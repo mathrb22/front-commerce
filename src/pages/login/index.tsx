@@ -36,7 +36,7 @@ export default function Login() {
 		});
 	};
 
-	const handleChange = (prop) => (event) => {
+	const handleChange = (prop: string) => (event: { target: { value: any; }; }) => {
 		setValues({ ...values, [prop]: event.target.value });
 	};
 
@@ -47,7 +47,7 @@ export default function Login() {
 		});
 	};
 
-	const handleMouseDownPassword = (event) => {
+	const handleMouseDownPassword = (event: { preventDefault: () => void; }) => {
 		event.preventDefault();
 	};
 
