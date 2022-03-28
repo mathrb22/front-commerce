@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -11,40 +10,46 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField } from '@mui/material';
+import { IconButton, InputAdornment, TextField } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 const theme = createTheme();
 
 export default function Login() {
 
-   const [values, setValues] = useState({
-				amount: '',
-				password: '',
-				weight: '',
-				weightRange: '',
-				showPassword: false,
-			});
+	const formik = useFormik({
+    initialValues: {
+      email: '',
+      password: '',
+			showPassword: false,
+			name: null
+    },
+    validationSchema: Yup.object({
+      email: Yup
+        .string()
+        .email(
+          'Informe um e-mail válido')
+        .max(255)
+        .required(
+          'Informe o e-mail'),
+      password: Yup
+        .string()
+        .max(255).min(6, 'A senha deve ter no mínimo 6 caracteres')
+        .required(
+          'Informe a senha').nullable(),
+			showPassword: Yup.boolean(),
+			name: Yup.string().max(255).required('Informe o nome')
+    }),
+    onSubmit: () => {
+      // router.push('/');
+    }
+  });
 
-
-	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-		event.preventDefault();
-		const data = new FormData(event.currentTarget);
-		console.log({
-			email: data.get('email'),
-			password: data.get('password'),
-		});
-	};
-
-	const handleChange = (prop: string) => (event: { target: { value: any; }; }) => {
-		setValues({ ...values, [prop]: event.target.value });
-	};
 
 	const handleClickShowPassword = () => {
-		setValues({
-			...values,
-			showPassword: !values.showPassword,
-		});
+		formik.setFieldValue('showPassword', !formik.values.showPassword);
 	};
 
 	const handleMouseDownPassword = (event: { preventDefault: () => void; }) => {
@@ -84,28 +89,36 @@ export default function Login() {
 						<Typography component='h1' variant='h5'>
 							Acessar plataforma
 						</Typography>
-						<Box component='form' noValidate onSubmit={handleSubmit} sx={{ mt: 1, maxWidth: 400}}>
+						<Box component='form' noValidate onSubmit={formik.handleSubmit} sx={{ mt: 1, maxWidth: 400}}>
 							<TextField
 								margin='normal'
 								required
 								fullWidth
 								id='email'
 								label='E-mail'
+								onBlur={formik.handleBlur}
+								onChange={formik.handleChange}
+								value={formik.values.email}
 								name='email'
 								placeholder='Digite seu e-mail'
 								autoComplete='email'
+								error={Boolean(formik.touched.email && formik.errors.email)}
+								helperText={formik.touched.email && formik.errors.email}
 								autoFocus
                 sx={{mb: 2}}
 							/>
-              <FormControl variant="outlined" fullWidth>
-                <InputLabel htmlFor="outlined-adornment-password">Senha</InputLabel>
-                <OutlinedInput
-                  fullWidth
+                <TextField
                   id="outlined-adornment-password"
-                  type={values.showPassword ? 'text' : 'password'}
-                  value={values.password}
-                  onChange={handleChange('password')}
-                  endAdornment={
+                  type={formik.values.showPassword ? 'text' : 'password'}
+                  fullWidth
+									required
+                  value={formik.values.password}
+									onBlur={formik.handleBlur}
+									onChange={formik.handleChange}
+									error={Boolean(formik.touched.password && formik.errors.password)}
+									helperText={formik.touched.password && formik.errors.password}
+									InputProps={{
+                  endAdornment: (
                     <InputAdornment position="end">
                       <IconButton
                         aria-label="toggle password visibility"
@@ -113,14 +126,14 @@ export default function Login() {
                         onMouseDown={handleMouseDownPassword}
                         edge="end"
                       >
-                        {values.showPassword ? <VisibilityOff /> : <Visibility />}
+                        {formik.values.showPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
                     </InputAdornment>
-                  }
-                  label="Senha"
+									)}}
+									name='password'
+									label="Senha"
                   placeholder='Digite sua senha'
                 />
-              </FormControl>
 							<FormControlLabel
 								control={<Checkbox value='remember' color='primary' />}
 								label='Lembrar-me'
