@@ -14,22 +14,22 @@ import { IconButton, InputAdornment, TextField } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { AuthContext } from '../../contexts/AuthContext';
-import { useContext } from 'react';
 import { useRouter } from 'next/router';
 
-export default function Login() {
+export default function Signup() {
 	const router = useRouter();
-	const { signIn } = useContext(AuthContext);
 
 	const formik = useFormik({
 		initialValues: {
+			fullName: '',
 			email: '',
 			password: '',
+			confirmPassword: '',
 			showPassword: false,
 			name: null,
 		},
 		validationSchema: Yup.object({
+			fullName: Yup.string().required('Informe o nome completo'),
 			email: Yup.string()
 				.email('Informe um e-mail válido')
 				.max(255)
@@ -39,13 +39,13 @@ export default function Login() {
 				.min(6, 'A senha deve ter no mínimo 6 caracteres')
 				.required('Informe a senha')
 				.nullable(),
+			confirmPassword: Yup.string()
+				.max(255)
+				.min(6, 'A senha deve ter no mínimo 6 caracteres')
+				.required('Confirme a senha').nullable(),
 			showPassword: Yup.boolean(),
 		}),
-		onSubmit: async (values) => {
-			await signIn({
-				login: values.email,
-				password: values.password,
-			});
+		onSubmit: () => {
 			router.push('/products');
 		},
 	});
@@ -88,13 +88,29 @@ export default function Login() {
 						<LockOutlinedIcon />
 					</Avatar>
 					<Typography component='h1' variant='h5'>
-						Acessar plataforma
+						Cadastre-se na plataforma
 					</Typography>
 					<Box
 						component='form'
 						noValidate
 						onSubmit={formik.handleSubmit}
 						sx={{ mt: 1, maxWidth: 400 }}>
+						<TextField
+							margin='normal'
+							required
+							fullWidth
+							id='name'
+							label='Nome completo'
+							onBlur={formik.handleBlur}
+							onChange={formik.handleChange}
+							value={formik.values.fullName}
+							name='fullName'
+							placeholder='Digite seu nome completo'
+							autoComplete='name'
+							error={Boolean(formik.touched.fullName && formik.errors.fullName)}
+							helperText={formik.touched.fullName && formik.errors.fullName}
+							autoFocus
+						/>
 						<TextField
 							margin='normal'
 							required
@@ -138,11 +154,35 @@ export default function Login() {
 							name='password'
 							label='Senha'
 							placeholder='Digite sua senha'
+							sx={{ mb: 2 }}
 						/>
-						<FormControlLabel
-							control={<Checkbox value='remember' color='primary' />}
-							label='Lembrar-me'
-							sx={{ mt: 1 }}
+						<TextField
+							id='outlined-adornment-password'
+							type={formik.values.showPassword ? 'text' : 'password'}
+							fullWidth
+							required
+							value={formik.values.confirmPassword}
+							onBlur={formik.handleBlur}
+							onChange={formik.handleChange}
+							error={Boolean(formik.touched.confirmPassword && formik.errors.confirmPassword)}
+							helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
+							InputProps={{
+								endAdornment: (
+									<InputAdornment position='end'>
+										<IconButton
+											aria-label='toggle password visibility'
+											onClick={handleClickShowPassword}
+											onMouseDown={handleMouseDownPassword}
+											edge='end'>
+											{formik.values.showPassword ? <VisibilityOff /> : <Visibility />}
+										</IconButton>
+									</InputAdornment>
+								),
+							}}
+							name='confirmPassword'
+							label='Confirmar Senha'
+							placeholder='Digite sua senha'
+							sx={{ mb: 2 }}
 						/>
 						<Button
 							type='submit'
@@ -150,20 +190,13 @@ export default function Login() {
 							size='large'
 							variant='contained'
 							sx={{ mt: 3, mb: 2 }}>
-							Entrar
+							Cadastrar-se
 						</Button>
-						<Grid container sx={{ mb: 4 }}>
-							<Grid item xs textAlign={'end'}>
-								<Link href='#' variant='body2'>
-									Esqueceu sua senha?
-								</Link>
-							</Grid>
-						</Grid>
 						<Grid container>
 							<Grid item xs textAlign={'center'}>
-								Não possui uma conta?{' '}
-								<Link href='/signup' variant='body2'>
-									{'Cadastre-se'}
+								Já possui uma conta?{' '}
+								<Link href='/login' variant='body2'>
+									{'Entrar'}
 								</Link>
 							</Grid>
 						</Grid>
