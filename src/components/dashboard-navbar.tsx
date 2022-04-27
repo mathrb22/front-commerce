@@ -67,13 +67,13 @@ export const DashboardNavbar = (props: any) => {
 						</IconButton>
 					</Tooltip>
 					<Tooltip title='Perfil'>
-						<IconButton>
+						<IconButton href='/account'>
 							<Avatar
 								sx={{
 									height: 40,
 									width: 40,
 								}}
-								src='/images/avatars/avatar_1.png'></Avatar>
+								src='/images/avatars/avatar_4.png'></Avatar>
 						</IconButton>
 					</Tooltip>
 				</Toolbar>
