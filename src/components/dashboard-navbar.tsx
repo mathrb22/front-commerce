@@ -73,7 +73,7 @@ export const DashboardNavbar = (props: any) => {
 									height: 40,
 									width: 40,
 								}}
-								src='/images/avatars/avatar_1.png'></Avatar>
+								src='/images/avatars/avatar_4.png'></Avatar>
 						</IconButton>
 					</Tooltip>
 				</Toolbar>
