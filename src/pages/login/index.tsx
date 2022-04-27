@@ -17,6 +17,8 @@ import * as Yup from 'yup';
 import { AuthContext } from '../../contexts/AuthContext';
 import { useContext } from 'react';
 import { useRouter } from 'next/router';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Login() {
 	const router = useRouter();
@@ -42,11 +44,23 @@ export default function Login() {
 			showPassword: Yup.boolean(),
 		}),
 		onSubmit: async (values) => {
-			await signIn({
-				login: values.email,
-				password: values.password,
-			});
-			router.push('/products');
+			if (values.email == 'admin@admin.com' && values.password == '123456') {
+				await signIn({
+					login: values.email,
+					password: values.password,
+				});
+			} else {
+				toast.warn('Usuário ou senha inválidos!', {
+					position: 'top-center',
+					autoClose: 5000,
+					theme: 'colored',
+					hideProgressBar: false,
+					closeOnClick: true,
+					pauseOnHover: true,
+					draggable: true,
+					progress: undefined,
+				});
+			}
 		},
 	});
 
@@ -60,6 +74,7 @@ export default function Login() {
 
 	return (
 		<Grid container component='main' sx={{ height: '100vh' }}>
+			<ToastContainer />
 			<CssBaseline />
 			<Grid
 				item
@@ -67,7 +82,7 @@ export default function Login() {
 				sm={4}
 				md={7}
 				sx={{
-					backgroundImage: 'url(/images/banner-login.jpg)',
+					backgroundImage: 'url(/images/banner-login2.jpg)',
 					backgroundRepeat: 'no-repeat',
 					backgroundColor: (t) =>
 						t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
