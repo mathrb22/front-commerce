@@ -42,7 +42,8 @@ export default function Signup() {
 			confirmPassword: Yup.string()
 				.max(255)
 				.min(6, 'A senha deve ter no mínimo 6 caracteres')
-				.required('Confirme a senha').nullable(),
+				.required('Confirme a senha')
+				.nullable(),
 			showPassword: Yup.boolean(),
 		}),
 		onSubmit: () => {
@@ -67,7 +68,7 @@ export default function Signup() {
 				sm={4}
 				md={7}
 				sx={{
-					backgroundImage: 'url(/images/banner-login.jpg)',
+					backgroundImage: 'url(/images/banner-login2.jpg)',
 					backgroundRepeat: 'no-repeat',
 					backgroundColor: (t) =>
 						t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
@@ -164,8 +165,12 @@ export default function Signup() {
 							value={formik.values.confirmPassword}
 							onBlur={formik.handleBlur}
 							onChange={formik.handleChange}
-							error={Boolean(formik.touched.confirmPassword && formik.errors.confirmPassword)}
-							helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
+							error={Boolean(
+								formik.touched.confirmPassword && formik.errors.confirmPassword
+							)}
+							helperText={
+								formik.touched.confirmPassword && formik.errors.confirmPassword
+							}
 							InputProps={{
 								endAdornment: (
 									<InputAdornment position='end'>
