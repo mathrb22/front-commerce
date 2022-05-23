@@ -1,28 +1,23 @@
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { IconButton, InputAdornment, TextField } from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { TextField } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { AuthContext } from '../../contexts/AuthContext';
 import { useContext } from 'react';
 import { useRouter } from 'next/router';
-import { toast, ToastContainer } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-export default function Login() {
+export default function ForgotPassword() {
 	const router = useRouter();
-	const { signIn } = useContext(AuthContext);
 
 	const formik = useFormik({
 		initialValues: {
@@ -36,41 +31,11 @@ export default function Login() {
 				.email('Informe um e-mail válido')
 				.max(255)
 				.required('Informe o e-mail'),
-			password: Yup.string()
-				.max(255)
-				.min(6, 'A senha deve ter no mínimo 6 caracteres')
-				.required('Informe a senha')
-				.nullable(),
-			showPassword: Yup.boolean(),
 		}),
 		onSubmit: async (values) => {
-			if (values.email == 'admin@admin.com' && values.password == '123456') {
-				await signIn({
-					login: values.email,
-					password: values.password,
-				});
-			} else {
-				toast.warn('Usuário ou senha inválidos!', {
-					position: 'top-center',
-					autoClose: 5000,
-					theme: 'colored',
-					hideProgressBar: false,
-					closeOnClick: true,
-					pauseOnHover: true,
-					draggable: true,
-					progress: undefined,
-				});
-			}
+			router.push('/products');
 		},
 	});
-
-	const handleClickShowPassword = () => {
-		formik.setFieldValue('showPassword', !formik.values.showPassword);
-	};
-
-	const handleMouseDownPassword = (event: { preventDefault: () => void }) => {
-		event.preventDefault();
-	};
 
 	return (
 		<Grid container component='main' sx={{ height: '100vh' }}>
@@ -103,13 +68,21 @@ export default function Login() {
 						<LockOutlinedIcon />
 					</Avatar>
 					<Typography component='h1' variant='h5'>
-						Acessar plataforma
+						Esqueci minha senha
 					</Typography>
 					<Box
 						component='form'
 						noValidate
 						onSubmit={formik.handleSubmit}
 						sx={{ mt: 1, maxWidth: 400 }}>
+						<Typography
+							variant='body1'
+							color='textSecondary'
+							component='p'
+							sx={{ mt: 2 }}>
+							Esqueceu sua senha? Não se preocupe, nós vamos te ajudar! Digite seu
+							e-mail cadastrado para redefinir a sua senha.
+						</Typography>
 						<TextField
 							margin='normal'
 							required
@@ -127,58 +100,18 @@ export default function Login() {
 							autoFocus
 							sx={{ mb: 2 }}
 						/>
-						<TextField
-							id='outlined-adornment-password'
-							type={formik.values.showPassword ? 'text' : 'password'}
-							fullWidth
-							required
-							value={formik.values.password}
-							onBlur={formik.handleBlur}
-							onChange={formik.handleChange}
-							error={Boolean(formik.touched.password && formik.errors.password)}
-							helperText={formik.touched.password && formik.errors.password}
-							InputProps={{
-								endAdornment: (
-									<InputAdornment position='end'>
-										<IconButton
-											aria-label='toggle password visibility'
-											onClick={handleClickShowPassword}
-											onMouseDown={handleMouseDownPassword}
-											edge='end'>
-											{formik.values.showPassword ? <VisibilityOff /> : <Visibility />}
-										</IconButton>
-									</InputAdornment>
-								),
-							}}
-							name='password'
-							label='Senha'
-							placeholder='Digite sua senha'
-						/>
-						<FormControlLabel
-							control={<Checkbox value='remember' color='primary' />}
-							label='Lembrar-me'
-							sx={{ mt: 1 }}
-						/>
 						<Button
 							type='submit'
 							fullWidth
 							size='large'
 							variant='contained'
 							sx={{ mt: 3, mb: 2 }}>
-							Entrar
+							Enviar
 						</Button>
-						<Grid container sx={{ mb: 4 }}>
-							<Grid item xs textAlign={'end'}>
-								<Link href='/forgot-password' variant='body2'>
-									Esqueceu sua senha?
-								</Link>
-							</Grid>
-						</Grid>
 						<Grid container>
 							<Grid item xs textAlign={'center'}>
-								Não possui uma conta?{' '}
-								<Link href='/signup' variant='body2'>
-									{'Cadastre-se'}
+								<Link href='/login' variant='body2'>
+									{'Voltar para o Login'}
 								</Link>
 							</Grid>
 						</Grid>
