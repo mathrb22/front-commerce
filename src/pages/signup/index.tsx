@@ -47,7 +47,7 @@ export default function Signup() {
 			showPassword: Yup.boolean(),
 		}),
 		onSubmit: () => {
-			router.push('/products');
+			router.push('/login');
 		},
 	});
 
