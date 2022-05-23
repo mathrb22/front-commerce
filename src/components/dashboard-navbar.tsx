@@ -59,13 +59,6 @@ export const DashboardNavbar = (props: any) => {
 						</IconButton>
 					</Tooltip>
 					<Box sx={{ flexGrow: 1 }} />
-					<Tooltip title='Notificações'>
-						<IconButton sx={{ ml: 1 }}>
-							<Badge badgeContent={4} color='primary' variant='dot'>
-								<NotificationsIcon fontSize='small' />
-							</Badge>
-						</IconButton>
-					</Tooltip>
 					<Tooltip title='Perfil'>
 						<IconButton href='/account'>
 							<Avatar

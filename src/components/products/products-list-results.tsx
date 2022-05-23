@@ -14,13 +14,14 @@ import {
 	TableRow,
 	Typography,
 } from '@mui/material';
-import { Customer } from '../../shared/types/customer';
+import { Product } from '../../shared/types/product';
+import { format } from 'util';
 
 export type ListProps<T> = {
 	data: T[];
 };
 
-export const CustomerListResults = ({ data }: ListProps<Customer>) => {
+export const ProductsListResults = ({ data }: ListProps<Product>) => {
 	const [limit, setLimit] = useState(10);
 	const [page, setPage] = useState(0);
 
@@ -41,27 +42,34 @@ export const CustomerListResults = ({ data }: ListProps<Customer>) => {
 							<TableHead>
 								<TableRow>
 									<TableCell>Nome</TableCell>
-									<TableCell>E-mail</TableCell>
-									<TableCell>Telefone</TableCell>
+									<TableCell>Descrição</TableCell>
+									<TableCell>Preço</TableCell>
+									<TableCell>Qtde. Estoque</TableCell>
+									<TableCell>Data de inclusão</TableCell>
 								</TableRow>
 							</TableHead>
 							<TableBody>
-								{data.map((customer: Customer) => (
-									<TableRow hover key={customer.id}>
-										<TableCell>
+								{data.map((product: Product) => (
+									<TableRow hover key={product.id}>
+										<TableCell sx={{ width: 360 }}>
 											<Box
 												sx={{
 													alignItems: 'center',
 													display: 'flex',
 												}}>
-												<Avatar src={customer.avatarUrl} sx={{ mr: 2 }}></Avatar>
+												<Avatar
+													variant='square'
+													src={product.media}
+													sx={{ mr: 2, width: 56, height: 56 }}></Avatar>
 												<Typography color='textPrimary' variant='body1'>
-													{customer.name}
+													{product.name}
 												</Typography>
 											</Box>
 										</TableCell>
-										<TableCell>{customer.email}</TableCell>
-										<TableCell>{customer.phone}</TableCell>
+										<TableCell>{product.description}</TableCell>
+										<TableCell sx={{ minWidth: 120 }}>R$ {product.price}</TableCell>
+										<TableCell sx={{ minWidth: 120 }}>{product.amount}</TableCell>
+										<TableCell>{product.inclusionDate}</TableCell>
 									</TableRow>
 								))}
 							</TableBody>
@@ -71,7 +79,7 @@ export const CustomerListResults = ({ data }: ListProps<Customer>) => {
 			</PerfectScrollbar>
 			<TablePagination
 				component='div'
-				count={7}
+				count={10}
 				onPageChange={handlePageChange}
 				onRowsPerPageChange={handleLimitChange}
 				page={page}

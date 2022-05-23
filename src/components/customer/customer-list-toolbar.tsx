@@ -26,6 +26,20 @@ export const CustomerListToolbar = (props: any) => (
 				Clientes
 			</Typography>
 			<Box sx={{ m: 1 }}>
+				<TextField
+					InputProps={{
+						endAdornment: (
+							<InputAdornment position='end'>
+								<SvgIcon color='action' fontSize='small'>
+									<SearchIcon />
+								</SvgIcon>
+							</InputAdornment>
+						),
+					}}
+					sx={{ backgroundColor: 'white', borderRadius: '4px', mr: 1, mb: 2 }}
+					placeholder='Pesquisar clientes'
+					variant='outlined'
+				/>
 				<Button startIcon={<DownloadIcon fontSize='small' />} sx={{ mr: 1 }}>
 					Exportar
 				</Button>
@@ -33,28 +47,6 @@ export const CustomerListToolbar = (props: any) => (
 					Adicionar Cliente
 				</Button>
 			</Box>
-		</Box>
-		<Box sx={{ mt: 3 }}>
-			<Card>
-				<CardContent>
-					<Box sx={{ maxWidth: 500 }}>
-						<TextField
-							fullWidth
-							InputProps={{
-								startAdornment: (
-									<InputAdornment position='start'>
-										<SvgIcon color='action' fontSize='small'>
-											<SearchIcon />
-										</SvgIcon>
-									</InputAdornment>
-								),
-							}}
-							placeholder='Pesquisar clientes'
-							variant='outlined'
-						/>
-					</Box>
-				</CardContent>
-			</Card>
 		</Box>
 	</Box>
 );
