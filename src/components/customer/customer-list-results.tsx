@@ -36,7 +36,7 @@ export const CustomerListResults = ({ data }: ListProps<Customer>) => {
 		<Card>
 			<PerfectScrollbar>
 				<Box>
-					<TableContainer sx={{ height: 360 }}>
+					<TableContainer sx={{ height: '70vh' }}>
 						<Table stickyHeader sx={{ minWidth: 1000, overflow: 'scroll' }}>
 							<TableHead>
 								<TableRow>
