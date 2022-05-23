@@ -13,7 +13,7 @@ const Dashboard = () => (
 			component='main'
 			sx={{
 				flexGrow: 1,
-				py: 8,
+				py: 3,
 			}}>
 			<Container maxWidth={false}>
 				<Grid container spacing={3}></Grid>

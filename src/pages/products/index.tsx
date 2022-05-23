@@ -3,7 +3,8 @@ import { Box, Container } from '@mui/material';
 import { ReactElement } from 'react';
 import { DashboardLayout } from '../../components/dashboard-layout';
 import { ProductsListToolbar } from '../../components/products/products-list-toolbar';
-import { ProductsListResults } from '../../components/products/customer-list-results';
+import { ProductsListResults } from '../../components/products/products-list-results';
+import { products } from '../../__mocks__/products';
 
 const Products = () => (
 	<>
@@ -14,12 +15,12 @@ const Products = () => (
 			component='main'
 			sx={{
 				flexGrow: 1,
-				py: 8,
+				py: 3,
 			}}>
 			<Container maxWidth={false}>
 				<ProductsListToolbar />
 				<Box sx={{ mt: 3 }}>
-					<ProductsListResults />
+					<ProductsListResults data={products} />
 				</Box>
 			</Container>
 		</Box>

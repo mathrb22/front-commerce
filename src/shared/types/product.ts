@@ -1,8 +1,9 @@
 export interface Product {
-	id: string,
-	createdAt: string,
-	description: string,
-	media: string,
-	title: string,
-	totalDownloads: string
+	id: string;
+	name: string;
+	description?: string;
+	media?: string;
+	price: number;
+	amount: number;
+	inclusionDate: string;
 }

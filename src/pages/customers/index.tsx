@@ -15,13 +15,12 @@ const Customers = () => (
 			component='main'
 			sx={{
 				flexGrow: 1,
-				py: 8,
+				py: 3,
 			}}>
 			<Container maxWidth={false}>
 				<CustomerListToolbar />
 				<Box sx={{ mt: 3 }}>
-					<CustomerListResults  />
-
+					<CustomerListResults data={customers} />
 				</Box>
 			</Container>
 		</Box>
