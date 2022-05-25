@@ -123,7 +123,7 @@ export default function Signup() {
 							value={formik.values.email}
 							name='email'
 							placeholder='Digite seu e-mail'
-							autoComplete='email'
+							autoComplete='off'
 							error={Boolean(formik.touched.email && formik.errors.email)}
 							helperText={formik.touched.email && formik.errors.email}
 							autoFocus
