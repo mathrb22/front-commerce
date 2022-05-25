@@ -44,11 +44,11 @@ const items = [
 		icon: <PersonIcon fontSize='small' />,
 		title: 'Conta',
 	},
-	{
-		href: '/settings',
-		icon: <SettingsIcon fontSize='small' />,
-		title: 'Configurações',
-	},
+	// {
+	// 	href: '/settings',
+	// 	icon: <SettingsIcon fontSize='small' />,
+	// 	title: 'Configurações',
+	// },
 	{
 		href: '/login',
 		icon: <LoginIcon fontSize='small' />,
