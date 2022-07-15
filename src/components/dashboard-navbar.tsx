@@ -53,11 +53,6 @@ export const DashboardNavbar = (props: any) => {
 						}}>
 						<MenuIcon fontSize='small' />
 					</IconButton>
-					<Tooltip title='Pesquisar'>
-						<IconButton sx={{ ml: 1 }}>
-							<SearchIcon fontSize='small' />
-						</IconButton>
-					</Tooltip>
 					<Box sx={{ flexGrow: 1 }} />
 					<Tooltip title='Perfil'>
 						<IconButton href='/account'>
