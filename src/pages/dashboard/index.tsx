@@ -7,7 +7,7 @@ import { RouteGuard } from '../../guards/AuthGuard';
 const Dashboard = () => (
 	<>
 		<Head>
-			<title>Dashboard | Material Kit</title>
+			<title>Dashboard | Frontcommerce</title>
 		</Head>
 		<Box
 			component='main'
