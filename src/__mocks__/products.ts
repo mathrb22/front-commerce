@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { Product } from '../shared/types/product';
+import { Product } from '../shared/interfaces/product';
 
 export const products: Product[] = [
 	{

@@ -1,7 +1,7 @@
 import { useState, useEffect, ProviderProps } from 'react';
 import { useRouter } from 'next/router';
-import { IUser } from '../shared/types/user';
 import { destroyCookie, parseCookies } from 'nookies';
+import { IUser } from '../shared/interfaces/user';
 
 let cookies = parseCookies();
 

@@ -14,7 +14,7 @@ import {
 	TableRow,
 	Typography,
 } from '@mui/material';
-import { Product } from '../../shared/types/product';
+import { Product } from '../../shared/interfaces/product';
 import { format } from 'util';
 
 export type ListProps<T> = {
