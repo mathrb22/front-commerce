@@ -2,34 +2,67 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { IconButton, InputAdornment, TextField } from '@mui/material';
+import {
+	FormControl,
+	FormLabel,
+	IconButton,
+	InputAdornment,
+	Radio,
+	RadioGroup,
+	TextField,
+} from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useRouter } from 'next/router';
+import { useEffect } from 'react';
+
+export type SignupFormValues = {
+	name: string;
+	secondName: string;
+	email: string;
+	password: string;
+	showPassword: boolean;
+	registerType: number;
+};
 
 export default function Signup() {
 	const router = useRouter();
 
 	const formik = useFormik({
 		initialValues: {
-			fullName: '',
+			name: '',
+			secondName: '',
 			email: '',
 			password: '',
-			confirmPassword: '',
 			showPassword: false,
-			name: null,
+			registerType: 1,
+		},
+		validate: (values) => {
+			let errors: Partial<SignupFormValues> = {};
+			if (values.registerType == 1 && !values.name)
+				errors.name = 'Informe seu nome';
+
+			if (values.registerType == 2 && !values.name)
+				errors.name = 'Informe a razão social';
+
+			if (values.registerType == 1 && !values.secondName)
+				errors.secondName = 'Informe seu sobrenome';
+
+			if (values.registerType == 2 && !values.name)
+				errors.secondName = 'Informe o nome fantasia';
+
+			return errors;
 		},
 		validationSchema: Yup.object({
-			fullName: Yup.string().required('Informe o nome completo'),
+			name: Yup.string().required(),
+			secondName: Yup.string().required(),
 			email: Yup.string()
 				.email('Informe um e-mail válido')
 				.max(255)
@@ -39,17 +72,17 @@ export default function Signup() {
 				.min(6, 'A senha deve ter no mínimo 6 caracteres')
 				.required('Informe a senha')
 				.nullable(),
-			confirmPassword: Yup.string()
-				.max(255)
-				.min(6, 'A senha deve ter no mínimo 6 caracteres')
-				.required('Confirme a senha')
-				.nullable(),
 			showPassword: Yup.boolean(),
 		}),
 		onSubmit: () => {
-			router.push('/login');
+			console.log(formik.values);
+			// router.push('/login');
 		},
 	});
+
+	useEffect(() => {
+		console.log(formik.values);
+	}, []);
 
 	const handleClickShowPassword = () => {
 		formik.setFieldValue('showPassword', !formik.values.showPassword);
@@ -96,20 +129,61 @@ export default function Signup() {
 						noValidate
 						onSubmit={formik.handleSubmit}
 						sx={{ mt: 1, maxWidth: 400 }}>
+						<FormControl sx={{ mt: 3 }}>
+							<FormLabel>Tipo de cadastro</FormLabel>
+							<RadioGroup
+								row
+								name='row-radio-buttons-group'
+								color='primary'
+								onChange={(e) => formik.setFieldValue('registerType', e.target.value)}
+								value={formik.values.registerType}>
+								<FormControlLabel value='1' control={<Radio />} label='Pessoa Física' />
+								<FormControlLabel
+									value='2'
+									control={<Radio />}
+									label='Pessoa Jurídica'
+								/>
+							</RadioGroup>
+						</FormControl>
+
 						<TextField
 							margin='normal'
 							required
 							fullWidth
 							id='name'
-							label='Nome completo'
+							label={formik.values.registerType == 1 ? 'Nome' : 'Razão Social'}
 							onBlur={formik.handleBlur}
 							onChange={formik.handleChange}
-							value={formik.values.fullName}
-							name='fullName'
-							placeholder='Digite seu nome completo'
+							value={formik.values.name}
+							name='name'
+							placeholder={
+								formik.values.registerType == 1
+									? 'Digite seu nome'
+									: 'Digite a razão social'
+							}
 							autoComplete='name'
-							error={Boolean(formik.touched.fullName && formik.errors.fullName)}
-							helperText={formik.touched.fullName && formik.errors.fullName}
+							error={Boolean(formik.touched.name && formik.errors.name)}
+							helperText={formik.touched.name && formik.errors.name}
+							autoFocus
+						/>
+						<TextField
+							margin='normal'
+							required
+							fullWidth
+							id='secondName'
+							label={formik.values.registerType == 1 ? 'Sobrenome' : 'Nome Fantasia'}
+							onBlur={formik.handleBlur}
+							onChange={formik.handleChange}
+							value={formik.values.secondName}
+							name='secondName'
+							placeholder={
+								formik.values.registerType == 1
+									? 'Digite seu sobrenome'
+									: 'Digite o nome fantasia'
+							}
+							autoComplete='secondName'
+							error={Boolean(formik.touched.secondName && formik.errors.secondName)}
+							helperText={formik.touched.secondName && formik.errors.secondName}
 							autoFocus
 						/>
 						<TextField
@@ -129,6 +203,7 @@ export default function Signup() {
 							autoFocus
 							sx={{ mb: 2 }}
 						/>
+
 						<TextField
 							id='outlined-adornment-password'
 							type={formik.values.showPassword ? 'text' : 'password'}
@@ -154,38 +229,6 @@ export default function Signup() {
 							}}
 							name='password'
 							label='Senha'
-							placeholder='Digite sua senha'
-							sx={{ mb: 2 }}
-						/>
-						<TextField
-							id='outlined-adornment-password'
-							type={formik.values.showPassword ? 'text' : 'password'}
-							fullWidth
-							required
-							value={formik.values.confirmPassword}
-							onBlur={formik.handleBlur}
-							onChange={formik.handleChange}
-							error={Boolean(
-								formik.touched.confirmPassword && formik.errors.confirmPassword
-							)}
-							helperText={
-								formik.touched.confirmPassword && formik.errors.confirmPassword
-							}
-							InputProps={{
-								endAdornment: (
-									<InputAdornment position='end'>
-										<IconButton
-											aria-label='toggle password visibility'
-											onClick={handleClickShowPassword}
-											onMouseDown={handleMouseDownPassword}
-											edge='end'>
-											{formik.values.showPassword ? <VisibilityOff /> : <Visibility />}
-										</IconButton>
-									</InputAdornment>
-								),
-							}}
-							name='confirmPassword'
-							label='Confirmar Senha'
 							placeholder='Digite sua senha'
 							sx={{ mb: 2 }}
 						/>
