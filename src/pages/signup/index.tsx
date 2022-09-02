@@ -13,6 +13,7 @@ import {
 	FormLabel,
 	IconButton,
 	InputAdornment,
+	MenuItem,
 	Radio,
 	RadioGroup,
 	TextField,
@@ -22,10 +23,14 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
+import { DatePicker } from '@mui/x-date-pickers';
+import moment from 'moment';
 
 export type SignupFormValues = {
 	name: string;
 	secondName: string;
+	gender: string;
+	birthDate: string;
 	email: string;
 	password: string;
 	showPassword: boolean;
@@ -35,10 +40,23 @@ export type SignupFormValues = {
 export default function Signup() {
 	const router = useRouter();
 
+	const genderList = [
+		{
+			id: 1,
+			value: 'Masculino',
+		},
+		{
+			id: 2,
+			value: 'Feminino',
+		},
+	];
+
 	const formik = useFormik({
 		initialValues: {
 			name: '',
 			secondName: '',
+			gender: '',
+			birthDate: '',
 			email: '',
 			password: '',
 			showPassword: false,
@@ -46,6 +64,15 @@ export default function Signup() {
 		},
 		validate: (values) => {
 			let errors: Partial<SignupFormValues> = {};
+
+			if (values.registerType == 1 && !values.birthDate)
+				errors.birthDate = 'Informe sua data de nascimento';
+
+			if (values.registerType == 1 && values.birthDate) {
+				const birthDate = moment(values.birthDate, 'DD/MM/YYYY', true);
+				if (!birthDate.isValid()) errors.birthDate = 'Data de nascimento inválida';
+			}
+
 			if (values.registerType == 1 && !values.name)
 				errors.name = 'Informe seu nome';
 
@@ -67,6 +94,8 @@ export default function Signup() {
 				.email('Informe um e-mail válido')
 				.max(255)
 				.required('Informe o e-mail'),
+			gender: Yup.string(),
+			birthDate: Yup.string().required('Informe sua data de nascimento'),
 			password: Yup.string()
 				.max(255)
 				.min(6, 'A senha deve ter no mínimo 6 caracteres')
@@ -81,7 +110,7 @@ export default function Signup() {
 	});
 
 	useEffect(() => {
-		console.log(formik.values);
+		// console.log(formik.values);
 	}, []);
 
 	const handleClickShowPassword = () => {
@@ -186,6 +215,58 @@ export default function Signup() {
 							helperText={formik.touched.secondName && formik.errors.secondName}
 							autoFocus
 						/>
+
+						{formik.values.registerType == 1 && (
+							<TextField
+								margin='normal'
+								fullWidth
+								id='gender'
+								label='Gênero'
+								onBlur={formik.handleBlur}
+								onChange={formik.handleChange}
+								value={formik.values.gender}
+								name='gender'
+								placeholder='Selecione seu gênero'
+								select
+								variant='outlined'>
+								<MenuItem value=''>Selecionar</MenuItem>
+								{genderList.map((gender) => (
+									<MenuItem key={gender.id} value={gender.value}>
+										{gender.value}
+									</MenuItem>
+								))}
+							</TextField>
+						)}
+
+						{formik.values.registerType == 1 && (
+							<DatePicker
+								label='Data de nascimento'
+								onChange={(date) => {
+									console.log(formik.errors);
+									formik.setFieldValue('birthDate', date);
+								}}
+								onError={(error) => {
+									formik.setFieldError('birthDate', error?.toString());
+									console.log(formik.errors);
+								}}
+								value={formik.values.birthDate ? formik.values.birthDate : null}
+								renderInput={(params) => (
+									<TextField
+										margin='normal'
+										fullWidth
+										required
+										id='birthDate'
+										onBlur={formik.handleBlur}
+										error={Boolean(formik.touched.birthDate && formik.errors.birthDate)}
+										helperText={formik.touched.birthDate && formik.errors.birthDate}
+										name='birthDate'
+										variant='outlined'
+										{...params}
+									/>
+								)}
+							/>
+						)}
+
 						<TextField
 							margin='normal'
 							required
@@ -193,7 +274,10 @@ export default function Signup() {
 							id='email'
 							label='E-mail'
 							onBlur={formik.handleBlur}
-							onChange={formik.handleChange}
+							onChange={(email) => {
+								console.log(formik.errors);
+								formik.setFieldValue('email', email.target.value);
+							}}
 							value={formik.values.email}
 							name='email'
 							placeholder='Digite seu e-mail'

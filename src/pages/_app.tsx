@@ -7,6 +7,9 @@ import { theme } from '../theme/theme';
 import { NextPage } from 'next';
 import { ReactElement, ReactNode } from 'react';
 import { AuthProvider } from '../contexts/AuthContext';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { ptBR } from 'date-fns/locale';
 
 type NextPageWithLayout = NextPage & {
 	getLayout?: (page: ReactElement) => ReactNode;
@@ -26,8 +29,10 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
 				<title>FrontCommerce</title>
 			</Head>
 			<ThemeProvider theme={theme}>
-				<CssBaseline />
-				{getLayout(<Component {...pageProps} />)}
+				<LocalizationProvider adapterLocale={ptBR} dateAdapter={AdapterDateFns}>
+					<CssBaseline />
+					{getLayout(<Component {...pageProps} />)}
+				</LocalizationProvider>
 			</ThemeProvider>
 		</AuthProvider>
 	);
