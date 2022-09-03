@@ -1,5 +1,5 @@
 import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
+import { LoadingButton } from '@mui/lab';
 import CssBaseline from '@mui/material/CssBaseline';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Link from '@mui/material/Link';
@@ -22,15 +22,19 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
+import { useContext } from 'react';
 import { DatePicker } from '@mui/x-date-pickers';
 import moment from 'moment';
+import { AuthContext, ISignUp } from '../../contexts/AuthContext';
+import { EPersonType } from '../../shared/enums/person-type.enum';
 
 export type SignupFormValues = {
 	name: string;
 	secondName: string;
 	gender: string;
-	birthDate: string;
+	birthdate: string;
+	documentNumber: string;
+	phone: string;
 	email: string;
 	password: string;
 	showPassword: boolean;
@@ -39,6 +43,7 @@ export type SignupFormValues = {
 
 export default function Signup() {
 	const router = useRouter();
+	const { register, isLoading } = useContext(AuthContext);
 
 	const genderList = [
 		{
@@ -55,8 +60,10 @@ export default function Signup() {
 		initialValues: {
 			name: '',
 			secondName: '',
+			documentNumber: '',
 			gender: '',
-			birthDate: '',
+			birthdate: '',
+			phone: '',
 			email: '',
 			password: '',
 			showPassword: false,
@@ -65,25 +72,24 @@ export default function Signup() {
 		validate: (values) => {
 			let errors: Partial<SignupFormValues> = {};
 
-			if (values.registerType == 1 && !values.birthDate)
-				errors.birthDate = 'Informe sua data de nascimento';
-
-			if (values.registerType == 1 && values.birthDate) {
-				const birthDate = moment(values.birthDate, 'DD/MM/YYYY', true);
-				if (!birthDate.isValid()) errors.birthDate = 'Data de nascimento inválida';
+			if (values.registerType == 1) {
+				if (!values.name) errors.name = 'Informe seu nome';
+				if (!values.secondName) errors.secondName = 'Informe seu sobrenome';
+				if (!values.documentNumber) errors.documentNumber = 'Informe seu CPF';
+				if (!values.birthdate) {
+					errors.birthdate = 'Informe sua data de nascimento';
+				} else {
+					const birthdate = moment(values.birthdate, 'DD/MM/YYYY', true);
+					if (!birthdate.isValid()) errors.birthdate = 'Data de nascimento inválida';
+				}
+			} else {
+				if (!values.name) errors.name = 'Informe a razão social';
+				if (!values.secondName) errors.secondName = 'Informe o nome fantasia';
+				if (!values.documentNumber) errors.documentNumber = 'Informe seu CNPJ';
+				if (!values.birthdate) {
+					delete errors.birthdate;
+				}
 			}
-
-			if (values.registerType == 1 && !values.name)
-				errors.name = 'Informe seu nome';
-
-			if (values.registerType == 2 && !values.name)
-				errors.name = 'Informe a razão social';
-
-			if (values.registerType == 1 && !values.secondName)
-				errors.secondName = 'Informe seu sobrenome';
-
-			if (values.registerType == 2 && !values.name)
-				errors.secondName = 'Informe o nome fantasia';
 
 			return errors;
 		},
@@ -95,7 +101,12 @@ export default function Signup() {
 				.max(255)
 				.required('Informe o e-mail'),
 			gender: Yup.string(),
-			birthDate: Yup.string().required('Informe sua data de nascimento'),
+			documentNumber: Yup.string().required(),
+			phone: Yup.string()
+				.required('Informe o número do celular')
+				.min(11, 'Informe um número de celular válido')
+				.max(11, 'Informe um número de celular válido'),
+			birthdate: Yup.string(),
 			password: Yup.string()
 				.max(255)
 				.min(6, 'A senha deve ter no mínimo 6 caracteres')
@@ -103,15 +114,26 @@ export default function Signup() {
 				.nullable(),
 			showPassword: Yup.boolean(),
 		}),
-		onSubmit: () => {
-			console.log(formik.values);
-			// router.push('/login');
+		onSubmit: async (values) => {
+			const signupBody: ISignUp = {
+				name: values.name,
+				secondName: values.secondName,
+				documentNumber: values.documentNumber,
+				personType:
+					values.registerType == 1
+						? EPersonType.NaturalPerson
+						: EPersonType.LegalPerson,
+				phone: values.phone,
+				email: values.email,
+				password: values.password,
+			};
+			if (values.registerType == 1) {
+				signupBody.gender = values.gender;
+				signupBody.birthdate = values.birthdate;
+			}
+			await register(signupBody);
 		},
 	});
-
-	useEffect(() => {
-		// console.log(formik.values);
-	}, []);
 
 	const handleClickShowPassword = () => {
 		formik.setFieldValue('showPassword', !formik.values.showPassword);
@@ -136,9 +158,21 @@ export default function Signup() {
 						t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
 					backgroundSize: 'cover',
 					backgroundPosition: 'center',
+					height: '100%',
 				}}
 			/>
-			<Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+			<Grid
+				item
+				xs={12}
+				sm={8}
+				md={5}
+				component={Paper}
+				elevation={6}
+				square
+				sx={{
+					height: '100%',
+					overflow: 'auto',
+				}}>
 				<Box
 					sx={{
 						my: 8,
@@ -216,6 +250,28 @@ export default function Signup() {
 							autoFocus
 						/>
 
+						<TextField
+							margin='normal'
+							required
+							fullWidth
+							id='documentNumber'
+							label={formik.values.registerType == 1 ? 'CPF' : 'CNPJ'}
+							onBlur={formik.handleBlur}
+							onChange={formik.handleChange}
+							value={formik.values.documentNumber}
+							variant='outlined'
+							name='documentNumber'
+							placeholder={
+								formik.values.registerType == 1 ? 'Digite seu CPF' : 'Digite seu CNPJ'
+							}
+							autoComplete='documentNumber'
+							error={Boolean(
+								formik.touched.documentNumber && formik.errors.documentNumber
+							)}
+							helperText={
+								formik.touched.documentNumber && formik.errors.documentNumber
+							}></TextField>
+
 						{formik.values.registerType == 1 && (
 							<TextField
 								margin='normal'
@@ -243,29 +299,46 @@ export default function Signup() {
 								label='Data de nascimento'
 								onChange={(date) => {
 									console.log(formik.errors);
-									formik.setFieldValue('birthDate', date);
+									formik.setFieldValue('birthdate', date);
 								}}
 								onError={(error) => {
-									formik.setFieldError('birthDate', error?.toString());
+									formik.setFieldError('birthdate', error?.toString());
 									console.log(formik.errors);
 								}}
-								value={formik.values.birthDate ? formik.values.birthDate : null}
+								value={formik.values.birthdate ? formik.values.birthdate : null}
 								renderInput={(params) => (
 									<TextField
 										margin='normal'
 										fullWidth
-										required
-										id='birthDate'
+										id='birthdate'
 										onBlur={formik.handleBlur}
-										error={Boolean(formik.touched.birthDate && formik.errors.birthDate)}
-										helperText={formik.touched.birthDate && formik.errors.birthDate}
-										name='birthDate'
+										error={Boolean(formik.touched.birthdate && formik.errors.birthdate)}
+										helperText={formik.touched.birthdate && formik.errors.birthdate}
+										name='birthdate'
 										variant='outlined'
 										{...params}
 									/>
 								)}
 							/>
 						)}
+
+						<TextField
+							type='number'
+							inputProps={{ inputMode: 'numeric' }}
+							margin='normal'
+							required
+							fullWidth
+							id='phone'
+							label='Celular'
+							onBlur={formik.handleBlur}
+							onChange={formik.handleChange}
+							value={formik.values.phone}
+							name='phone'
+							placeholder='Digite seu celular'
+							autoComplete='phone'
+							variant='outlined'
+							error={Boolean(formik.touched.phone && formik.errors.phone)}
+							helperText={formik.touched.phone && formik.errors.phone}></TextField>
 
 						<TextField
 							margin='normal'
@@ -275,6 +348,7 @@ export default function Signup() {
 							label='E-mail'
 							onBlur={formik.handleBlur}
 							onChange={(email) => {
+								console.log(formik.values);
 								console.log(formik.errors);
 								formik.setFieldValue('email', email.target.value);
 							}}
@@ -316,14 +390,15 @@ export default function Signup() {
 							placeholder='Digite sua senha'
 							sx={{ mb: 2 }}
 						/>
-						<Button
+						<LoadingButton
+							loading={isLoading}
 							type='submit'
 							fullWidth
 							size='large'
 							variant='contained'
 							sx={{ mt: 3, mb: 2 }}>
 							Cadastrar-se
-						</Button>
+						</LoadingButton>
 						<Grid container>
 							<Grid item xs textAlign={'center'}>
 								Já possui uma conta?{' '}

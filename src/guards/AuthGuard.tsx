@@ -1,13 +1,12 @@
-import { useState, useEffect, ProviderProps } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { destroyCookie, parseCookies } from 'nookies';
 import { IUser } from '../shared/interfaces/user';
-
-let cookies = parseCookies();
 
 type RouteGuardProps = {
 	children: any;
 };
+
+const publicPaths = ['/login', '/signup', 'forgot-password'];
 
 function RouteGuard({ children }: any) {
 	const router = useRouter();
@@ -36,9 +35,11 @@ function RouteGuard({ children }: any) {
 
 	function authCheck(url: string) {
 		// redirect to login page if accessing a private page and not logged in
-		const publicPaths = ['/login', '/signup'];
+		const user = localStorage.getItem('frontcommerce.user')
+			? JSON.parse(localStorage.getItem('frontcommerce.user') as string)
+			: null;
 		const path = url.split('?')[0];
-		if (!user?.id && !publicPaths.includes(path)) {
+		if (!user && !publicPaths.includes(path)) {
 			setAuthorized(false);
 			router.push({
 				pathname: '/login',

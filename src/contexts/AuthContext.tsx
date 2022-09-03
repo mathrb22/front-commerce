@@ -1,44 +1,48 @@
 import { createContext, ReactNode, useEffect, useState } from 'react';
-import { setCookie, parseCookies, destroyCookie } from 'nookies';
 import Router from 'next/router';
-import { IPhoneContact } from '../shared/interfaces/phone';
-import { IEmailContact } from '../shared/interfaces/email';
 import { api } from '../services/api';
 import { IUser } from '../shared/interfaces/user';
-import { PersonType } from '../shared/enums/person-type.enum';
+import { EPersonType } from '../shared/enums/person-type.enum';
+import { signIn, signUp } from '../services/auth.service';
+import { toast } from 'react-toastify';
+import { ERole } from '../shared/enums/role.enum';
 
-type ApiResponse = {
-	data: {
-		userId: string;
-		accessToken: string;
-		refreshToken: string;
-		expires: string;
-	};
-};
-
-type SignInCredentials = {
+export type SignInCredentials = {
 	login: string;
 	password: string;
-	role?: string;
+	role: ERole;
 };
 
 export interface ISignUp {
 	name: string;
 	secondName: string;
-	gender: string;
-	personType: PersonType;
+	gender?: string;
+	personType: EPersonType;
 	documentNumber: string;
 	birthdate?: string;
 	password: string;
 	phone: string;
-	email?: string;
+	email: string;
+}
+
+export interface IAuthResponse {
+	userId: string;
+	accessToken: string;
+	refreshToken: string;
+}
+
+export interface IRefreshBody {
+	accessToken: string;
+	refreshToken: string;
+	role: string;
 }
 
 type AuthContextData = {
-	signIn: (credentials: SignInCredentials) => Promise<void>;
-	signUp: (signUp: ISignUp) => Promise<void>;
-	signOut: () => void;
+	login: (credentials: SignInCredentials) => Promise<void>;
+	register: (signUp: ISignUp) => Promise<void>;
+	logout: () => void;
 	isAuthenticated: boolean;
+	isLoading: boolean;
 	user: IUser | null;
 };
 
@@ -51,66 +55,98 @@ export const AuthContext = createContext({} as AuthContextData);
 export function AuthProvider({ children }: AuthProviderProps) {
 	const [user, setUser] = useState<IUser | null>(null);
 	const isAuthenticated = !!user;
+	const [isLoading, setIsLoading] = useState(false);
 
-	useEffect(() => {
-		const { 'frontcommerce.token': token } = parseCookies();
-		if (token) {
-			console.log(token);
-		}
-	}, []);
+	async function login({ login, password, role }: SignInCredentials) {
+		console.log(user);
+		setUser(null);
+		setIsLoading(true);
+		signIn({ login, password, role })
+			.then((response) => {
+				setIsLoading(false);
+				if (response.status == 200 && response.data) {
+					console.log(user);
+					setUser({
+						login: login,
+						role: role,
+						userId: response.data.userId,
+						accessToken: response.data.accessToken,
+						refreshToken: response.data.refreshToken,
+					});
+					console.log(user);
+					localStorage.setItem('frontcommerce.user', JSON.stringify(user));
 
-	async function signIn({ login, password, role }: SignInCredentials) {
-		const response = await api.post<SignInCredentials, ApiResponse>(
-			'auth/sign-in',
-			{
-				login,
-				password,
-				role: role ?? 'USER',
-			}
-		);
-		const { userId, accessToken, refreshToken, expires } = response.data;
+					api.defaults.headers.head = {
+						Authorization: `Bearer ${response.data.accessToken}`,
+					};
 
-		setCookie(undefined, 'frontcommerce.token', accessToken, {
-			maxAge: 60 * 60 * 24 * 30, // 30 days,
-			path: '/',
-		});
-
-		setCookie(undefined, 'frontcommerce.refreshToken', refreshToken, {
-			maxAge: 60 * 60 * 24 * 30, // 30 days,
-			path: '/',
-		});
-
-		setUser({
-			login,
-			userId,
-			accessToken,
-			refreshToken,
-			expires,
-		});
-
-		api.defaults.headers.head = {
-			Authorization: `Bearer ${accessToken}`,
-		};
-
-		Router.push('/');
+					Router.push('/products');
+				}
+			})
+			.catch((error) => {
+				setIsLoading(false);
+				toast.warn('Não foi possível realizar o login. Tente novamente.', {
+					position: 'top-center',
+					autoClose: 5000,
+					theme: 'colored',
+					hideProgressBar: false,
+					closeOnClick: true,
+					pauseOnHover: true,
+					draggable: true,
+				});
+			});
 	}
 
-	async function signUp(data: ISignUp) {
-		await api.post<ISignUp, ApiResponse>('auth/sign-up', data);
+	async function register(signupBody: ISignUp) {
+		setUser(null);
+		setIsLoading(true);
+		signUp(signupBody)
+			.then((response) => {
+				setIsLoading(false);
+				if (response.status == 200 && response.data) {
+					if (response.data.userId) {
+						console.log(user);
+						setUser({
+							login: signupBody.email,
+							userId: response.data.userId,
+							accessToken: response.data.accessToken,
+							refreshToken: response.data.refreshToken,
+						});
 
-		Router.push('/login');
+						console.log(user);
+						localStorage.setItem('frontcommerce.user', JSON.stringify(user));
+
+						api.defaults.headers.head = {
+							Authorization: `Bearer ${response.data.accessToken}`,
+						};
+
+						Router.push('/products');
+					}
+				}
+			})
+			.catch((error) => {
+				setIsLoading(false);
+				toast.warn('Não foi possível realizar o cadastro. Tente novamente.', {
+					position: 'top-center',
+					autoClose: 5000,
+					theme: 'colored',
+					hideProgressBar: false,
+					closeOnClick: true,
+					pauseOnHover: true,
+					draggable: true,
+				});
+			});
 	}
 
-	function signOut(): void {
-		destroyCookie(undefined, 'frontcommerce.token');
-		destroyCookie(undefined, 'frontcommerce.refreshToken');
-
+	function logout(): void {
+		setUser(null);
+		localStorage.removeItem('frontcommerce.user');
 		Router.push('/login');
 	}
 
 	return (
 		<AuthContext.Provider
-			value={{ user, isAuthenticated, signIn, signUp, signOut }}>
+			value={{ user, isAuthenticated, isLoading, login, register, logout }}>
 			{children}
 		</AuthContext.Provider>
 	);

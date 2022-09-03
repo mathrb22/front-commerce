@@ -10,6 +10,7 @@ import { AuthProvider } from '../contexts/AuthContext';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { ptBR } from 'date-fns/locale';
+import { RouteGuard } from '../guards/AuthGuard';
 
 type NextPageWithLayout = NextPage & {
 	getLayout?: (page: ReactElement) => ReactNode;
@@ -31,7 +32,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
 			<ThemeProvider theme={theme}>
 				<LocalizationProvider adapterLocale={ptBR} dateAdapter={AdapterDateFns}>
 					<CssBaseline />
-					{getLayout(<Component {...pageProps} />)}
+					<RouteGuard>{getLayout(<Component {...pageProps} />)}</RouteGuard>
 				</LocalizationProvider>
 			</ThemeProvider>
 		</AuthProvider>

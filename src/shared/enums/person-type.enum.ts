@@ -1,4 +1,4 @@
-export enum PersonType {
-	ADMIN = 'ADMIN',
-	USER = 'USER',
+export enum EPersonType {
+	NaturalPerson = 'NaturalPerson',
+	LegalPerson = 'LegalPerson',
 }

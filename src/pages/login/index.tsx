@@ -9,20 +9,21 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { IconButton, InputAdornment, TextField } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { AuthContext } from '../../contexts/AuthContext';
+import { AuthContext, SignInCredentials } from '../../contexts/AuthContext';
 import { useContext } from 'react';
 import { useRouter } from 'next/router';
-import { toast, ToastContainer } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { ERole } from '../../shared/enums/role.enum';
+import { LoadingButton } from '@mui/lab';
 
 export default function Login() {
 	const router = useRouter();
-	const { signIn } = useContext(AuthContext);
+	const { login, isLoading } = useContext(AuthContext);
 
 	const formik = useFormik({
 		initialValues: {
@@ -43,24 +44,13 @@ export default function Login() {
 				.nullable(),
 			showPassword: Yup.boolean(),
 		}),
-		onSubmit: async (values) => {
-			if (values.email == 'admin@admin.com' && values.password == '123456') {
-				await signIn({
-					login: values.email,
-					password: values.password,
-				});
-			} else {
-				toast.warn('Usuário ou senha inválidos!', {
-					position: 'top-center',
-					autoClose: 5000,
-					theme: 'colored',
-					hideProgressBar: false,
-					closeOnClick: true,
-					pauseOnHover: true,
-					draggable: true,
-					progress: undefined,
-				});
-			}
+		onSubmit: async ({ email, password }) => {
+			const credentials: SignInCredentials = {
+				login: email,
+				password: password,
+				role: ERole.ADMIN,
+			};
+			await login(credentials);
 		},
 	});
 
@@ -159,14 +149,15 @@ export default function Login() {
 							label='Lembrar-me'
 							sx={{ mt: 1 }}
 						/>
-						<Button
+						<LoadingButton
+							loading={isLoading}
 							type='submit'
 							fullWidth
 							size='large'
 							variant='contained'
 							sx={{ mt: 3, mb: 2 }}>
 							Entrar
-						</Button>
+						</LoadingButton>
 						<Grid container sx={{ mb: 4 }}>
 							<Grid item xs textAlign={'end'}>
 								<Link href='/forgot-password' variant='body2'>

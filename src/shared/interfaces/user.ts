@@ -1,10 +1,12 @@
+import { ERole } from '../enums/role.enum';
+
 export interface IUser {
 	login: string;
 	userId: string;
 	accessToken: string;
 	refreshToken: string;
-	expires: string;
 	id?: number;
+	role?: ERole;
 	name?: string;
 	surname?: string;
 	gender?: string;
