@@ -41,9 +41,7 @@ type AuthContextData = {
 	login: (credentials: SignInCredentials) => Promise<void>;
 	register: (signUp: ISignUp) => Promise<void>;
 	logout: () => void;
-	isAuthenticated: boolean;
 	isLoading: boolean;
-	user: IUser | null;
 };
 
 type AuthProviderProps = {
@@ -53,26 +51,21 @@ type AuthProviderProps = {
 export const AuthContext = createContext({} as AuthContextData);
 
 export function AuthProvider({ children }: AuthProviderProps) {
-	const [user, setUser] = useState<IUser | null>(null);
-	const isAuthenticated = !!user;
 	const [isLoading, setIsLoading] = useState(false);
 
 	async function login({ login, password, role }: SignInCredentials) {
-		console.log(user);
-		setUser(null);
 		setIsLoading(true);
 		signIn({ login, password, role })
 			.then((response) => {
 				setIsLoading(false);
 				if (response.status == 200 && response.data) {
-					console.log(user);
-					setUser({
+					const user = {
 						login: login,
 						role: role,
 						userId: response.data.userId,
 						accessToken: response.data.accessToken,
 						refreshToken: response.data.refreshToken,
-					});
+					};
 					console.log(user);
 					localStorage.setItem('frontcommerce.user', JSON.stringify(user));
 
@@ -98,20 +91,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
 	}
 
 	async function register(signupBody: ISignUp) {
-		setUser(null);
 		setIsLoading(true);
 		signUp(signupBody)
 			.then((response) => {
 				setIsLoading(false);
 				if (response.status == 200 && response.data) {
 					if (response.data.userId) {
-						console.log(user);
-						setUser({
+						const user = {
 							login: signupBody.email,
 							userId: response.data.userId,
 							accessToken: response.data.accessToken,
 							refreshToken: response.data.refreshToken,
-						});
+						};
 
 						console.log(user);
 						localStorage.setItem('frontcommerce.user', JSON.stringify(user));
@@ -139,14 +130,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
 	}
 
 	function logout(): void {
-		setUser(null);
 		localStorage.removeItem('frontcommerce.user');
 		Router.push('/login');
 	}
 
 	return (
-		<AuthContext.Provider
-			value={{ user, isAuthenticated, isLoading, login, register, logout }}>
+		<AuthContext.Provider value={{ isLoading, login, register, logout }}>
 			{children}
 		</AuthContext.Provider>
 	);

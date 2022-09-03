@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { IUser } from '../shared/interfaces/user';
 
 type RouteGuardProps = {
 	children: any;
@@ -10,7 +9,6 @@ const publicPaths = ['/login', '/signup', 'forgot-password'];
 
 function RouteGuard({ children }: any) {
 	const router = useRouter();
-	const [user, setUser] = useState<IUser | null>(null);
 	const [authorized, setAuthorized] = useState(false);
 
 	useEffect(() => {
