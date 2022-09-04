@@ -247,7 +247,6 @@ export default function Signup() {
 							autoComplete='secondName'
 							error={Boolean(formik.touched.secondName && formik.errors.secondName)}
 							helperText={formik.touched.secondName && formik.errors.secondName}
-							autoFocus
 						/>
 
 						<TextField
@@ -348,8 +347,6 @@ export default function Signup() {
 							label='E-mail'
 							onBlur={formik.handleBlur}
 							onChange={(email) => {
-								console.log(formik.values);
-								console.log(formik.errors);
 								formik.setFieldValue('email', email.target.value);
 							}}
 							value={formik.values.email}
@@ -358,7 +355,6 @@ export default function Signup() {
 							autoComplete='off'
 							error={Boolean(formik.touched.email && formik.errors.email)}
 							helperText={formik.touched.email && formik.errors.email}
-							autoFocus
 							sx={{ mb: 2 }}
 						/>
 
