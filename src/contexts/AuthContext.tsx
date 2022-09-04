@@ -1,45 +1,47 @@
 import { createContext, ReactNode, useEffect, useState } from 'react';
-import { setCookie, parseCookies, destroyCookie } from 'nookies';
 import Router from 'next/router';
-import { IPhoneContact } from '../shared/types/phone';
-import { IEmailContact } from '../shared/types/email';
 import { api } from '../services/api';
-import { IUser } from '../shared/types/user';
+import { IUser } from '../shared/interfaces/user';
+import { EPersonType } from '../shared/enums/person-type.enum';
+import { signIn, signUp } from '../services/auth.service';
+import { toast } from 'react-toastify';
+import { ERole } from '../shared/enums/role.enum';
 
-type ApiResponse = {
-	data: {
-		userId: string;
-		accessToken: string;
-		refreshToken: string;
-		expires: string;
-	};
-};
-
-type SignInCredentials = {
+export type SignInCredentials = {
 	login: string;
 	password: string;
-	role?: string;
+	role: ERole;
 };
 
 export interface ISignUp {
 	name: string;
-	surname: string;
-	gender: string;
+	secondName: string;
+	gender?: string;
+	personType: EPersonType;
 	documentNumber: string;
 	birthdate?: string;
 	password: string;
-	passwordConfirm: string;
 	phone: string;
-	email?: string;
-	phones?: Array<IPhoneContact>;
-	emails?: Array<IEmailContact>;
+	email: string;
+}
+
+export interface IAuthResponse {
+	userId: string;
+	accessToken: string;
+	refreshToken: string;
+}
+
+export interface IRefreshBody {
+	accessToken: string;
+	refreshToken: string;
+	role: string;
 }
 
 type AuthContextData = {
-	signIn: (credentials: SignInCredentials) => Promise<void>;
-	signOut: () => void;
-	isAuthenticated: boolean;
-	user: IUser | null;
+	login: (credentials: SignInCredentials) => Promise<void>;
+	register: (signUp: ISignUp) => Promise<void>;
+	logout: () => void;
+	isLoading: boolean;
 };
 
 type AuthProviderProps = {
@@ -49,38 +51,91 @@ type AuthProviderProps = {
 export const AuthContext = createContext({} as AuthContextData);
 
 export function AuthProvider({ children }: AuthProviderProps) {
-	const [user, setUser] = useState<IUser | null>(null);
-	const isAuthenticated = !!user;
+	const [isLoading, setIsLoading] = useState(false);
 
-	useEffect(() => {
-		// if (!isAuthenticated) {
-		// 	Router.push('/login');
-		// }
-	}, []);
+	async function login({ login, password, role }: SignInCredentials) {
+		setIsLoading(true);
+		signIn({ login, password, role })
+			.then((response) => {
+				setIsLoading(false);
+				if (response.status == 200 && response.data) {
+					const user = {
+						login: login,
+						role: role,
+						userId: response.data.userId,
+						accessToken: response.data.accessToken,
+						refreshToken: response.data.refreshToken,
+					};
+					console.log(user);
+					localStorage.setItem('frontcommerce.user', JSON.stringify(user));
 
-	async function signIn({ login, password }: SignInCredentials) {
-		setUser({
-			email: login,
-			password: password,
-		});
+					api.defaults.headers.head = {
+						Authorization: `Bearer ${response.data.accessToken}`,
+					};
 
-		// setCookie(undefined, 'user', 'true', {
-		// 	maxAge: 60 * 60 * 24 * 30, // 30 days,
-		// 	path: '/',
-		// });
-
-		Router.push('/products');
+					Router.push('/products');
+				}
+			})
+			.catch((error) => {
+				setIsLoading(false);
+				toast.warn('Não foi possível realizar o login. Tente novamente.', {
+					position: 'top-center',
+					autoClose: 5000,
+					theme: 'colored',
+					hideProgressBar: false,
+					closeOnClick: true,
+					pauseOnHover: true,
+					draggable: true,
+				});
+			});
 	}
 
-	function signOut(): void {
-		// destroyCookie(undefined, 'frontcommerce.token');
-		// destroyCookie(undefined, 'frontcommerce.refreshToken');
+	async function register(signupBody: ISignUp) {
+		setIsLoading(true);
+		signUp(signupBody)
+			.then((response) => {
+				setIsLoading(false);
+				if (response.status == 200 && response.data) {
+					if (response.data.userId) {
+						const user = {
+							login: signupBody.email,
+							userId: response.data.userId,
+							accessToken: response.data.accessToken,
+							refreshToken: response.data.refreshToken,
+						};
 
+						console.log(user);
+						localStorage.setItem('frontcommerce.user', JSON.stringify(user));
+
+						api.defaults.headers.head = {
+							Authorization: `Bearer ${response.data.accessToken}`,
+						};
+
+						Router.push('/products');
+					}
+				}
+			})
+			.catch((error) => {
+				setIsLoading(false);
+				toast.warn('Não foi possível realizar o cadastro. Tente novamente.', {
+					position: 'top-center',
+					autoClose: 5000,
+					theme: 'colored',
+					hideProgressBar: false,
+					closeOnClick: true,
+					pauseOnHover: true,
+					draggable: true,
+				});
+			});
+	}
+
+	function logout(): void {
+		localStorage.removeItem('frontcommerce.user');
 		Router.push('/login');
 	}
 
 	return (
-		<AuthContext.Provider value={{ user, isAuthenticated, signIn, signOut }}>
+		<AuthContext.Provider value={{ isLoading, login, register, logout }}>
 			{children}
 		</AuthContext.Provider>
 	);

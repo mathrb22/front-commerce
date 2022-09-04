@@ -2,7 +2,6 @@ import Head from 'next/head';
 import { Box, Container, Grid } from '@mui/material';
 import { DashboardLayout } from '../../components/dashboard-layout';
 import { ReactElement } from 'react';
-import { RouteGuard } from '../../guards/AuthGuard';
 
 const Dashboard = () => (
 	<>

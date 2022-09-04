@@ -14,7 +14,7 @@ import {
 	TableRow,
 	Typography,
 } from '@mui/material';
-import { Customer } from '../../shared/types/customer';
+import { Customer } from '../../shared/interfaces/customer';
 
 export type ListProps<T> = {
 	data: T[];

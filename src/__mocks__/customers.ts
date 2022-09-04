@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { Customer } from '../shared/types/customer';
+import { Customer } from '../shared/interfaces/customer';
 
 export const customers: Customer[] = [
 	{

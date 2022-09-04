@@ -22,47 +22,50 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import LoginIcon from '@mui/icons-material/Login';
 import { Logo } from './logo';
 import { NavItem } from './nav-item';
-
-const items = [
-	// {
-	// 	href: '/dashboard',
-	// 	icon: <DashboardIcon fontSize='small' />,
-	// 	title: 'Dashboard',
-	// },
-	{
-		href: '/products',
-		icon: <ShoppingBagIcon fontSize='small' />,
-		title: 'Produtos',
-	},
-	{
-		href: '/customers',
-		icon: <PeopleIcon fontSize='small' />,
-		title: 'Clientes',
-	},
-	{
-		href: '/account',
-		icon: <PersonIcon fontSize='small' />,
-		title: 'Conta',
-	},
-	// {
-	// 	href: '/settings',
-	// 	icon: <SettingsIcon fontSize='small' />,
-	// 	title: 'Configurações',
-	// },
-	{
-		href: '/login',
-		icon: <LoginIcon fontSize='small' />,
-		title: 'Sair',
-	},
-];
+import { useContext } from 'react';
+import { AuthContext } from '../contexts/AuthContext';
 
 export const DashboardSidebar = (props: any) => {
 	const { open, onClose } = props;
+	const { logout } = useContext(AuthContext);
 	const router = useRouter();
 	const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'), {
 		defaultMatches: true,
 		noSsr: false,
 	});
+
+	const items = [
+		// {
+		// 	href: '/dashboard',
+		// 	icon: <DashboardIcon fontSize='small' />,
+		// 	title: 'Dashboard',
+		// },
+		{
+			href: '/products',
+			icon: <ShoppingBagIcon fontSize='small' />,
+			title: 'Produtos',
+		},
+		{
+			href: '/customers',
+			icon: <PeopleIcon fontSize='small' />,
+			title: 'Clientes',
+		},
+		{
+			href: '/account',
+			icon: <PersonIcon fontSize='small' />,
+			title: 'Conta',
+		},
+		// {
+		// 	href: '/settings',
+		// 	icon: <SettingsIcon fontSize='small' />,
+		// 	title: 'Configurações',
+		// },
+		{
+			icon: <LoginIcon fontSize='small' />,
+			title: 'Sair',
+			onclick: logout,
+		},
+	];
 
 	useEffect(
 		() => {
@@ -112,6 +115,7 @@ export const DashboardSidebar = (props: any) => {
 							key={item.title}
 							icon={item.icon}
 							href={item.href}
+							onClick={item.onclick}
 							title={item.title}
 						/>
 					))}
