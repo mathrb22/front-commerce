@@ -5,7 +5,7 @@ type RouteGuardProps = {
 	children: any;
 };
 
-const publicPaths = ['/login', '/signup', 'forgot-password'];
+const publicPaths = ['/login', '/signup', '/forgot-password'];
 
 function RouteGuard({ children }: any) {
 	const router = useRouter();
