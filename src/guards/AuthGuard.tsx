@@ -44,6 +44,11 @@ function RouteGuard({ children }: any) {
 			});
 		} else {
 			setAuthorized(true);
+			if (path == '/') {
+				router.push({
+					pathname: '/products',
+				});
+			}
 		}
 	}
 
