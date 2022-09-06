@@ -26,19 +26,25 @@ api.interceptors.response.use(
 	},
 	(error) => {
 		if (error.response?.status === 401) {
-			if (error.response?.data?.code) {
-				const accessToken = getUser()?.accessToken;
-				const refreshToken = getUser()?.refreshToken;
+			// if (error.response?.data?.code) {
+			const accessToken = getUser()?.accessToken;
+			const refreshToken = getUser()?.refreshToken;
 
-				api.post('auth/refresh', {
+			api
+				.post('auth/refresh', {
 					accessToken,
 					refreshToken,
 					role: ERole.ADMIN,
+				})
+				.then((response) => {
+					api.defaults.headers.head = {
+						Authorization: `Bearer ${response.data.accessToken}`,
+					};
 				});
-			} else {
-				StoragerHelper.removeItem('frontcommerce.user');
-				Router.push('/login');
-			}
+			// } else {
+		} else {
+			StoragerHelper.removeItem('frontcommerce.user');
+			Router.push('/login');
 		}
 	}
 );
