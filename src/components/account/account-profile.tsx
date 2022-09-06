@@ -8,9 +8,10 @@ import {
 	Divider,
 	Typography,
 } from '@mui/material';
-import { Contact } from '../../shared/interfaces/customer';
+import { Contact } from '../../shared/interfaces/contact';
 import UserAvatar from '../avatar';
 import Skeleton from '@mui/material/Skeleton';
+import { EPersonType } from '../../shared/enums/person-type.enum';
 
 export interface AccountProfileProps {
 	profile: Contact;
@@ -39,7 +40,9 @@ export const AccountProfile = ({ profile, isLoading }: AccountProfileProps) => (
 							gutterBottom
 							variant='h5'
 							textAlign='center'>
-							{profile?.name + ' ' + profile?.secondName}
+							{profile?.personTypeId == 1
+								? profile?.name + ' ' + profile?.secondName
+								: profile?.secondName}
 						</Typography>
 						<Typography color='textSecondary' variant='body2'>
 							{`${profile?.address ?? 'Endereço não informado'}`}

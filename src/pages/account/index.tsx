@@ -9,7 +9,7 @@ import {
 import { AccountProfileDetails } from '../../components/account/account-profile-details';
 import { useEffect } from 'react';
 import { getContactInfo } from '../../services/contacts.service';
-import { Contact } from '../../shared/interfaces/customer';
+import { Contact } from '../../shared/interfaces/contact';
 import { IUser } from '../../shared/interfaces/user';
 import { AuthContext } from '../../contexts/AuthContext';
 

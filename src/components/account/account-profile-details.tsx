@@ -6,6 +6,7 @@ import {
 	CardContent,
 	CardHeader,
 	Divider,
+	MenuItem,
 	Grid,
 	TextField,
 } from '@mui/material';
@@ -48,27 +49,53 @@ const states = [
 
 export const AccountProfileDetails = ({ profile }: AccountProfileProps) => {
 	const [isSubmitting, setIsSubmitting] = useState(false);
+
+	const genderList = [
+		{
+			id: 1,
+			value: 'Masculino',
+		},
+		{
+			id: 2,
+			value: 'Feminino',
+		},
+	];
+
 	const formik = useFormik({
 		initialValues: {
 			name: profile ? profile?.name : '',
 			secondName: profile ? profile?.secondName : '',
+			personType: profile ? profile?.personTypeId : 1,
 			birthDate: profile && profile?.birthdate ? moment(profile?.birthdate) : null,
+			gender: profile ? profile.gender : '',
 			email: profile ? profile?.email : '',
 			phone: profile ? profile?.phone : '',
 		},
 		validate: (values) => {
 			const errors: any = {};
-			if (!values.name) errors.name = 'Informe seu nome';
-			if (!values.secondName) errors.secondName = 'Informe seu sobrenome';
-			if (!values.birthDate) {
-				errors.birthdate = 'Informe sua data de nascimento';
+			if (values.personType == 1) {
+				if (!values.name) errors.name = 'Informe seu nome';
+				if (!values.secondName) errors.secondName = 'Informe seu sobrenome';
+				if (!values.birthDate) {
+					errors.birthdate = 'Informe sua data de nascimento';
+				}
+			} else {
+				if (!values.name) errors.name = 'Informe a razão social';
+				if (!values.secondName) errors.secondName = 'Informe o nome fantasia';
+				if (!values.birthDate) {
+					delete errors.birthdate;
+				}
 			}
 			console.log(errors);
 			return errors;
 		},
 		enableReinitialize: true,
 		onSubmit: (values) => {
+			setIsSubmitting(true);
 			console.log(values);
+			setTimeout(() => {
+				setIsSubmitting(false);
+			}, 2000);
 		},
 		validationSchema: Yup.object({
 			name: Yup.string().required(),
@@ -77,6 +104,7 @@ export const AccountProfileDetails = ({ profile }: AccountProfileProps) => {
 				.email('Informe um e-mail válido')
 				.max(255)
 				.required('Informe o e-mail'),
+			personType: Yup.number(),
 			gender: Yup.string(),
 			phone: Yup.string()
 				.required('Informe o número do celular')
@@ -99,74 +127,130 @@ export const AccountProfileDetails = ({ profile }: AccountProfileProps) => {
 						<Grid item md={6} xs={12}>
 							<TextField
 								fullWidth
-								label='Nome'
+								label={formik.values.personType == 1 ? 'Nome' : 'Razão Social'}
 								name='name'
 								onChange={formik.handleChange}
 								required
 								value={formik.values.name}
+								placeholder={
+									formik.values.personType == 1
+										? 'Digite seu nome'
+										: 'Digite a razão social'
+								}
+								autoComplete='name'
+								error={Boolean(formik.touched.name && formik.errors.name)}
+								helperText={formik.touched.name && formik.errors.name}
 								variant='outlined'
 							/>
 						</Grid>
 						<Grid item md={6} xs={12}>
 							<TextField
 								fullWidth
-								label='Sobrenome'
+								label={formik.values.personType == 1 ? 'Sobrenome' : 'Nome Fantasia'}
 								name='secondName'
 								onChange={formik.handleChange}
 								required
 								value={formik.values.secondName}
+								placeholder={
+									formik.values.personType == 1
+										? 'Digite seu sobrenome'
+										: 'Digite o nome fantasia'
+								}
+								autoComplete='secondName'
+								error={Boolean(formik.touched.secondName && formik.errors.secondName)}
+								helperText={formik.touched.secondName && formik.errors.secondName}
 								variant='outlined'
 							/>
 						</Grid>
 						<Grid item md={6} xs={12}>
 							<TextField
 								fullWidth
-								label='E-mail'
-								name='email'
-								onChange={formik.handleChange}
 								required
+								id='email'
+								label='E-mail'
+								onBlur={formik.handleBlur}
+								onChange={(email) => {
+									formik.setFieldValue('email', email.target.value);
+								}}
 								value={formik.values.email}
-								variant='outlined'
+								name='email'
+								placeholder='Digite seu e-mail'
+								autoComplete='off'
+								error={Boolean(formik.touched.email && formik.errors.email)}
+								helperText={formik.touched.email && formik.errors.email}
 							/>
 						</Grid>
 						<Grid item md={6} xs={12}>
 							<TextField
-								fullWidth
-								label='Telefone'
-								name='phone'
-								onChange={formik.handleChange}
 								type='number'
+								inputProps={{ inputMode: 'numeric' }}
+								required
+								fullWidth
+								id='phone'
+								label='Celular'
+								onBlur={formik.handleBlur}
+								onChange={formik.handleChange}
 								value={formik.values.phone}
+								name='phone'
+								placeholder='Digite seu celular'
+								autoComplete='phone'
 								variant='outlined'
+								error={Boolean(formik.touched.phone && formik.errors.phone)}
+								helperText={formik.touched.phone && formik.errors.phone}
 							/>
 						</Grid>
-						<Grid item md={6} xs={12}>
-							<DatePicker
-								label='Data de nascimento'
-								onChange={(date) => {
-									console.log(formik.errors);
-									formik.setFieldValue('birthdate', date);
-								}}
-								onError={(error) => {
-									formik.setFieldError('birthdate', error?.toString());
-									console.log(formik.errors);
-								}}
-								value={formik.values.birthDate ? formik.values.birthDate : null}
-								renderInput={(params) => (
+						{formik.values.personType == 1 && (
+							<>
+								<Grid item md={6} xs={12}>
 									<TextField
 										margin='normal'
 										fullWidth
-										id='birthDate'
+										id='gender'
+										label='Gênero'
 										onBlur={formik.handleBlur}
-										error={Boolean(formik.touched.birthDate && formik.errors.birthDate)}
-										helperText={formik.touched.birthDate && formik.errors.birthDate}
-										name='birthdate'
-										variant='outlined'
-										{...params}
+										onChange={formik.handleChange}
+										value={formik.values.gender}
+										name='gender'
+										placeholder='Selecione seu gênero'
+										select
+										variant='outlined'>
+										<MenuItem value=''>Selecionar</MenuItem>
+										{genderList.map((gender) => (
+											<MenuItem key={gender.id} value={gender.value}>
+												{gender.value}
+											</MenuItem>
+										))}
+									</TextField>
+								</Grid>
+								<Grid item md={6} xs={12}>
+									<DatePicker
+										label='Data de nascimento'
+										onChange={(date) => {
+											console.log(formik.errors);
+											formik.setFieldValue('birthdate', date);
+										}}
+										onError={(error) => {
+											formik.setFieldError('birthdate', error?.toString());
+											console.log(formik.errors);
+										}}
+										value={formik.values.birthDate ? formik.values.birthDate : null}
+										renderInput={(params) => (
+											<TextField
+												margin='normal'
+												fullWidth
+												id='birthDate'
+												onBlur={formik.handleBlur}
+												error={Boolean(formik.touched.birthDate && formik.errors.birthDate)}
+												helperText={formik.touched.birthDate && formik.errors.birthDate}
+												name='birthdate'
+												variant='outlined'
+												{...params}
+											/>
+										)}
 									/>
-								)}
-							/>
-						</Grid>
+								</Grid>
+							</>
+						)}
 						{/*
 						<Grid item md={6} xs={12}>
 							<TextField
