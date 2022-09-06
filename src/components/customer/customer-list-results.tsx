@@ -14,13 +14,13 @@ import {
 	TableRow,
 	Typography,
 } from '@mui/material';
-import { Customer } from '../../shared/interfaces/customer';
+import { Contact } from '../../shared/interfaces/customer';
 
 export type ListProps<T> = {
 	data: T[];
 };
 
-export const CustomerListResults = ({ data }: ListProps<Customer>) => {
+export const CustomerListResults = ({ data }: ListProps<Contact>) => {
 	const [limit, setLimit] = useState(10);
 	const [page, setPage] = useState(0);
 
@@ -46,7 +46,7 @@ export const CustomerListResults = ({ data }: ListProps<Customer>) => {
 								</TableRow>
 							</TableHead>
 							<TableBody>
-								{data.map((customer: Customer) => (
+								{data.map((customer: Contact) => (
 									<TableRow hover key={customer.id}>
 										<TableCell>
 											<Box
@@ -54,7 +54,7 @@ export const CustomerListResults = ({ data }: ListProps<Customer>) => {
 													alignItems: 'center',
 													display: 'flex',
 												}}>
-												<Avatar src={customer.avatarUrl} sx={{ mr: 2 }}></Avatar>
+												<Avatar src={customer.imageUrl} sx={{ mr: 2 }}></Avatar>
 												<Typography color='textPrimary' variant='body1'>
 													{customer.name}
 												</Typography>

@@ -13,5 +13,5 @@ export interface IUser {
 	documentNumber?: string;
 	birthdate?: string;
 	userStatus?: string;
-	urlImage?: string;
+	imageUrl?: string;
 }

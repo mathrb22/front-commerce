@@ -9,6 +9,12 @@ import {
 	Grid,
 	TextField,
 } from '@mui/material';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { AccountProfileProps } from './account-profile';
+import moment from 'moment';
+import { LoadingButton } from '@mui/lab';
+import { DatePicker } from '@mui/x-date-pickers';
 
 const states = [
 	{ nome: 'Acre', sigla: 'AC' },
@@ -40,25 +46,48 @@ const states = [
 	{ nome: 'Tocantins', sigla: 'TO' },
 ];
 
-export const AccountProfileDetails = (props: any) => {
-	const [values, setValues] = useState({
-		firstName: 'José',
-		lastName: 'Silva',
-		email: 'admin@admin.com',
-		phone: '',
-		state: 'SP',
-		country: 'Brasil',
+export const AccountProfileDetails = ({ profile }: AccountProfileProps) => {
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const formik = useFormik({
+		initialValues: {
+			name: profile ? profile?.name : '',
+			secondName: profile ? profile?.secondName : '',
+			birthDate: profile && profile?.birthdate ? moment(profile?.birthdate) : null,
+			email: profile ? profile?.email : '',
+			phone: profile ? profile?.phone : '',
+		},
+		validate: (values) => {
+			const errors: any = {};
+			if (!values.name) errors.name = 'Informe seu nome';
+			if (!values.secondName) errors.secondName = 'Informe seu sobrenome';
+			if (!values.birthDate) {
+				errors.birthdate = 'Informe sua data de nascimento';
+			}
+			console.log(errors);
+			return errors;
+		},
+		enableReinitialize: true,
+		onSubmit: (values) => {
+			console.log(values);
+		},
+		validationSchema: Yup.object({
+			name: Yup.string().required(),
+			secondName: Yup.string().required(),
+			email: Yup.string()
+				.email('Informe um e-mail válido')
+				.max(255)
+				.required('Informe o e-mail'),
+			gender: Yup.string(),
+			phone: Yup.string()
+				.required('Informe o número do celular')
+				.min(11, 'Informe um número de celular válido')
+				.max(11, 'Informe um número de celular válido'),
+			birthdate: Yup.string(),
+		}),
 	});
 
-	const handleChange = (event: any) => {
-		setValues({
-			...values,
-			[event.target.name]: event.target.value,
-		});
-	};
-
 	return (
-		<form autoComplete='off' noValidate {...props}>
+		<form noValidate onSubmit={formik.handleSubmit}>
 			<Card>
 				<CardHeader
 					subheader='Os dados a seguir podem ser editados'
@@ -71,10 +100,10 @@ export const AccountProfileDetails = (props: any) => {
 							<TextField
 								fullWidth
 								label='Nome'
-								name='firstName'
-								onChange={handleChange}
+								name='name'
+								onChange={formik.handleChange}
 								required
-								value={values.firstName}
+								value={formik.values.name}
 								variant='outlined'
 							/>
 						</Grid>
@@ -82,10 +111,10 @@ export const AccountProfileDetails = (props: any) => {
 							<TextField
 								fullWidth
 								label='Sobrenome'
-								name='lastName'
-								onChange={handleChange}
+								name='secondName'
+								onChange={formik.handleChange}
 								required
-								value={values.lastName}
+								value={formik.values.secondName}
 								variant='outlined'
 							/>
 						</Grid>
@@ -94,9 +123,9 @@ export const AccountProfileDetails = (props: any) => {
 								fullWidth
 								label='E-mail'
 								name='email'
-								onChange={handleChange}
+								onChange={formik.handleChange}
 								required
-								value={values.email}
+								value={formik.values.email}
 								variant='outlined'
 							/>
 						</Grid>
@@ -105,23 +134,40 @@ export const AccountProfileDetails = (props: any) => {
 								fullWidth
 								label='Telefone'
 								name='phone'
-								onChange={handleChange}
+								onChange={formik.handleChange}
 								type='number'
-								value={values.phone}
+								value={formik.values.phone}
 								variant='outlined'
 							/>
 						</Grid>
 						<Grid item md={6} xs={12}>
-							<TextField
-								fullWidth
-								label='País'
-								name='country'
-								onChange={handleChange}
-								required
-								value={values.country}
-								variant='outlined'
+							<DatePicker
+								label='Data de nascimento'
+								onChange={(date) => {
+									console.log(formik.errors);
+									formik.setFieldValue('birthdate', date);
+								}}
+								onError={(error) => {
+									formik.setFieldError('birthdate', error?.toString());
+									console.log(formik.errors);
+								}}
+								value={formik.values.birthDate ? formik.values.birthDate : null}
+								renderInput={(params) => (
+									<TextField
+										margin='normal'
+										fullWidth
+										id='birthDate'
+										onBlur={formik.handleBlur}
+										error={Boolean(formik.touched.birthDate && formik.errors.birthDate)}
+										helperText={formik.touched.birthDate && formik.errors.birthDate}
+										name='birthdate'
+										variant='outlined'
+										{...params}
+									/>
+								)}
 							/>
 						</Grid>
+						{/*
 						<Grid item md={6} xs={12}>
 							<TextField
 								fullWidth
@@ -142,7 +188,7 @@ export const AccountProfileDetails = (props: any) => {
 									</option>
 								))}
 							</TextField>
-						</Grid>
+						</Grid> */}
 					</Grid>
 				</CardContent>
 				<Divider />
@@ -150,11 +196,18 @@ export const AccountProfileDetails = (props: any) => {
 					sx={{
 						display: 'flex',
 						justifyContent: 'flex-end',
-						p: 2,
+						pl: 2,
+						pr: 2,
 					}}>
-					<Button color='primary' variant='contained'>
+					<LoadingButton
+						loading={isSubmitting}
+						type='submit'
+						color='primary'
+						size='large'
+						variant='contained'
+						sx={{ mt: 3, mb: 2 }}>
 						Salvar alterações
-					</Button>
+					</LoadingButton>
 				</Box>
 			</Card>
 		</form>

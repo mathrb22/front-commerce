@@ -6,6 +6,9 @@ import { EPersonType } from '../shared/enums/person-type.enum';
 import { signIn, signUp } from '../services/auth.service';
 import { toast } from 'react-toastify';
 import { ERole } from '../shared/enums/role.enum';
+import { Contact } from '../shared/interfaces/customer';
+import { getContactInfo } from '../services/contacts.service';
+import { StoragerHelper } from '../shared/helpers/storage.helper';
 
 export type SignInCredentials = {
 	login: string;
@@ -41,6 +44,7 @@ type AuthContextData = {
 	login: (credentials: SignInCredentials) => Promise<void>;
 	register: (signUp: ISignUp) => Promise<void>;
 	logout: () => void;
+	profileData: Contact;
 	isLoading: boolean;
 };
 
@@ -52,11 +56,17 @@ export const AuthContext = createContext({} as AuthContextData);
 
 export function AuthProvider({ children }: AuthProviderProps) {
 	const [isLoading, setIsLoading] = useState(false);
+	const [profileData, setProfileData] = useState<Contact>({
+		id: '',
+		name: '',
+		email: '',
+		phone: '',
+	});
 
 	async function login({ login, password, role }: SignInCredentials) {
 		setIsLoading(true);
 		signIn({ login, password, role })
-			.then((response) => {
+			.then(async (response) => {
 				setIsLoading(false);
 				if (response.status == 200 && response.data) {
 					const user = {
@@ -72,6 +82,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
 					api.defaults.headers.head = {
 						Authorization: `Bearer ${response.data.accessToken}`,
 					};
+
+					const userLoggedIn = StoragerHelper.getLoggedInUser();
+					if (userLoggedIn) {
+						await getUserData();
+					}
 
 					Router.push('/products');
 				}
@@ -93,7 +108,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 	async function register(signupBody: ISignUp) {
 		setIsLoading(true);
 		signUp(signupBody)
-			.then((response) => {
+			.then(async (response) => {
 				setIsLoading(false);
 				if (response.status == 200 && response.data) {
 					if (response.data.userId) {
@@ -110,6 +125,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 						api.defaults.headers.head = {
 							Authorization: `Bearer ${response.data.accessToken}`,
 						};
+
+						await getUserData();
 
 						Router.push('/products');
 					}
@@ -129,13 +146,32 @@ export function AuthProvider({ children }: AuthProviderProps) {
 			});
 	}
 
+	async function getUserData() {
+		const user = StoragerHelper.getLoggedInUser();
+		if (user && user.userId) {
+			setIsLoading(true);
+			await getContactInfo(+user.userId).then((res) => {
+				console.log(res);
+				if (res.data) {
+					setProfileData(res.data);
+					setIsLoading(false);
+				}
+			});
+		}
+	}
+
 	function logout(): void {
 		localStorage.removeItem('frontcommerce.user');
 		Router.push('/login');
 	}
 
+	useEffect(() => {
+		getUserData();
+	}, []);
+
 	return (
-		<AuthContext.Provider value={{ isLoading, login, register, logout }}>
+		<AuthContext.Provider
+			value={{ isLoading, login, register, logout, profileData }}>
 			{children}
 		</AuthContext.Provider>
 	);

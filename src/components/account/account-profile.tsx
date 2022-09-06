@@ -8,19 +8,17 @@ import {
 	Divider,
 	Typography,
 } from '@mui/material';
+import { Contact } from '../../shared/interfaces/customer';
+import UserAvatar from '../avatar';
+import Skeleton from '@mui/material/Skeleton';
 
-const user = {
-	avatar: '/images/avatars/avatar_4.png',
-	city: 'Bauru',
-	state: 'SP',
-	country: 'Brasil',
-	jobTitle: 'Gerente de vendas',
-	name: 'José Silva',
-	timezone: 'GTM-3',
-};
+export interface AccountProfileProps {
+	profile: Contact;
+	isLoading?: boolean;
+}
 
-export const AccountProfile = (props: any) => (
-	<Card {...props}>
+export const AccountProfile = ({ profile, isLoading }: AccountProfileProps) => (
+	<Card>
 		<CardContent>
 			<Box
 				sx={{
@@ -28,26 +26,49 @@ export const AccountProfile = (props: any) => (
 					display: 'flex',
 					flexDirection: 'column',
 				}}>
-				<Avatar
-					src={user.avatar}
-					sx={{
-						height: 64,
-						mb: 2,
-						width: 64,
-					}}
-				/>
-				<Typography color='textPrimary' gutterBottom variant='h5'>
-					{user.name}
-				</Typography>
-				<Typography color='textSecondary' variant='body2'>
-					{`${user.city} - ${user.state}`}
-				</Typography>
-				<Typography color='textSecondary' variant='body2'>
-					{`${user.country}`}
-				</Typography>
-				<Typography color='textSecondary' variant='body2'>
-					{user.timezone}
-				</Typography>
+				{profile && !isLoading ? (
+					<>
+						<UserAvatar
+							imageUrl={profile.imageUrl}
+							userName={profile.name}
+							width={64}
+							height={64}
+						/>
+						<Typography
+							color='textPrimary'
+							gutterBottom
+							variant='h5'
+							textAlign='center'>
+							{profile?.name + ' ' + profile?.secondName}
+						</Typography>
+						<Typography color='textSecondary' variant='body2'>
+							{`${profile?.address ?? 'Endereço não informado'}`}
+						</Typography>
+					</>
+				) : (
+					<>
+						<Skeleton
+							animation='wave'
+							variant='circular'
+							width={64}
+							height={64}
+							sx={{ mb: 2 }}
+						/>
+						<Skeleton
+							animation='wave'
+							sx={{ mb: 2 }}
+							variant='rectangular'
+							width={210}
+							height={50}
+						/>
+						<Skeleton
+							animation='wave'
+							variant='rectangular'
+							width={210}
+							height={24}
+						/>
+					</>
+				)}
 			</Box>
 		</CardContent>
 		<Divider />
