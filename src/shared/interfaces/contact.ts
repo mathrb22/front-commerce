@@ -1,12 +1,13 @@
-import { EPersonType } from '../enums/person-type.enum';
+import { Moment } from 'moment';
 
-export interface Customer {
-	id?: string;
+export interface Contact {
+	id?: number;
 	name?: string;
 	secondName?: string;
 	gender?: string;
-	birthdate?: string;
+	birthdate?: string | Moment | null;
 	address?: string;
+	personTypeId?: number;
 	personType?: number;
 	phone?: string;
 	imageUrl?: string;

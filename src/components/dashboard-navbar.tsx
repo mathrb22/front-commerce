@@ -15,6 +15,9 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import UserAvatar from './avatar';
+import { useContext } from 'react';
+import { AuthContext } from '../contexts/AuthContext';
 
 const DashboardNavbarRoot = styled(AppBar)(({ theme }: any) => ({
 	backgroundColor: theme.palette.background.paper,
@@ -23,6 +26,8 @@ const DashboardNavbarRoot = styled(AppBar)(({ theme }: any) => ({
 
 export const DashboardNavbar = (props: any) => {
 	const { onSidebarOpen, ...other } = props;
+
+	const { profileData, isLoading } = useContext(AuthContext);
 
 	return (
 		<>
@@ -56,12 +61,13 @@ export const DashboardNavbar = (props: any) => {
 					<Box sx={{ flexGrow: 1 }} />
 					<Tooltip title='Perfil'>
 						<IconButton href='/account'>
-							<Avatar
-								sx={{
-									height: 40,
-									width: 40,
-								}}
-								src='/images/avatars/avatar_4.png'></Avatar>
+							<UserAvatar
+								width={40}
+								height={40}
+								fontSize={22}
+								imageUrl={profileData.imageUrl}
+								userName={profileData.name}
+							/>
 						</IconButton>
 					</Tooltip>
 				</Toolbar>

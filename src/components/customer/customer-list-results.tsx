@@ -54,7 +54,7 @@ export const CustomerListResults = ({ data }: ListProps<Customer>) => {
 													alignItems: 'center',
 													display: 'flex',
 												}}>
-												<Avatar src={customer.avatarUrl} sx={{ mr: 2 }}></Avatar>
+												<Avatar src={customer.imageUrl} sx={{ mr: 2 }}></Avatar>
 												<Typography color='textPrimary' variant='body1'>
 													{customer.name}
 												</Typography>

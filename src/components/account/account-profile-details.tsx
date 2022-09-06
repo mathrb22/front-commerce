@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import {
 	Box,
 	Button,
@@ -6,9 +6,23 @@ import {
 	CardContent,
 	CardHeader,
 	Divider,
+	MenuItem,
 	Grid,
 	TextField,
 } from '@mui/material';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { AccountProfileProps } from './account-profile';
+import moment from 'moment';
+import { LoadingButton } from '@mui/lab';
+import { DatePicker } from '@mui/x-date-pickers';
+import {
+	getContactInfo,
+	updateContactInfo,
+} from '../../services/contacts.service';
+import { Contact } from '../../shared/interfaces/contact';
+import { toast } from 'react-toastify';
+import { AuthContext } from '../../contexts/AuthContext';
 
 const states = [
 	{ nome: 'Acre', sigla: 'AC' },
@@ -40,25 +54,108 @@ const states = [
 	{ nome: 'Tocantins', sigla: 'TO' },
 ];
 
-export const AccountProfileDetails = (props: any) => {
-	const [values, setValues] = useState({
-		firstName: 'José',
-		lastName: 'Silva',
-		email: 'admin@admin.com',
-		phone: '',
-		state: 'SP',
-		country: 'Brasil',
+export const AccountProfileDetails = ({ profile }: AccountProfileProps) => {
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const { getUserData } = useContext(AuthContext);
+
+	const genderList = [
+		{
+			id: 1,
+			value: 'Masculino',
+		},
+		{
+			id: 2,
+			value: 'Feminino',
+		},
+	];
+
+	function updateContact(id: number, contact: Contact) {
+		setIsSubmitting(true);
+		updateContactInfo(id, contact).then(
+			async (response) => {
+				setIsSubmitting(false);
+				if (response.status == 200 && response.data) {
+					toast.success('Dados alterados com sucesso!', {
+						position: 'top-center',
+						autoClose: 5000,
+						theme: 'colored',
+						hideProgressBar: false,
+						closeOnClick: true,
+						pauseOnHover: true,
+						draggable: true,
+					});
+					await getUserData();
+				}
+			},
+			(error) => {
+				setIsSubmitting(false);
+				toast.error('Erro ao alterar dados!', {
+					position: 'top-center',
+					autoClose: 5000,
+					theme: 'colored',
+					hideProgressBar: false,
+					closeOnClick: true,
+					pauseOnHover: true,
+					draggable: true,
+				});
+			}
+		);
+	}
+
+	const formik = useFormik({
+		initialValues: {
+			name: profile ? profile?.name : '',
+			secondName: profile ? profile?.secondName : '',
+			personType: profile ? profile?.personTypeId : 1,
+			birthdate: profile && profile?.birthdate ? moment(profile?.birthdate) : null,
+			gender: profile ? profile.gender : '',
+			email: profile ? profile?.email : '',
+			phone: profile ? profile?.phone : '',
+		},
+		validate: (values) => {
+			const errors: any = {};
+			if (values.personType == 1) {
+				if (!values.name) errors.name = 'Informe seu nome';
+				if (!values.secondName) errors.secondName = 'Informe seu sobrenome';
+				if (!values.birthdate) {
+					errors.birthdate = 'Informe sua data de nascimento';
+				}
+			} else {
+				if (!values.name) errors.name = 'Informe a razão social';
+				if (!values.secondName) errors.secondName = 'Informe o nome fantasia';
+				if (!values.birthdate) {
+					delete errors.birthdate;
+				}
+			}
+			console.log(errors);
+			return errors;
+		},
+		enableReinitialize: true,
+		onSubmit: async (values) => {
+			setIsSubmitting(true);
+			const contact = values;
+			console.log(contact);
+			if (profile.id) await updateContact(profile.id, contact);
+		},
+		validationSchema: Yup.object({
+			name: Yup.string().required(),
+			secondName: Yup.string().required(),
+			email: Yup.string()
+				.email('Informe um e-mail válido')
+				.max(255)
+				.required('Informe o e-mail'),
+			personType: Yup.number(),
+			gender: Yup.string(),
+			phone: Yup.string()
+				.required('Informe o número do celular')
+				.min(11, 'Informe um número de celular válido')
+				.max(11, 'Informe um número de celular válido'),
+			birthdate: Yup.string(),
+		}),
 	});
 
-	const handleChange = (event: any) => {
-		setValues({
-			...values,
-			[event.target.name]: event.target.value,
-		});
-	};
-
 	return (
-		<form autoComplete='off' noValidate {...props}>
+		<form noValidate onSubmit={formik.handleSubmit}>
 			<Card>
 				<CardHeader
 					subheader='Os dados a seguir podem ser editados'
@@ -70,58 +167,130 @@ export const AccountProfileDetails = (props: any) => {
 						<Grid item md={6} xs={12}>
 							<TextField
 								fullWidth
-								label='Nome'
-								name='firstName'
-								onChange={handleChange}
+								label={formik.values.personType == 1 ? 'Nome' : 'Razão Social'}
+								name='name'
+								onChange={formik.handleChange}
 								required
-								value={values.firstName}
+								value={formik.values.name}
+								placeholder={
+									formik.values.personType == 1
+										? 'Digite seu nome'
+										: 'Digite a razão social'
+								}
+								autoComplete='name'
+								error={Boolean(formik.touched.name && formik.errors.name)}
+								helperText={formik.touched.name && formik.errors.name}
 								variant='outlined'
 							/>
 						</Grid>
 						<Grid item md={6} xs={12}>
 							<TextField
 								fullWidth
-								label='Sobrenome'
-								name='lastName'
-								onChange={handleChange}
+								label={formik.values.personType == 1 ? 'Sobrenome' : 'Nome Fantasia'}
+								name='secondName'
+								onChange={formik.handleChange}
 								required
-								value={values.lastName}
+								value={formik.values.secondName}
+								placeholder={
+									formik.values.personType == 1
+										? 'Digite seu sobrenome'
+										: 'Digite o nome fantasia'
+								}
+								autoComplete='secondName'
+								error={Boolean(formik.touched.secondName && formik.errors.secondName)}
+								helperText={formik.touched.secondName && formik.errors.secondName}
 								variant='outlined'
 							/>
 						</Grid>
 						<Grid item md={6} xs={12}>
 							<TextField
 								fullWidth
+								required
+								id='email'
 								label='E-mail'
+								onBlur={formik.handleBlur}
+								onChange={(email) => {
+									formik.setFieldValue('email', email.target.value);
+								}}
+								value={formik.values.email}
 								name='email'
-								onChange={handleChange}
-								required
-								value={values.email}
-								variant='outlined'
+								placeholder='Digite seu e-mail'
+								autoComplete='off'
+								error={Boolean(formik.touched.email && formik.errors.email)}
+								helperText={formik.touched.email && formik.errors.email}
 							/>
 						</Grid>
 						<Grid item md={6} xs={12}>
 							<TextField
-								fullWidth
-								label='Telefone'
-								name='phone'
-								onChange={handleChange}
 								type='number'
-								value={values.phone}
-								variant='outlined'
-							/>
-						</Grid>
-						<Grid item md={6} xs={12}>
-							<TextField
-								fullWidth
-								label='País'
-								name='country'
-								onChange={handleChange}
+								inputProps={{ inputMode: 'numeric' }}
 								required
-								value={values.country}
+								fullWidth
+								id='phone'
+								label='Celular'
+								onBlur={formik.handleBlur}
+								onChange={formik.handleChange}
+								value={formik.values.phone}
+								name='phone'
+								placeholder='Digite seu celular'
+								autoComplete='phone'
 								variant='outlined'
+								error={Boolean(formik.touched.phone && formik.errors.phone)}
+								helperText={formik.touched.phone && formik.errors.phone}
 							/>
 						</Grid>
+						{formik.values.personType == 1 && (
+							<>
+								<Grid item md={6} xs={12}>
+									<TextField
+										margin='normal'
+										fullWidth
+										id='gender'
+										label='Gênero'
+										onBlur={formik.handleBlur}
+										onChange={formik.handleChange}
+										value={formik.values.gender}
+										name='gender'
+										placeholder='Selecione seu gênero'
+										select
+										variant='outlined'>
+										<MenuItem value=''>Selecionar</MenuItem>
+										{genderList.map((gender) => (
+											<MenuItem key={gender.id} value={gender.value}>
+												{gender.value}
+											</MenuItem>
+										))}
+									</TextField>
+								</Grid>
+								<Grid item md={6} xs={12}>
+									<DatePicker
+										label='Data de nascimento'
+										onChange={(date) => {
+											console.log(formik.errors);
+											formik.setFieldValue('birthdate', date);
+										}}
+										onError={(error) => {
+											formik.setFieldError('birthdate', error?.toString());
+										}}
+										value={formik.values.birthdate ? formik.values.birthdate : null}
+										renderInput={(params) => (
+											<TextField
+												margin='normal'
+												fullWidth
+												id='birthdate'
+												onBlur={formik.handleBlur}
+												error={Boolean(formik.touched.birthdate && formik.errors.birthdate)}
+												helperText={formik.touched.birthdate && formik.errors.birthdate}
+												name='birthdate'
+												variant='outlined'
+												{...params}
+											/>
+										)}
+									/>
+								</Grid>
+							</>
+						)}
+						{/*
 						<Grid item md={6} xs={12}>
 							<TextField
 								fullWidth
@@ -142,7 +311,7 @@ export const AccountProfileDetails = (props: any) => {
 									</option>
 								))}
 							</TextField>
-						</Grid>
+						</Grid> */}
 					</Grid>
 				</CardContent>
 				<Divider />
@@ -150,11 +319,18 @@ export const AccountProfileDetails = (props: any) => {
 					sx={{
 						display: 'flex',
 						justifyContent: 'flex-end',
-						p: 2,
+						pl: 2,
+						pr: 2,
 					}}>
-					<Button color='primary' variant='contained'>
+					<LoadingButton
+						loading={isSubmitting}
+						type='submit'
+						color='primary'
+						size='large'
+						variant='contained'
+						sx={{ mt: 3, mb: 2 }}>
 						Salvar alterações
-					</Button>
+					</LoadingButton>
 				</Box>
 			</Card>
 		</form>
