@@ -14,13 +14,13 @@ import {
 	TableRow,
 	Typography,
 } from '@mui/material';
-import { Contact } from '../../shared/interfaces/customer';
+import { Customer } from '../../shared/interfaces/customer';
 
 export type ListProps<T> = {
 	data: T[];
 };
 
-export const CustomerListResults = ({ data }: ListProps<Contact>) => {
+export const CustomerListResults = ({ data }: ListProps<Customer>) => {
 	const [limit, setLimit] = useState(10);
 	const [page, setPage] = useState(0);
 
@@ -46,7 +46,7 @@ export const CustomerListResults = ({ data }: ListProps<Contact>) => {
 								</TableRow>
 							</TableHead>
 							<TableBody>
-								{data.map((customer: Contact) => (
+								{data.map((customer: Customer) => (
 									<TableRow hover key={customer.id}>
 										<TableCell>
 											<Box

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import {
 	Box,
 	Button,
@@ -16,6 +16,13 @@ import { AccountProfileProps } from './account-profile';
 import moment from 'moment';
 import { LoadingButton } from '@mui/lab';
 import { DatePicker } from '@mui/x-date-pickers';
+import {
+	getContactInfo,
+	updateContactInfo,
+} from '../../services/contacts.service';
+import { Contact } from '../../shared/interfaces/contact';
+import { toast } from 'react-toastify';
+import { AuthContext } from '../../contexts/AuthContext';
 
 const states = [
 	{ nome: 'Acre', sigla: 'AC' },
@@ -49,6 +56,7 @@ const states = [
 
 export const AccountProfileDetails = ({ profile }: AccountProfileProps) => {
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const { getUserData } = useContext(AuthContext);
 
 	const genderList = [
 		{
@@ -61,12 +69,45 @@ export const AccountProfileDetails = ({ profile }: AccountProfileProps) => {
 		},
 	];
 
+	function updateContact(id: number, contact: Contact) {
+		setIsSubmitting(true);
+		updateContactInfo(id, contact).then(
+			async (response) => {
+				setIsSubmitting(false);
+				if (response.status == 200 && response.data) {
+					toast.success('Dados alterados com sucesso!', {
+						position: 'top-center',
+						autoClose: 5000,
+						theme: 'colored',
+						hideProgressBar: false,
+						closeOnClick: true,
+						pauseOnHover: true,
+						draggable: true,
+					});
+					await getUserData();
+				}
+			},
+			(error) => {
+				setIsSubmitting(false);
+				toast.error('Erro ao alterar dados!', {
+					position: 'top-center',
+					autoClose: 5000,
+					theme: 'colored',
+					hideProgressBar: false,
+					closeOnClick: true,
+					pauseOnHover: true,
+					draggable: true,
+				});
+			}
+		);
+	}
+
 	const formik = useFormik({
 		initialValues: {
 			name: profile ? profile?.name : '',
 			secondName: profile ? profile?.secondName : '',
 			personType: profile ? profile?.personTypeId : 1,
-			birthDate: profile && profile?.birthdate ? moment(profile?.birthdate) : null,
+			birthdate: profile && profile?.birthdate ? moment(profile?.birthdate) : null,
 			gender: profile ? profile.gender : '',
 			email: profile ? profile?.email : '',
 			phone: profile ? profile?.phone : '',
@@ -76,13 +117,13 @@ export const AccountProfileDetails = ({ profile }: AccountProfileProps) => {
 			if (values.personType == 1) {
 				if (!values.name) errors.name = 'Informe seu nome';
 				if (!values.secondName) errors.secondName = 'Informe seu sobrenome';
-				if (!values.birthDate) {
+				if (!values.birthdate) {
 					errors.birthdate = 'Informe sua data de nascimento';
 				}
 			} else {
 				if (!values.name) errors.name = 'Informe a razão social';
 				if (!values.secondName) errors.secondName = 'Informe o nome fantasia';
-				if (!values.birthDate) {
+				if (!values.birthdate) {
 					delete errors.birthdate;
 				}
 			}
@@ -90,12 +131,11 @@ export const AccountProfileDetails = ({ profile }: AccountProfileProps) => {
 			return errors;
 		},
 		enableReinitialize: true,
-		onSubmit: (values) => {
+		onSubmit: async (values) => {
 			setIsSubmitting(true);
-			console.log(values);
-			setTimeout(() => {
-				setIsSubmitting(false);
-			}, 2000);
+			const contact = values;
+			console.log(contact);
+			if (profile.id) await updateContact(profile.id, contact);
 		},
 		validationSchema: Yup.object({
 			name: Yup.string().required(),
@@ -231,17 +271,16 @@ export const AccountProfileDetails = ({ profile }: AccountProfileProps) => {
 										}}
 										onError={(error) => {
 											formik.setFieldError('birthdate', error?.toString());
-											console.log(formik.errors);
 										}}
-										value={formik.values.birthDate ? formik.values.birthDate : null}
+										value={formik.values.birthdate ? formik.values.birthdate : null}
 										renderInput={(params) => (
 											<TextField
 												margin='normal'
 												fullWidth
-												id='birthDate'
+												id='birthdate'
 												onBlur={formik.handleBlur}
-												error={Boolean(formik.touched.birthDate && formik.errors.birthDate)}
-												helperText={formik.touched.birthDate && formik.errors.birthDate}
+												error={Boolean(formik.touched.birthdate && formik.errors.birthdate)}
+												helperText={formik.touched.birthdate && formik.errors.birthdate}
 												name='birthdate'
 												variant='outlined'
 												{...params}

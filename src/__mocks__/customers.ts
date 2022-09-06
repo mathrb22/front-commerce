@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid';
-import { Contact } from '../shared/interfaces/customer';
+import { Customer } from '../shared/interfaces/customer';
 
-export const customers: Contact[] = [
+export const customers: Customer[] = [
 	{
 		id: uuid(),
 		name: 'Thiago Marcelo Felipe Assunção',

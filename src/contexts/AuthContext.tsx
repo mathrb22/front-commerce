@@ -6,7 +6,7 @@ import { EPersonType } from '../shared/enums/person-type.enum';
 import { signIn, signUp } from '../services/auth.service';
 import { toast } from 'react-toastify';
 import { ERole } from '../shared/enums/role.enum';
-import { Contact } from '../shared/interfaces/customer';
+import { Contact } from '../shared/interfaces/contact';
 import { getContactInfo } from '../services/contacts.service';
 import { StoragerHelper } from '../shared/helpers/storage.helper';
 
@@ -44,6 +44,7 @@ type AuthContextData = {
 	login: (credentials: SignInCredentials) => Promise<void>;
 	register: (signUp: ISignUp) => Promise<void>;
 	logout: () => void;
+	getUserData: () => Promise<void>;
 	profileData: Contact;
 	isLoading: boolean;
 };
@@ -57,7 +58,7 @@ export const AuthContext = createContext({} as AuthContextData);
 export function AuthProvider({ children }: AuthProviderProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [profileData, setProfileData] = useState<Contact>({
-		id: '',
+		id: 0,
 		name: '',
 		email: '',
 		phone: '',
@@ -171,7 +172,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
 	return (
 		<AuthContext.Provider
-			value={{ isLoading, login, register, logout, profileData }}>
+			value={{ isLoading, login, register, logout, profileData, getUserData }}>
 			{children}
 		</AuthContext.Provider>
 	);
