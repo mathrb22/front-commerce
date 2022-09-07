@@ -11,6 +11,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { ptBR } from 'date-fns/locale';
 import { RouteGuard } from '../guards/AuthGuard';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 
 type NextPageWithLayout = NextPage & {
 	getLayout?: (page: ReactElement) => ReactNode;
@@ -33,6 +35,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
 				<LocalizationProvider adapterLocale={ptBR} dateAdapter={AdapterDateFns}>
 					<CssBaseline />
 					<RouteGuard>{getLayout(<Component {...pageProps} />)}</RouteGuard>
+					<ToastContainer autoClose={5000} />
 				</LocalizationProvider>
 			</ThemeProvider>
 		</AuthProvider>

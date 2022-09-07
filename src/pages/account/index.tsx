@@ -1,13 +1,17 @@
 import Head from 'next/head';
 import { Box, Container, Grid, Typography } from '@mui/material';
-import { ReactElement, useContext } from 'react';
+import { ReactElement, useContext, useEffect } from 'react';
 import { DashboardLayout } from '../../components/dashboard-layout';
 import { AccountProfile } from '../../components/account/account-profile';
 import { AccountProfileDetails } from '../../components/account/account-profile-details';
 import { AuthContext } from '../../contexts/AuthContext';
 
 export default function Account() {
-	const { profileData, isLoading } = useContext(AuthContext);
+	const { profileData, getUserData, isLoading } = useContext(AuthContext);
+
+	useEffect(() => {
+		getUserData();
+	}, []);
 
 	return (
 		<>

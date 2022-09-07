@@ -23,6 +23,7 @@ import {
 import { Contact } from '../../shared/interfaces/contact';
 import { toast } from 'react-toastify';
 import { AuthContext } from '../../contexts/AuthContext';
+import 'react-toastify/dist/ReactToastify.css';
 
 const states = [
 	{ nome: 'Acre', sigla: 'AC' },
@@ -70,6 +71,7 @@ export const AccountProfileDetails = ({ profile }: AccountProfileProps) => {
 	];
 
 	function updateContact(id: number, contact: Contact) {
+		toast.configure();
 		setIsSubmitting(true);
 		updateContactInfo(id, contact).then(
 			async (response) => {
@@ -127,14 +129,12 @@ export const AccountProfileDetails = ({ profile }: AccountProfileProps) => {
 					delete errors.birthdate;
 				}
 			}
-			console.log(errors);
 			return errors;
 		},
 		enableReinitialize: true,
 		onSubmit: async (values) => {
 			setIsSubmitting(true);
 			const contact = values;
-			console.log(contact);
 			if (profile.id) await updateContact(profile.id, contact);
 		},
 		validationSchema: Yup.object({
@@ -266,7 +266,6 @@ export const AccountProfileDetails = ({ profile }: AccountProfileProps) => {
 									<DatePicker
 										label='Data de nascimento'
 										onChange={(date) => {
-											console.log(formik.errors);
 											formik.setFieldValue('birthdate', date);
 										}}
 										onError={(error) => {

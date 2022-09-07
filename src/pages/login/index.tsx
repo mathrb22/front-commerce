@@ -63,119 +63,121 @@ export default function Login() {
 	};
 
 	return (
-		<Grid container component='main' sx={{ height: '100vh' }}>
+		<>
 			<ToastContainer />
-			<CssBaseline />
-			<Grid
-				item
-				xs={false}
-				sm={4}
-				md={7}
-				sx={{
-					backgroundImage: 'url(/images/banner-login2.jpg)',
-					backgroundRepeat: 'no-repeat',
-					backgroundColor: (t) =>
-						t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
-					backgroundSize: 'cover',
-					backgroundPosition: 'center',
-				}}
-			/>
-			<Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-				<Box
+			<Grid container component='main' sx={{ height: '100vh' }}>
+				<CssBaseline />
+				<Grid
+					item
+					xs={false}
+					sm={4}
+					md={7}
 					sx={{
-						my: 8,
-						mx: 4,
-						display: 'flex',
-						flexDirection: 'column',
-						alignItems: 'center',
-					}}>
-					<Avatar sx={{ m: 2, bgcolor: 'primary.main' }}>
-						<LockOutlinedIcon />
-					</Avatar>
-					<Typography component='h1' variant='h5'>
-						Acessar plataforma
-					</Typography>
+						backgroundImage: 'url(/images/banner-login2.jpg)',
+						backgroundRepeat: 'no-repeat',
+						backgroundColor: (t) =>
+							t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
+						backgroundSize: 'cover',
+						backgroundPosition: 'center',
+					}}
+				/>
+				<Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
 					<Box
-						component='form'
-						noValidate
-						onSubmit={formik.handleSubmit}
-						sx={{ mt: 1, maxWidth: 400 }}>
-						<TextField
-							margin='normal'
-							required
-							fullWidth
-							id='email'
-							label='E-mail'
-							onBlur={formik.handleBlur}
-							onChange={formik.handleChange}
-							value={formik.values.email}
-							name='email'
-							placeholder='Digite seu e-mail'
-							autoComplete='off'
-							error={Boolean(formik.touched.email && formik.errors.email)}
-							helperText={formik.touched.email && formik.errors.email}
-							autoFocus
-							sx={{ mb: 2 }}
-						/>
-						<TextField
-							id='outlined-adornment-password'
-							type={formik.values.showPassword ? 'text' : 'password'}
-							fullWidth
-							required
-							value={formik.values.password}
-							onBlur={formik.handleBlur}
-							onChange={formik.handleChange}
-							error={Boolean(formik.touched.password && formik.errors.password)}
-							helperText={formik.touched.password && formik.errors.password}
-							InputProps={{
-								endAdornment: (
-									<InputAdornment position='end'>
-										<IconButton
-											aria-label='toggle password visibility'
-											onClick={handleClickShowPassword}
-											onMouseDown={handleMouseDownPassword}
-											edge='end'>
-											{formik.values.showPassword ? <VisibilityOff /> : <Visibility />}
-										</IconButton>
-									</InputAdornment>
-								),
-							}}
-							name='password'
-							label='Senha'
-							placeholder='Digite sua senha'
-						/>
-						<FormControlLabel
-							control={<Checkbox value='remember' color='primary' />}
-							label='Lembrar-me'
-							sx={{ mt: 1 }}
-						/>
-						<LoadingButton
-							loading={isLoading}
-							type='submit'
-							fullWidth
-							size='large'
-							variant='contained'
-							sx={{ mt: 3, mb: 2 }}>
-							Entrar
-						</LoadingButton>
-						<Grid container sx={{ mb: 4 }}>
-							<Grid item xs textAlign={'end'}>
-								<Link href='/forgot-password' variant='body2'>
-									Esqueceu sua senha?
-								</Link>
+						sx={{
+							my: 8,
+							mx: 4,
+							display: 'flex',
+							flexDirection: 'column',
+							alignItems: 'center',
+						}}>
+						<Avatar sx={{ m: 2, bgcolor: 'primary.main' }}>
+							<LockOutlinedIcon />
+						</Avatar>
+						<Typography component='h1' variant='h5'>
+							Acessar plataforma
+						</Typography>
+						<Box
+							component='form'
+							noValidate
+							onSubmit={formik.handleSubmit}
+							sx={{ mt: 1, maxWidth: 400 }}>
+							<TextField
+								margin='normal'
+								required
+								fullWidth
+								id='email'
+								label='E-mail'
+								onBlur={formik.handleBlur}
+								onChange={formik.handleChange}
+								value={formik.values.email}
+								name='email'
+								placeholder='Digite seu e-mail'
+								autoComplete='off'
+								error={Boolean(formik.touched.email && formik.errors.email)}
+								helperText={formik.touched.email && formik.errors.email}
+								autoFocus
+								sx={{ mb: 2 }}
+							/>
+							<TextField
+								id='outlined-adornment-password'
+								type={formik.values.showPassword ? 'text' : 'password'}
+								fullWidth
+								required
+								value={formik.values.password}
+								onBlur={formik.handleBlur}
+								onChange={formik.handleChange}
+								error={Boolean(formik.touched.password && formik.errors.password)}
+								helperText={formik.touched.password && formik.errors.password}
+								InputProps={{
+									endAdornment: (
+										<InputAdornment position='end'>
+											<IconButton
+												aria-label='toggle password visibility'
+												onClick={handleClickShowPassword}
+												onMouseDown={handleMouseDownPassword}
+												edge='end'>
+												{formik.values.showPassword ? <VisibilityOff /> : <Visibility />}
+											</IconButton>
+										</InputAdornment>
+									),
+								}}
+								name='password'
+								label='Senha'
+								placeholder='Digite sua senha'
+							/>
+							<FormControlLabel
+								control={<Checkbox value='remember' color='primary' />}
+								label='Lembrar-me'
+								sx={{ mt: 1 }}
+							/>
+							<LoadingButton
+								loading={isLoading}
+								type='submit'
+								fullWidth
+								size='large'
+								variant='contained'
+								sx={{ mt: 3, mb: 2 }}>
+								Entrar
+							</LoadingButton>
+							<Grid container sx={{ mb: 4 }}>
+								<Grid item xs textAlign={'end'}>
+									<Link href='/forgot-password' variant='body2'>
+										Esqueceu sua senha?
+									</Link>
+								</Grid>
 							</Grid>
-						</Grid>
-						<Grid container>
-							<Grid item xs textAlign={'center'}>
-								Não possui uma conta?{' '}
-								<Link href='/signup' variant='body2'>
-									{'Cadastre-se'}
-								</Link>
+							<Grid container>
+								<Grid item xs textAlign={'center'}>
+									Não possui uma conta?{' '}
+									<Link href='/signup' variant='body2'>
+										{'Cadastre-se'}
+									</Link>
+								</Grid>
 							</Grid>
-						</Grid>
+						</Box>
 					</Box>
-				</Box>
+				</Grid>
 			</Grid>
-		</Grid>
+		</>
 	);
 }
