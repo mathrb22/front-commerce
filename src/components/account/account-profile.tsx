@@ -44,7 +44,7 @@ export const AccountProfile = ({ profile, isLoading }: AccountProfileProps) => (
 								? profile?.name + ' ' + profile?.secondName
 								: profile?.secondName}
 						</Typography>
-						<Typography color='textSecondary' variant='body2'>
+						<Typography color='textSecondary' variant='body2' textAlign='center'>
 							{`${profile?.address ?? 'Endereço não informado'}`}
 						</Typography>
 					</>

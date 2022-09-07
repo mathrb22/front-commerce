@@ -79,7 +79,7 @@ export const AccountProfileDetails = ({ profile }: AccountProfileProps) => {
 				if (response.status == 200 && response.data) {
 					toast.success('Dados alterados com sucesso!', {
 						position: 'top-center',
-						autoClose: 5000,
+						autoClose: 3000,
 						theme: 'colored',
 						hideProgressBar: false,
 						closeOnClick: true,
@@ -110,6 +110,7 @@ export const AccountProfileDetails = ({ profile }: AccountProfileProps) => {
 			secondName: profile ? profile?.secondName : '',
 			personType: profile ? profile?.personTypeId : 1,
 			birthdate: profile && profile?.birthdate ? moment(profile?.birthdate) : null,
+			address: profile ? profile?.address : '',
 			gender: profile ? profile.gender : '',
 			email: profile ? profile?.email : '',
 			phone: profile ? profile?.phone : '',
@@ -145,6 +146,7 @@ export const AccountProfileDetails = ({ profile }: AccountProfileProps) => {
 				.max(255)
 				.required('Informe o e-mail'),
 			personType: Yup.number(),
+			address: Yup.string(),
 			gender: Yup.string(),
 			phone: Yup.string()
 				.required('Informe o número do celular')
@@ -243,7 +245,6 @@ export const AccountProfileDetails = ({ profile }: AccountProfileProps) => {
 							<>
 								<Grid item md={6} xs={12}>
 									<TextField
-										margin='normal'
 										fullWidth
 										id='gender'
 										label='Gênero'
@@ -274,7 +275,6 @@ export const AccountProfileDetails = ({ profile }: AccountProfileProps) => {
 										value={formik.values.birthdate ? formik.values.birthdate : null}
 										renderInput={(params) => (
 											<TextField
-												margin='normal'
 												fullWidth
 												id='birthdate'
 												onBlur={formik.handleBlur}
@@ -289,6 +289,22 @@ export const AccountProfileDetails = ({ profile }: AccountProfileProps) => {
 								</Grid>
 							</>
 						)}
+						<Grid item md={12} xs={12}>
+							<TextField
+								fullWidth
+								id='address'
+								label='Endereço'
+								onBlur={formik.handleBlur}
+								onChange={formik.handleChange}
+								value={formik.values.address}
+								name='address'
+								placeholder='Digite seu endereço'
+								autoComplete='off'
+								variant='outlined'
+								error={Boolean(formik.touched.address && formik.errors.address)}
+								helperText={formik.touched.address && formik.errors.address}
+							/>
+						</Grid>
 						{/*
 						<Grid item md={6} xs={12}>
 							<TextField
