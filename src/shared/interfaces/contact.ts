@@ -6,6 +6,7 @@ export interface Contact {
 	secondName?: string;
 	gender?: string;
 	birthdate?: string | Moment | null;
+	documentNumber?: string;
 	address?: string;
 	personTypeId?: number;
 	personType?: number;
