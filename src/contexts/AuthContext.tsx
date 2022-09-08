@@ -9,6 +9,8 @@ import { ERole } from '../shared/enums/role.enum';
 import { Contact } from '../shared/interfaces/contact';
 import { getContactInfo } from '../services/contacts.service';
 import { StoragerHelper } from '../shared/helpers/storage.helper';
+import 'react-toastify/dist/ReactToastify.css';
+import { AxiosError } from 'axios';
 
 export type SignInCredentials = {
 	login: string;
@@ -63,38 +65,65 @@ export function AuthProvider({ children }: AuthProviderProps) {
 		email: '',
 		phone: '',
 	});
+	toast.configure();
 
 	async function login({ login, password, role }: SignInCredentials) {
 		setIsLoading(true);
 		signIn({ login, password, role })
-			.then(async (response) => {
-				setIsLoading(false);
-				if (response.status == 200 && response.data) {
-					const user = {
-						login: login,
-						role: role,
-						userId: response.data.userId,
-						accessToken: response.data.accessToken,
-						refreshToken: response.data.refreshToken,
-					};
-					console.log(user);
-					localStorage.setItem('frontcommerce.user', JSON.stringify(user));
+			.then(
+				async (response) => {
+					setIsLoading(false);
+					if (response && response.status == 200 && response.data) {
+						const user = {
+							login: login,
+							role: role,
+							userId: response.data.userId,
+							accessToken: response.data.accessToken,
+							refreshToken: response.data.refreshToken,
+						};
+						console.log(user);
+						localStorage.setItem('frontcommerce.user', JSON.stringify(user));
 
-					api.defaults.headers.head = {
-						Authorization: `Bearer ${response.data.accessToken}`,
-					};
+						api.defaults.headers.head = {
+							Authorization: `Bearer ${response.data.accessToken}`,
+						};
 
-					const userLoggedIn = StoragerHelper.getLoggedInUser();
-					if (userLoggedIn) {
-						await getUserData();
+						const userLoggedIn = StoragerHelper.getLoggedInUser();
+						if (userLoggedIn) {
+							await getUserData();
+						}
+
+						Router.push('/products');
 					}
-
-					Router.push('/products');
+				},
+				(err: AxiosError) => {
+					console.log('caiu aqui');
+					setIsLoading(false);
+					if (err.response?.data)
+						toast(err.response?.data.description, {
+							position: 'top-center',
+							autoClose: 5000,
+							theme: 'colored',
+							hideProgressBar: false,
+							closeOnClick: true,
+							pauseOnHover: true,
+							draggable: true,
+						});
+					else
+						toast('Não foi possível realizar o login. Tente novamente', {
+							position: 'top-center',
+							autoClose: 5000,
+							theme: 'colored',
+							hideProgressBar: false,
+							closeOnClick: true,
+							pauseOnHover: true,
+							draggable: true,
+						});
 				}
-			})
+			)
 			.catch((error) => {
 				setIsLoading(false);
-				toast.warn('Não foi possível realizar o login. Tente novamente.', {
+				toast('Não foi possível realizar o login. Tente novamente.', {
 					position: 'top-center',
 					autoClose: 5000,
 					theme: 'colored',
@@ -127,15 +156,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
 							Authorization: `Bearer ${response.data.accessToken}`,
 						};
 
-						await getUserData();
-
-						Router.push('/products');
+						getUserData().then(() => {
+							Router.push('/products');
+						});
 					}
 				}
 			})
 			.catch((error) => {
 				setIsLoading(false);
-				toast.warn('Não foi possível realizar o cadastro. Tente novamente.', {
+				toast('Não foi possível realizar o cadastro. Tente novamente.', {
 					position: 'top-center',
 					autoClose: 5000,
 					theme: 'colored',
@@ -153,7 +182,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 			setIsLoading(true);
 			await getContactInfo(+user.userId).then((res) => {
 				console.log(res);
-				if (res.data) {
+				if (res && res.data) {
 					setProfileData(res.data);
 					setIsLoading(false);
 				}
