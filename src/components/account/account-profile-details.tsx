@@ -109,6 +109,7 @@ export const AccountProfileDetails = ({ profile }: AccountProfileProps) => {
 			name: profile ? profile?.name : '',
 			secondName: profile ? profile?.secondName : '',
 			personType: profile ? profile?.personTypeId : 1,
+			documentNumber: profile ? profile?.documentNumber : '',
 			birthdate: profile && profile?.birthdate ? moment(profile?.birthdate) : null,
 			address: profile ? profile?.address : '',
 			gender: profile ? profile.gender : '',
@@ -146,6 +147,7 @@ export const AccountProfileDetails = ({ profile }: AccountProfileProps) => {
 				.max(255)
 				.required('Informe o e-mail'),
 			personType: Yup.number(),
+			documentNumber: Yup.string(),
 			address: Yup.string(),
 			gender: Yup.string(),
 			phone: Yup.string()
