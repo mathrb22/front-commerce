@@ -1,13 +1,14 @@
 import { EPersonType } from '../enums/person-type.enum';
 
 export interface Customer {
-	id?: string;
+	id?: number;
 	name?: string;
 	secondName?: string;
+	documentNumber?: string;
 	gender?: string;
-	birthdate?: string;
+	birthDate?: string;
 	address?: string;
-	personType?: number;
+	personType?: string;
 	phone?: string;
 	imageUrl?: string;
 	imageName?: string;

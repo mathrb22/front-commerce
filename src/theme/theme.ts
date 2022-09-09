@@ -1,5 +1,6 @@
 import { createTheme } from '@mui/material';
-import { ptBR } from '@mui/material/locale';
+import { ptBR } from '@mui/x-data-grid';
+import { ptBR as corePtBR } from '@mui/material/locale';
 
 export const theme = createTheme(
 	{
@@ -300,5 +301,6 @@ export const theme = createTheme(
 			},
 		},
 	},
-	ptBR
+	ptBR,
+	corePtBR
 );
