@@ -33,9 +33,11 @@ export const AccountProfile = ({ profile, isLoading }: AccountProfileProps) => (
 							imageUrl={profile.imageUrl}
 							userName={profile.name}
 							width={64}
+							fontSize={32}
 							height={64}
 						/>
 						<Typography
+							sx={{ mt: 2 }}
 							color='textPrimary'
 							gutterBottom
 							variant='h5'

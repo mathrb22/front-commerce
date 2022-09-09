@@ -64,7 +64,7 @@ export const DashboardNavbar = (props: any) => {
 							<UserAvatar
 								width={40}
 								height={40}
-								fontSize={22}
+								fontSize={20}
 								imageUrl={profileData.imageUrl}
 								userName={profileData.name}
 							/>
