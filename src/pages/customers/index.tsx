@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { Avatar, Box, Container, IconButton } from '@mui/material';
+import { Avatar, Box, Container, IconButton, Tooltip } from '@mui/material';
 import { CustomerListToolbar } from '../../components/customer/customer-list-toolbar';
 import { ReactElement, useEffect, useState } from 'react';
 import { DashboardLayout } from '../../components/dashboard-layout';
@@ -34,12 +34,16 @@ export default function Customers() {
 			renderCell: (params) => {
 				return (
 					<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-						<IconButton color='primary' aria-label='edit'>
-							<EditIcon />
-						</IconButton>
-						<IconButton color='error' aria-label='delete'>
-							<DeleteIcon />
-						</IconButton>
+						<Tooltip title='Editar'>
+							<IconButton color='primary' aria-label='edit'>
+								<EditIcon />
+							</IconButton>
+						</Tooltip>
+						<Tooltip title='Excluir'>
+							<IconButton color='error' aria-label='delete'>
+								<DeleteIcon />
+							</IconButton>
+						</Tooltip>
 					</Box>
 				);
 			},
