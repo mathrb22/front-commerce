@@ -1,4 +1,5 @@
 import { Avatar, Typography, AvatarProps } from '@mui/material';
+import { ReactNode } from 'react';
 
 export interface UserAvatarProps extends AvatarProps {
 	imageUrl?: string;
@@ -18,6 +19,45 @@ export default function UserAvatar({
 	backgroundColor,
 	...props
 }: UserAvatarProps) {
+	function stringToColor(string: string | undefined) {
+		if (!string) {
+			return 'primary';
+		}
+
+		let hash = 0;
+		let i;
+
+		if (string && string.length > 0) {
+			/* eslint-disable no-bitwise */
+			for (i = 0; i < string.length; i += 1) {
+				hash = string.charCodeAt(i) + ((hash << 5) - hash);
+			}
+
+			let color = '#';
+
+			for (i = 0; i < 3; i += 1) {
+				const value = (hash >> (i * 10)) & 0xff;
+				color += `00${value.toString(16)}`.slice(-2);
+			}
+			/* eslint-enable no-bitwise */
+
+			return color;
+		}
+	}
+
+	function stringAvatar(name: string | undefined) {
+		if (!name)
+			return <Typography sx={{ fontSize: fontSize || 16 }}>?</Typography>;
+		if (name && name.length > 0) {
+			return (
+				<Typography sx={{ fontSize: fontSize || 16 }}>{name.charAt(0)}</Typography>
+			);
+			// return {
+			// 	children: `${name[0]}`,
+			// };
+		}
+	}
+
 	return (
 		<>
 			{imageUrl ? (
@@ -25,7 +65,6 @@ export default function UserAvatar({
 					alt='Avatar do usuário'
 					src={imageUrl}
 					sx={{
-						mb: 2,
 						width: width ?? 40,
 						height: height ?? 40,
 					}}
@@ -35,17 +74,12 @@ export default function UserAvatar({
 				<Avatar
 					alt='Avatar do usuário'
 					sx={{
-						mb: 2,
 						width: width ?? 40,
 						height: height ?? 40,
-						backgroundColor: backgroundColor ?? 'primary.main',
+						bgcolor: stringToColor(userName),
 					}}
 					{...props}>
-					<Typography
-						variant='h4'
-						sx={{ fontWeight: 600, fontSize: fontSize ?? 32 }}>
-						{userName && userName[0]}
-					</Typography>
+					{stringAvatar(userName)}
 				</Avatar>
 			)}
 		</>
