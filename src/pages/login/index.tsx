@@ -31,6 +31,7 @@ export default function Login() {
 			password: '',
 			showPassword: false,
 			name: null,
+			keepMeConnected: false,
 		},
 		validationSchema: Yup.object({
 			email: Yup.string()
@@ -43,12 +44,14 @@ export default function Login() {
 				.required('Informe a senha')
 				.nullable(),
 			showPassword: Yup.boolean(),
+			keepMeConnected: Yup.boolean(),
 		}),
-		onSubmit: async ({ email, password }) => {
+		onSubmit: async ({ email, password, keepMeConnected }) => {
 			const credentials: SignInCredentials = {
 				login: email,
 				password: password,
 				role: ERole.ADMIN,
+				keepMeConnected: keepMeConnected,
 			};
 			await login(credentials);
 		},
@@ -146,8 +149,15 @@ export default function Login() {
 								placeholder='Digite sua senha'
 							/>
 							<FormControlLabel
-								control={<Checkbox value='remember' color='primary' />}
-								label='Lembrar-me'
+								control={
+									<Checkbox
+										name='keepMeConnected'
+										value={formik.values.keepMeConnected}
+										onChange={formik.handleChange}
+										color='primary'
+									/>
+								}
+								label='Manter-me conectado(a)'
 								sx={{ mt: 1 }}
 							/>
 							<LoadingButton

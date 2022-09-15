@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import { ERole } from '../shared/enums/role.enum';
 import { Contact } from '../shared/interfaces/contact';
 import { getContactInfo } from '../services/contacts.service';
-import { StoragerHelper } from '../shared/helpers/storage.helper';
+import { StorageHelper } from '../shared/helpers/storage.helper';
 import 'react-toastify/dist/ReactToastify.css';
 import { AxiosError } from 'axios';
 
@@ -16,6 +16,7 @@ export type SignInCredentials = {
 	login: string;
 	password: string;
 	role: ERole;
+	keepMeConnected?: boolean;
 };
 
 export interface ISignUp {
@@ -67,28 +68,37 @@ export function AuthProvider({ children }: AuthProviderProps) {
 	});
 	toast.configure();
 
-	async function login({ login, password, role }: SignInCredentials) {
+	async function login({
+		login,
+		password,
+		role,
+		keepMeConnected: rememberMe,
+	}: SignInCredentials) {
 		setIsLoading(true);
 		signIn({ login, password, role })
 			.then(
 				async (response) => {
 					setIsLoading(false);
 					if (response && response.status == 200 && response.data) {
-						const user = {
+						const user: IUser = {
 							login: login,
 							role: role,
 							userId: response.data.userId,
 							accessToken: response.data.accessToken,
 							refreshToken: response.data.refreshToken,
 						};
+						user.password = rememberMe
+							? StorageHelper.encryptUsingAES256(password)
+							: undefined;
+
 						console.log(user);
-						localStorage.setItem('frontcommerce.user', JSON.stringify(user));
+						StorageHelper.setItem('frontcommerce.user', JSON.stringify(user));
 
 						api.defaults.headers.head = {
 							Authorization: `Bearer ${response.data.accessToken}`,
 						};
 
-						const userLoggedIn = StoragerHelper.getLoggedInUser();
+						const userLoggedIn = StorageHelper.getLoggedInUser();
 						if (userLoggedIn) {
 							await getUserData();
 						}
@@ -177,7 +187,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 	}
 
 	async function getUserData() {
-		const user = StoragerHelper.getLoggedInUser();
+		const user = StorageHelper.getLoggedInUser();
 		if (user && user.userId) {
 			setIsLoading(true);
 			await getContactInfo(+user.userId).then((res) => {
