@@ -14,4 +14,5 @@ export interface IUser {
 	birthdate?: string;
 	userStatus?: string;
 	imageUrl?: string;
+	password?: string;
 }
