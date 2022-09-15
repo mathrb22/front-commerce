@@ -55,3 +55,19 @@ export async function getAllCustomers(
 			});
 	});
 }
+
+export async function exportCustomers(): Promise<AxiosResponse<Blob>> {
+	return new Promise((resolve, reject) => {
+		api
+			.get<Blob, AxiosResponse<Blob>>('contact/export', {
+				timeout: 8000,
+				responseType: 'blob',
+			})
+			.then((response) => {
+				resolve(response);
+			})
+			.catch((error) => {
+				reject(error);
+			});
+	});
+}

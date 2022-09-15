@@ -58,24 +58,20 @@ api.interceptors.response.use(
 				const encryptedPassword = StorageHelper.decryptUsingAES256(user.password);
 				signIn({
 					login: user.login,
-					password: user.password,
+					password: encryptedPassword,
 					role: ERole.ADMIN,
-				})
-					.then(async (response) => {
-						if (response.data) {
-							user.accessToken = response.data.accessToken;
-							user.refreshToken = response.data.refreshToken;
-							StorageHelper.setItem('frontcommerce.user', JSON.stringify(user));
+				}).then(async (response) => {
+					if (response.data) {
+						user.accessToken = response.data.accessToken;
+						user.refreshToken = response.data.refreshToken;
+						StorageHelper.setItem('frontcommerce.user', JSON.stringify(user));
 
-							api.defaults.headers.head = {
-								Authorization: `Bearer ${response.data.accessToken}`,
-							};
-							Router.push('/products');
-						}
-					})
-					.catch((error) => {
-						toast.error(error.response.data.message);
-					});
+						api.defaults.headers.head = {
+							Authorization: `Bearer ${response.data.accessToken}`,
+						};
+						Router.push('/products');
+					}
+				});
 			} else {
 				StorageHelper.removeItem('frontcommerce.user');
 				Router.push('/login');
