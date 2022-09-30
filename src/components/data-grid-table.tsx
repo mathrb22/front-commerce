@@ -1,6 +1,7 @@
 import { Card } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
+import { NoContent } from './no-content';
 
 export interface IDataGridProps {
 	columns: GridColDef[];
@@ -63,6 +64,9 @@ export default function DataGridTable({
 						page: pageNumber,
 						pageSize: pageSize,
 					},
+				}}
+				components={{
+					NoRowsOverlay: () => <NoContent />,
 				}}
 				paginationMode='server'
 				pageSize={pageSize}
