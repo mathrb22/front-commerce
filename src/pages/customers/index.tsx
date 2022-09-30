@@ -135,12 +135,21 @@ export default function Customers() {
 	}
 
 	function handleSearch(query: string) {
+		console.log(query);
 		let params = queryParams;
+		console.log(queryParams);
+		console.log(params);
 		if (query != params.get('query')) {
-			if (params.get('query')) params.set('query', query);
-			else params.append('query', query);
+			if (params.get('query')) {
+				params.set('query', query);
+			} else {
+				params.delete('query');
+				params.append('query', query);
+			}
 
 			setQueryParams(params);
+			console.log(params);
+			console.log(queryParams);
 			getCustomers();
 		}
 	}

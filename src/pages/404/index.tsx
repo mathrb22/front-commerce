@@ -4,7 +4,7 @@ import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
 
-export default function Page404() {
+export function Page404() {
 	return (
 		<>
 			<Head>
@@ -39,8 +39,8 @@ export default function Page404() {
 							<Image
 								alt='Imagem de página não encontrada'
 								src='/images/404.svg'
-                width={460}
-                height={460}
+								width={460}
+								height={460}
 							/>
 						</Box>
 						<Link href='/products' passHref>
