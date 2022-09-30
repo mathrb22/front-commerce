@@ -9,9 +9,9 @@ import { Contact } from '../../shared/interfaces/contact';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import UserAvatar from '../../components/avatar';
 import { Customer } from '../../shared/interfaces/customer';
 import { CustomerListResults } from '../../components/customer/customer-list-results';
-import UserAvatar from '../../components/avatar';
 
 export default function Customers() {
 	const [contacts, setContacts] = useState<Pageable<Customer>>({
@@ -20,8 +20,9 @@ export default function Customers() {
 		size: 10,
 		total: 0,
 	});
-	const [query, setQuery] = useState<string | undefined>('');
 	const params = new URLSearchParams();
+
+	const [queryParams, setQueryParams] = useState<URLSearchParams>(params);
 
 	const columns: GridColDef[] = [
 		{
@@ -96,12 +97,27 @@ export default function Customers() {
 	];
 
 	useEffect(() => {
-		getAllCustomers().then((response) => {
+		getCustomers();
+	}, [queryParams]);
+
+	function getCustomers() {
+		console.log(queryParams);
+		getAllCustomers(queryParams).then((response) => {
 			console.log(response.data);
 			setContacts(response.data);
-			console.table(contacts?.data);
 		});
-	}, []);
+	}
+
+	function handleSearch(query: string) {
+		let params = queryParams;
+		if (query != params.get('query')) {
+			if (params.get('query')) params.set('query', query);
+			else params.append('query', query);
+
+			setQueryParams(params);
+			getCustomers();
+		}
+	}
 
 	return (
 		<>
@@ -115,14 +131,15 @@ export default function Customers() {
 					py: 3,
 				}}>
 				<Container maxWidth={false}>
-					<CustomerListToolbar />
+					<CustomerListToolbar onSearch={(query) => handleSearch(query)} />
 					<Box sx={{ mt: 3 }}>
 						<CustomerListResults
 							rows={contacts?.data}
 							columns={columns}
-							page={contacts.page}
-							size={contacts.size}
-							total={contacts.total}
+							page={contacts?.page}
+							size={contacts?.size}
+							total={contacts?.total}
+							onGetQueryParams={(params) => setQueryParams(params)}
 						/>
 					</Box>
 				</Container>

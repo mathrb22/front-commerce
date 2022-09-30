@@ -46,6 +46,7 @@ export async function getAllCustomers(
 		api
 			.get<Contact[], AxiosResponse<Pageable<Customer>>>('contact', {
 				timeout: 8000,
+				params: params,
 			})
 			.then((response) => {
 				resolve(response);
