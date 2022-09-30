@@ -1,5 +1,17 @@
 import Head from 'next/head';
-import { Avatar, Box, Container, IconButton, Tooltip } from '@mui/material';
+import {
+	Avatar,
+	Box,
+	Button,
+	Container,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogContentText,
+	DialogTitle,
+	IconButton,
+	Tooltip,
+} from '@mui/material';
 import { CustomerListToolbar } from '../../components/customer/customer-list-toolbar';
 import { ReactElement, useEffect, useState } from 'react';
 import { DashboardLayout } from '../../components/dashboard-layout';
@@ -12,6 +24,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import UserAvatar from '../../components/avatar';
 import { Customer } from '../../shared/interfaces/customer';
 import { CustomerListResults } from '../../components/customer/customer-list-results';
+import Image from 'next/image';
 
 export default function Customers() {
 	const [contacts, setContacts] = useState<Pageable<Customer>>({
@@ -21,8 +34,21 @@ export default function Customers() {
 		total: 0,
 	});
 	const params = new URLSearchParams();
+	const [isDeleteModalShowing, setIsDeleteModalShowing] = useState(false);
 
 	const [queryParams, setQueryParams] = useState<URLSearchParams>(params);
+
+	function showDeleteDialog() {
+		setIsDeleteModalShowing(true);
+	}
+
+	function handleCloseDeleteDialog() {
+		setIsDeleteModalShowing(false);
+	}
+
+	function handleDeleteContact() {
+		setIsDeleteModalShowing(false);
+	}
 
 	const columns: GridColDef[] = [
 		{
@@ -41,7 +67,7 @@ export default function Customers() {
 							</IconButton>
 						</Tooltip>
 						<Tooltip title='Excluir'>
-							<IconButton color='error' aria-label='delete'>
+							<IconButton color='error' aria-label='delete' onClick={showDeleteDialog}>
 								<DeleteIcon />
 							</IconButton>
 						</Tooltip>
@@ -143,6 +169,41 @@ export default function Customers() {
 						/>
 					</Box>
 				</Container>
+
+				<Dialog
+					open={isDeleteModalShowing}
+					onClose={handleCloseDeleteDialog}
+					aria-labelledby='alert-dialog-title'
+					aria-describedby='alert-dialog-description'>
+					<DialogTitle id='alert-dialog-title'>Confirmar exclusão</DialogTitle>
+					<DialogContent sx={{ maxWidth: 480 }}>
+						<Box sx={{ textAlign: 'center' }}>
+							<Image
+								alt='Exclusão de registro'
+								src='/images/delete_vector.svg'
+								width={160}
+								height={120}
+							/>
+						</Box>
+						<DialogContentText
+							id='alert-dialog-description'
+							sx={{ textAlign: 'center' }}>
+							Deseja excluir esse cliente? Esta ação não poderá ser desfeita.
+						</DialogContentText>
+					</DialogContent>
+					<DialogActions sx={{ pb: 3, justifyContent: 'center' }}>
+						<Button onClick={handleCloseDeleteDialog} color='inherit'>
+							Cancelar
+						</Button>
+						<Button
+							onClick={handleDeleteContact}
+							variant='contained'
+							color='error'
+							autoFocus>
+							Excluir
+						</Button>
+					</DialogActions>
+				</Dialog>
 			</Box>
 		</>
 	);
