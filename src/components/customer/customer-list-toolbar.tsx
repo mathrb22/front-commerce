@@ -15,7 +15,14 @@ import DownloadIcon from '@mui/icons-material/Download';
 import { exportCustomers } from '../../services/contacts.service';
 import { toast } from 'react-toastify';
 
-export const CustomerListToolbar = (props: any) => {
+interface CustomerListToolbarProps extends React.ComponentProps<typeof Box> {
+	onSearch: (query: string) => void;
+}
+
+export const CustomerListToolbar = ({
+	onSearch,
+	...props
+}: CustomerListToolbarProps) => {
 	async function exportData() {
 		exportCustomers().then(
 			(response) => {
@@ -52,6 +59,7 @@ export const CustomerListToolbar = (props: any) => {
 				</Typography>
 				<Box sx={{ m: 1 }}>
 					<TextField
+						onChange={(event) => onSearch(event.target.value)}
 						InputProps={{
 							endAdornment: (
 								<InputAdornment position='end'>

@@ -10,6 +10,7 @@ export interface CustomerListResultsProps {
 	page: number;
 	size: number;
 	total: number;
+	onGetQueryParams: (params: URLSearchParams) => void;
 }
 
 export const CustomerListResults = ({
@@ -18,14 +19,21 @@ export const CustomerListResults = ({
 	page,
 	size,
 	total,
+	onGetQueryParams,
 }: CustomerListResultsProps) => {
+	const rowsPerPage = [10, 25, 50];
+
 	return (
-		<DataGridTable
-			page={page}
-			rows={rows}
-			columns={columns}
-			size={size}
-			total={total}
-		/>
+		<Card sx={{ height: 'calc(100vh - 200px)' }}>
+			<DataGridTable
+				page={page}
+				rows={rows}
+				columns={columns}
+				rowsPerPage={rowsPerPage}
+				size={size}
+				total={total}
+				onGetQueryParams={(params) => onGetQueryParams(params)}
+			/>
+		</Card>
 	);
 };

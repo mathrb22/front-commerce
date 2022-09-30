@@ -19,7 +19,7 @@ function getAxiosRequestConfig() {
 	var config: AxiosRequestConfig;
 	var baseURL: string = process.env.NEXT_PUBLIC_API_URL
 		? process.env.NEXT_PUBLIC_API_URL
-		: 'https://localhost:5001';
+		: 'https://localhost:44375';
 
 	const user = getUser();
 	if (user && user.accessToken) {
