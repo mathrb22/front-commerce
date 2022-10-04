@@ -17,10 +17,12 @@ import { toast } from 'react-toastify';
 
 interface CustomerListToolbarProps extends React.ComponentProps<typeof Box> {
 	onSearch: (query: string) => void;
+	onAdd: () => void;
 }
 
 export const CustomerListToolbar = ({
 	onSearch,
+	onAdd,
 	...props
 }: CustomerListToolbarProps) => {
 	async function exportData() {
@@ -81,7 +83,7 @@ export const CustomerListToolbar = ({
 							Exportar
 						</Button>
 					</Tooltip>
-					<Button color='primary' variant='contained'>
+					<Button color='primary' variant='contained' onClick={onAdd}>
 						Adicionar Cliente
 					</Button>
 				</Box>

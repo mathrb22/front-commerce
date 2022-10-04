@@ -25,9 +25,11 @@ import UserAvatar from '../../components/avatar';
 import { Customer } from '../../shared/interfaces/customer';
 import { CustomerListResults } from '../../components/customer/customer-list-results';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 
 export default function Customers() {
-	const [contacts, setContacts] = useState<Pageable<Customer>>({
+	const router = useRouter();
+	const [customers, setCustomers] = useState<Pageable<Customer>>({
 		data: [],
 		page: 1,
 		size: 10,
@@ -46,8 +48,16 @@ export default function Customers() {
 		setIsDeleteModalShowing(false);
 	}
 
-	function handleDeleteContact() {
+	function handleDeleteCustomer() {
 		setIsDeleteModalShowing(false);
+	}
+
+	function handleEditCustomer(id: number) {
+		router.push(`/customers/form/${id}`);
+	}
+
+	function handleAddCustomer() {
+		router.push(`/customers/form`);
 	}
 
 	const columns: GridColDef[] = [
@@ -58,11 +68,14 @@ export default function Customers() {
 			filterable: false,
 			sortable: false,
 
-			renderCell: (params) => {
+			renderCell: ({ row }) => {
 				return (
 					<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
 						<Tooltip title='Editar'>
-							<IconButton color='primary' aria-label='edit'>
+							<IconButton
+								color='primary'
+								aria-label='edit'
+								onClick={() => handleEditCustomer(row.id)}>
 								<EditIcon />
 							</IconButton>
 						</Tooltip>
@@ -130,7 +143,7 @@ export default function Customers() {
 		console.log(queryParams);
 		getAllCustomers(queryParams).then((response) => {
 			console.log(response.data);
-			setContacts(response.data);
+			setCustomers(response.data);
 		});
 	}
 
@@ -165,15 +178,18 @@ export default function Customers() {
 					flexGrow: 1,
 					py: 3,
 				}}>
-				<Container maxWidth={false}>
-					<CustomerListToolbar onSearch={(query) => handleSearch(query)} />
+				<Container maxWidth={false} sx={{ px: 3 }}>
+					<CustomerListToolbar
+						onSearch={(query) => handleSearch(query)}
+						onAdd={handleAddCustomer}
+					/>
 					<Box sx={{ mt: 3 }}>
 						<CustomerListResults
-							rows={contacts?.data}
+							rows={customers?.data}
 							columns={columns}
-							page={contacts?.page}
-							size={contacts?.size}
-							total={contacts?.total}
+							page={customers?.page}
+							size={customers?.size}
+							total={customers?.total}
 							onGetQueryParams={(params) => setQueryParams(params)}
 						/>
 					</Box>
@@ -205,7 +221,7 @@ export default function Customers() {
 							Cancelar
 						</Button>
 						<Button
-							onClick={handleDeleteContact}
+							onClick={handleDeleteCustomer}
 							variant='contained'
 							color='error'
 							autoFocus>
