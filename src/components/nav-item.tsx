@@ -14,7 +14,7 @@ export interface NavItemProps {
 export const NavItem = (props: NavItemProps) => {
 	const { href, icon, title, onClick } = props;
 	const router = useRouter();
-	const active = href ? router.pathname === href : false;
+	const active = href ? router.pathname.includes(href) : false;
 
 	return (
 		<ListItem

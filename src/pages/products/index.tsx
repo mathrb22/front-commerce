@@ -17,7 +17,7 @@ const Products = () => (
 				flexGrow: 1,
 				py: 3,
 			}}>
-			<Container maxWidth={false}>
+			<Container maxWidth={false} sx={{ px: 3 }}>
 				<ProductsListToolbar />
 				<Box sx={{ mt: 3 }}>
 					<ProductsListResults data={products} />

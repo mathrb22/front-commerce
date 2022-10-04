@@ -24,7 +24,7 @@ export default function Account() {
 					flexGrow: 1,
 					py: 3,
 				}}>
-				<Container maxWidth={false}>
+				<Container maxWidth={false} sx={{ px: 3 }}>
 					<Typography sx={{ mb: 3 }} variant='h4'>
 						Conta
 					</Typography>

@@ -24,6 +24,7 @@ import { Contact } from '../../shared/interfaces/contact';
 import { toast } from 'react-toastify';
 import { AuthContext } from '../../contexts/AuthContext';
 import 'react-toastify/dist/ReactToastify.css';
+import { genderList } from '../../shared/consts/genders';
 
 const states = [
 	{ nome: 'Acre', sigla: 'AC' },
@@ -58,17 +59,6 @@ const states = [
 export const AccountProfileDetails = ({ profile }: AccountProfileProps) => {
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const { getUserData } = useContext(AuthContext);
-
-	const genderList = [
-		{
-			id: 1,
-			value: 'Masculino',
-		},
-		{
-			id: 2,
-			value: 'Feminino',
-		},
-	];
 
 	function updateContact(id: number, contact: Contact) {
 		toast.configure();

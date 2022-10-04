@@ -21,6 +21,23 @@ export async function getContactInfo(
 	});
 }
 
+export async function createContact(
+	contact: Contact
+): Promise<AxiosResponse<Contact>> {
+	return new Promise((resolve, reject) => {
+		api
+			.post<Contact, AxiosResponse<Contact>>(`contact`, contact, {
+				timeout: 8000,
+			})
+			.then((response) => {
+				resolve(response);
+			})
+			.catch((error) => {
+				reject(error);
+			});
+	});
+}
+
 export async function updateContactInfo(
 	id: number,
 	contact: Contact
@@ -44,7 +61,7 @@ export async function getAllCustomers(
 ): Promise<AxiosResponse<Pageable<Customer>>> {
 	return new Promise((resolve, reject) => {
 		api
-			.get<Contact[], AxiosResponse<Pageable<Customer>>>('contact', {
+			.get<Customer[], AxiosResponse<Pageable<Customer>>>('contact', {
 				timeout: 8000,
 				params: params,
 			})

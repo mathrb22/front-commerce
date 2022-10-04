@@ -43,7 +43,7 @@ export default function Page404() {
 								height={460}
 							/>
 						</Box>
-						<Link href='/products' passHref>
+						<Link href='/' passHref>
 							<Button
 								component='a'
 								startIcon={<ArrowBack fontSize='small' />}
