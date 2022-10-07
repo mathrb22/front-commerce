@@ -15,7 +15,10 @@ import {
 import { CustomerListToolbar } from '../../components/customer/customer-list-toolbar';
 import { ReactElement, useEffect, useState } from 'react';
 import { DashboardLayout } from '../../components/dashboard-layout';
-import { getAllCustomers } from '../../services/contacts.service';
+import {
+	deleteContact,
+	getAllCustomers,
+} from '../../services/contacts.service';
 import { Pageable } from '../../shared/interfaces/pageable';
 import { Contact } from '../../shared/interfaces/contact';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
@@ -26,6 +29,9 @@ import { Customer } from '../../shared/interfaces/customer';
 import { CustomerListResults } from '../../components/customer/customer-list-results';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
+import { toast } from 'react-toastify';
+import { AxiosError } from 'axios';
+import { LoadingButton } from '@mui/lab';
 
 export default function Customers() {
 	const router = useRouter();
@@ -35,12 +41,15 @@ export default function Customers() {
 		size: 10,
 		total: 0,
 	});
+	const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>();
+	const [isDeletingCustomer, setIsDeletingCustomer] = useState<boolean>(false);
 	const params = new URLSearchParams();
 	const [isDeleteModalShowing, setIsDeleteModalShowing] = useState(false);
 
 	const [queryParams, setQueryParams] = useState<URLSearchParams>(params);
 
-	function showDeleteDialog() {
+	function showDeleteDialog(customer: Customer) {
+		setSelectedCustomer(customer);
 		setIsDeleteModalShowing(true);
 	}
 
@@ -49,7 +58,53 @@ export default function Customers() {
 	}
 
 	function handleDeleteCustomer() {
-		setIsDeleteModalShowing(false);
+		toast.configure();
+		if (selectedCustomer?.id) {
+			setIsDeletingCustomer(true);
+			deleteContact(selectedCustomer?.id)
+				.then((response) => {
+					if (response.status == 200) {
+						// get the customer from customers list and remove from the array (ddatagrid):
+						const deletedCustomer = customers.data.find(
+							(customer) => customer.id == selectedCustomer?.id
+						);
+						console.log(deletedCustomer);
+						console.log(customers.data.length);
+						if (deletedCustomer) {
+							const index = customers.data.indexOf(deletedCustomer);
+							customers.data.splice(index, 1);
+							setCustomers({ ...customers });
+							console.log(customers.data.length);
+						}
+
+						setIsDeletingCustomer(false);
+						setIsDeleteModalShowing(false);
+						setSelectedCustomer(null);
+						toast.success('Cliente removido com sucesso!', {
+							position: 'top-center',
+							autoClose: 3000,
+							theme: 'colored',
+							hideProgressBar: false,
+							closeOnClick: true,
+							pauseOnHover: true,
+							draggable: true,
+						});
+					}
+				})
+				.catch((error: AxiosError) => {
+					setIsDeletingCustomer(false);
+					setIsDeleteModalShowing(false);
+					toast.error('Erro ao remover cliente!', {
+						position: 'top-center',
+						autoClose: 3000,
+						theme: 'colored',
+						hideProgressBar: false,
+						closeOnClick: true,
+						pauseOnHover: true,
+						draggable: true,
+					});
+				});
+		}
 	}
 
 	function handleEditCustomer(id: number) {
@@ -80,7 +135,10 @@ export default function Customers() {
 							</IconButton>
 						</Tooltip>
 						<Tooltip title='Excluir'>
-							<IconButton color='error' aria-label='delete' onClick={showDeleteDialog}>
+							<IconButton
+								color='error'
+								aria-label='delete'
+								onClick={() => showDeleteDialog(row)}>
 								<DeleteIcon />
 							</IconButton>
 						</Tooltip>
@@ -220,13 +278,15 @@ export default function Customers() {
 						<Button onClick={handleCloseDeleteDialog} color='inherit'>
 							Cancelar
 						</Button>
-						<Button
+
+						<LoadingButton
+							loading={isDeletingCustomer}
 							onClick={handleDeleteCustomer}
 							variant='contained'
 							color='error'
 							autoFocus>
 							Excluir
-						</Button>
+						</LoadingButton>
 					</DialogActions>
 				</Dialog>
 			</Box>
