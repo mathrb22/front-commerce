@@ -1,5 +1,12 @@
 import { FileUpload } from '@mui/icons-material';
-import { Avatar, Typography, AvatarProps, Button, Box } from '@mui/material';
+import {
+	Avatar,
+	Typography,
+	AvatarProps,
+	Button,
+	Box,
+	Skeleton,
+} from '@mui/material';
 import { ReactNode, useState } from 'react';
 
 export interface UserAvatarProps extends AvatarProps {
@@ -10,6 +17,7 @@ export interface UserAvatarProps extends AvatarProps {
 	backgroundColor?: string;
 	userName?: string;
 	showUploadButton?: boolean;
+	isLoading?: boolean;
 	onSelectImage?: (base64Img: string, imageName: string) => void;
 }
 
@@ -21,6 +29,7 @@ export default function UserAvatar({
 	fontSize,
 	backgroundColor,
 	showUploadButton,
+	isLoading = true,
 	onSelectImage,
 	...props
 }: UserAvatarProps) {
@@ -86,17 +95,27 @@ export default function UserAvatar({
 
 	return (
 		<Box sx={{ position: 'relative' }}>
-			<Avatar
-				alt='Avatar do usuário'
-				sx={{
-					width: width ?? 40,
-					height: height ?? 40,
-					bgcolor: !userAvatar ? stringToColor(userName) : null,
-				}}
-				{...props}
-				src={userAvatar}>
-				{!userAvatar && stringAvatar(userName)}
-			</Avatar>
+			{isLoading ? (
+				<Skeleton
+					animation='wave'
+					variant='circular'
+					width={width ?? 40}
+					height={width ?? 40}
+				/>
+			) : (
+				<Avatar
+					alt='Avatar do usuário'
+					sx={{
+						width: width ?? 40,
+						height: height ?? 40,
+						bgcolor: !userAvatar ? stringToColor(userName) : null,
+					}}
+					{...props}
+					src={userAvatar}>
+					{!userAvatar && stringAvatar(userName)}
+				</Avatar>
+			)}
+
 			{showUploadButton && (
 				<Button
 					variant='contained'

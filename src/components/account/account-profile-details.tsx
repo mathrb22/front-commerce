@@ -209,6 +209,7 @@ export const AccountProfileDetails = ({
 										handleChangeUserImg(base64Img, imageName)
 									}
 									userName={profile.name}
+									isLoading={false}
 									width={72}
 									fontSize={32}
 									height={72}

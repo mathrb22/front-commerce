@@ -49,6 +49,7 @@ export default function Customers() {
 	const [queryParams, setQueryParams] = useState<URLSearchParams>(params);
 
 	function showDeleteDialog(customer: Customer) {
+		console.log(customer);
 		setSelectedCustomer(customer);
 		setIsDeleteModalShowing(true);
 	}
@@ -159,7 +160,14 @@ export default function Customers() {
 							alignItems: 'center',
 							justifyContent: 'center',
 						}}>
-						<UserAvatar userName={row.name} width={32} height={32} fontSize={16} />
+						<UserAvatar
+							userName={row.name}
+							imageUrl={row.imageUrl}
+							isLoading={false}
+							width={32}
+							height={32}
+							fontSize={16}
+						/>
 					</Box>
 				);
 			},
