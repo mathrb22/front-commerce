@@ -56,6 +56,23 @@ export async function updateContactInfo(
 	});
 }
 
+export async function deleteContact(
+	id: number
+): Promise<AxiosResponse<Contact>> {
+	return new Promise((resolve, reject) => {
+		api
+			.delete<Contact, AxiosResponse<Contact>>(`contact/${id}`, {
+				timeout: 8000,
+			})
+			.then((response) => {
+				resolve(response);
+			})
+			.catch((error) => {
+				reject(error);
+			});
+	});
+}
+
 export async function getAllCustomers(
 	params?: URLSearchParams
 ): Promise<AxiosResponse<Pageable<Customer>>> {
