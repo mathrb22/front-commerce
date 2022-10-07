@@ -9,10 +9,11 @@ import {
 	MenuItem,
 	Grid,
 	TextField,
+	Skeleton,
+	Typography,
 } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { AccountProfileProps } from './account-profile';
 import moment from 'moment';
 import { LoadingButton } from '@mui/lab';
 import { DatePicker } from '@mui/x-date-pickers';
@@ -25,6 +26,8 @@ import { toast } from 'react-toastify';
 import { AuthContext } from '../../contexts/AuthContext';
 import 'react-toastify/dist/ReactToastify.css';
 import { genderList } from '../../shared/consts/genders';
+import UserAvatar from '../avatar';
+import { EPersonType } from '../../shared/enums/person-type.enum';
 
 const states = [
 	{ nome: 'Acre', sigla: 'AC' },
@@ -56,7 +59,15 @@ const states = [
 	{ nome: 'Tocantins', sigla: 'TO' },
 ];
 
-export const AccountProfileDetails = ({ profile }: AccountProfileProps) => {
+interface AccountProfileProps {
+	profile: Contact;
+	isLoading: boolean;
+}
+
+export const AccountProfileDetails = ({
+	profile,
+	isLoading,
+}: AccountProfileProps) => {
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const { getUserData } = useContext(AuthContext);
 
@@ -98,6 +109,8 @@ export const AccountProfileDetails = ({ profile }: AccountProfileProps) => {
 		initialValues: {
 			name: profile ? profile?.name : '',
 			secondName: profile ? profile?.secondName : '',
+			imageUrl: profile ? profile?.imageUrl : '',
+			imageName: profile ? profile?.imageName : '',
 			personType: profile ? profile?.personTypeId : 1,
 			documentNumber: profile ? profile?.documentNumber : '',
 			birthdate: profile && profile?.birthdate ? moment(profile?.birthdate) : null,
@@ -126,8 +139,25 @@ export const AccountProfileDetails = ({ profile }: AccountProfileProps) => {
 		enableReinitialize: true,
 		onSubmit: async (values) => {
 			setIsSubmitting(true);
-			const contact = values;
-			if (profile.id) await updateContact(profile.id, contact);
+			const contactBody: Contact = {
+				name: values.name,
+				secondName: values.secondName,
+				documentNumber: values.documentNumber,
+				personType:
+					values.personType == 1
+						? EPersonType.NaturalPerson
+						: EPersonType.LegalPerson,
+				phone: values.phone,
+				email: values.email,
+				address: values.address,
+				imageUrl: values.imageUrl,
+				imageName: values.imageName,
+			};
+			if (values.personType == 1) {
+				contactBody.gender = values.gender;
+				contactBody.birthdate = values.birthdate;
+			}
+			if (profile.id) await updateContact(profile.id, contactBody);
 		},
 		validationSchema: Yup.object({
 			name: Yup.string().required(),
@@ -148,14 +178,93 @@ export const AccountProfileDetails = ({ profile }: AccountProfileProps) => {
 		}),
 	});
 
+	function handleChangeUserImg(base64Img: string, imageName: string) {
+		if (base64Img && imageName) {
+			formik.setFieldValue('imageUrl', base64Img);
+			formik.setFieldValue('imageName', imageName);
+			console.log(formik.values.imageUrl);
+			console.log(formik.values.imageName);
+		}
+	}
+
 	return (
 		<form noValidate onSubmit={formik.handleSubmit}>
-			<Card>
+			<Card
+				sx={{
+					borderBottomLeftRadius: 0,
+					borderBottomRightRadius: 0,
+				}}>
+				<CardContent>
+					<Box
+						sx={{
+							alignItems: 'center',
+							display: 'flex',
+							flexDirection: 'column',
+						}}>
+						{profile && !isLoading ? (
+							<>
+								<UserAvatar
+									imageUrl={profile.imageUrl}
+									onSelectImage={(base64Img, imageName) =>
+										handleChangeUserImg(base64Img, imageName)
+									}
+									userName={profile.name}
+									width={72}
+									fontSize={32}
+									height={72}
+									showUploadButton
+								/>
+								<Typography
+									sx={{ mt: 2 }}
+									color='textPrimary'
+									gutterBottom
+									variant='h5'
+									textAlign='center'>
+									{profile?.personTypeId == 1
+										? profile?.name + ' ' + profile?.secondName
+										: profile?.secondName}
+								</Typography>
+								<Typography color='textSecondary' variant='body2' textAlign='center'>
+									{`${profile?.address ?? 'Endereço não informado'}`}
+								</Typography>
+							</>
+						) : (
+							<>
+								<Skeleton
+									animation='wave'
+									variant='circular'
+									width={64}
+									height={64}
+									sx={{ mb: 2 }}
+								/>
+								<Skeleton
+									animation='wave'
+									sx={{ mb: 2 }}
+									variant='rectangular'
+									width={210}
+									height={50}
+								/>
+								<Skeleton
+									animation='wave'
+									variant='rectangular'
+									width={210}
+									height={24}
+								/>
+							</>
+						)}
+					</Box>
+				</CardContent>
+				<Divider />
+			</Card>
+			<Card
+				sx={{
+					borderTopLeftRadius: 0,
+					borderTopRightRadius: 0,
+				}}>
 				<CardHeader
 					subheader='Os dados a seguir podem ser editados'
 					title='Dados pessoais'
 				/>
-				<Divider />
 				<CardContent>
 					<Grid container spacing={3}>
 						<Grid item md={6} xs={12}>
@@ -297,28 +406,6 @@ export const AccountProfileDetails = ({ profile }: AccountProfileProps) => {
 								helperText={formik.touched.address && formik.errors.address}
 							/>
 						</Grid>
-						{/*
-						<Grid item md={6} xs={12}>
-							<TextField
-								fullWidth
-								label='Selecione seu estado'
-								name='state'
-								onChange={handleChange}
-								required
-								select
-								SelectProps={{ native: true }}
-								value={values.state}
-								variant='outlined'>
-								<option key={''} value={''}>
-									Selecionar
-								</option>
-								{states.map((option) => (
-									<option key={option.sigla} value={option.sigla}>
-										{option.nome}
-									</option>
-								))}
-							</TextField>
-						</Grid> */}
 					</Grid>
 				</CardContent>
 				<Divider />

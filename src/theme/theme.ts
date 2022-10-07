@@ -155,7 +155,7 @@ export const theme = createTheme(
 				disabled: 'rgba(55, 65, 81, 0.26)',
 			},
 			background: {
-				default: '#F9FAFC',
+				default: 'rgb(243, 244, 249)',
 				paper: '#FFFFFF',
 			},
 			divider: '#E6E8F0',
