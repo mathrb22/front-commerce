@@ -110,7 +110,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 					console.log('caiu aqui');
 					setIsLoading(false);
 					if (err.response?.data)
-						toast(err.response?.data.description, {
+						toast.error(err.response?.data.description, {
 							position: 'top-center',
 							autoClose: 5000,
 							theme: 'colored',
@@ -120,7 +120,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 							draggable: true,
 						});
 					else
-						toast('Não foi possível realizar o login. Tente novamente', {
+						toast.error('Não foi possível realizar o login. Tente novamente', {
 							position: 'top-center',
 							autoClose: 5000,
 							theme: 'colored',

@@ -1,4 +1,5 @@
 import { Moment } from 'moment';
+import { EPersonType } from '../enums/person-type.enum';
 
 export interface Contact {
 	id?: number;
@@ -9,7 +10,7 @@ export interface Contact {
 	documentNumber?: string;
 	address?: string;
 	personTypeId?: number;
-	personType?: number;
+	personType?: EPersonType;
 	phone?: string;
 	imageUrl?: string;
 	imageName?: string;

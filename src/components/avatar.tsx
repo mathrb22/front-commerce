@@ -1,5 +1,6 @@
-import { Avatar, Typography, AvatarProps } from '@mui/material';
-import { ReactNode } from 'react';
+import { FileUpload } from '@mui/icons-material';
+import { Avatar, Typography, AvatarProps, Button, Box } from '@mui/material';
+import { ReactNode, useState } from 'react';
 
 export interface UserAvatarProps extends AvatarProps {
 	imageUrl?: string;
@@ -8,6 +9,8 @@ export interface UserAvatarProps extends AvatarProps {
 	fontSize?: number;
 	backgroundColor?: string;
 	userName?: string;
+	showUploadButton?: boolean;
+	onSelectImage?: (base64Img: string, imageName: string) => void;
 }
 
 export default function UserAvatar({
@@ -17,8 +20,12 @@ export default function UserAvatar({
 	height,
 	fontSize,
 	backgroundColor,
+	showUploadButton,
+	onSelectImage,
 	...props
 }: UserAvatarProps) {
+	const [userAvatar, setUserAvatar] = useState<string | undefined>(imageUrl);
+
 	function stringToColor(string: string | undefined) {
 		if (!string) {
 			return 'primary';
@@ -52,36 +59,71 @@ export default function UserAvatar({
 			return (
 				<Typography sx={{ fontSize: fontSize || 16 }}>{name.charAt(0)}</Typography>
 			);
-			// return {
-			// 	children: `${name[0]}`,
-			// };
+		}
+	}
+
+	function handleUpload() {
+		//get the input file with id avatarUpload and click it
+		const fileInput = document.getElementById('avatarUpload');
+		if (fileInput) {
+			fileInput.click();
+		}
+	}
+
+	function handleFileChange(event: any) {
+		const file = event.target.files[0];
+		if (file) {
+			const reader = new FileReader();
+			reader.onloadend = () => {
+				if (reader.result) {
+					setUserAvatar(reader.result as string);
+					if (onSelectImage) onSelectImage(reader.result as string, file.name);
+				}
+			};
+			reader.readAsDataURL(file);
 		}
 	}
 
 	return (
-		<>
-			{imageUrl ? (
-				<Avatar
-					alt='Avatar do usuário'
-					src={imageUrl}
+		<Box sx={{ position: 'relative' }}>
+			<Avatar
+				alt='Avatar do usuário'
+				sx={{
+					width: width ?? 40,
+					height: height ?? 40,
+					bgcolor: !userAvatar ? stringToColor(userName) : null,
+				}}
+				{...props}
+				src={userAvatar}>
+				{!userAvatar && stringAvatar(userName)}
+			</Avatar>
+			{showUploadButton && (
+				<Button
+					variant='contained'
 					sx={{
-						width: width ?? 40,
-						height: height ?? 40,
+						position: 'absolute',
+						bottom: -8,
+						right: -8,
+						py: '6px',
+						px: '16px',
+						minWidth: 14,
+						width: 14,
+						borderRadius: '50%',
+						background: 'primary light',
 					}}
-					{...props}
-				/>
-			) : (
-				<Avatar
-					alt='Avatar do usuário'
-					sx={{
-						width: width ?? 40,
-						height: height ?? 40,
-						bgcolor: stringToColor(userName),
-					}}
-					{...props}>
-					{stringAvatar(userName)}
-				</Avatar>
+					color='primary'
+					aria-label='upload picture'
+					onClick={handleUpload}>
+					<input
+						id='avatarUpload'
+						hidden
+						accept='image/*'
+						type='file'
+						onChange={(e) => handleFileChange(e)}
+					/>
+					<FileUpload fontSize='small' />
+				</Button>
 			)}
-		</>
+		</Box>
 	);
 }
