@@ -1,9 +1,10 @@
 export interface Product {
-	id: string;
+	id: number;
 	name: string;
 	description?: string;
 	media?: string;
 	price: number;
 	amount: number;
-	inclusionDate: string;
+	createdBy: string;
+	createdAt: string;
 }
