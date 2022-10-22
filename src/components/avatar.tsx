@@ -6,6 +6,7 @@ import {
 	Button,
 	Box,
 	Skeleton,
+	Tooltip,
 } from '@mui/material';
 import { ReactNode, useState } from 'react';
 
@@ -117,31 +118,33 @@ export default function UserAvatar({
 			)}
 
 			{showUploadButton && (
-				<Button
-					variant='contained'
-					sx={{
-						position: 'absolute',
-						bottom: -8,
-						right: -8,
-						py: '6px',
-						px: '16px',
-						minWidth: 14,
-						width: 14,
-						borderRadius: '50%',
-						background: 'primary light',
-					}}
-					color='primary'
-					aria-label='upload picture'
-					onClick={handleUpload}>
-					<input
-						id='avatarUpload'
-						hidden
-						accept='image/*'
-						type='file'
-						onChange={(e) => handleFileChange(e)}
-					/>
-					<FileUpload fontSize='small' />
-				</Button>
+				<Tooltip title='Alterar foto de perfil'>
+					<Button
+						variant='contained'
+						sx={{
+							position: 'absolute',
+							bottom: -8,
+							right: -8,
+							py: '6px',
+							px: '16px',
+							minWidth: 14,
+							width: 14,
+							borderRadius: '50%',
+							background: 'primary light',
+						}}
+						color='primary'
+						aria-label='upload picture'
+						onClick={handleUpload}>
+						<input
+							id='avatarUpload'
+							hidden
+							accept='image/*'
+							type='file'
+							onChange={(e) => handleFileChange(e)}
+						/>
+						<FileUpload fontSize='small' />
+					</Button>
+				</Tooltip>
 			)}
 		</Box>
 	);

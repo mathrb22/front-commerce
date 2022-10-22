@@ -194,6 +194,7 @@ export default function CustomerForm({ customer }: CustomerFormProps) {
 			component='main'
 			sx={{
 				flexGrow: 1,
+				width: '100%',
 				maxWidth: 940,
 				mx: 'auto',
 				py: 3,

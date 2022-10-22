@@ -32,6 +32,11 @@ import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
 import { AxiosError } from 'axios';
 import { LoadingButton } from '@mui/lab';
+import {
+	convertDateToLocaleDate,
+	formatDocument,
+	formatPhoneNumber,
+} from '../../shared/helpers/format.helper';
 
 export default function Customers() {
 	const router = useRouter();
@@ -65,37 +70,37 @@ export default function Customers() {
 			deleteContact(selectedCustomer?.id)
 				.then((response) => {
 					if (response.status == 200) {
-						// get the customer from customers list and remove from the array (ddatagrid):
 						const deletedCustomer = customers.data.find(
 							(customer) => customer.id == selectedCustomer?.id
 						);
-						console.log(deletedCustomer);
-						console.log(customers.data.length);
 						if (deletedCustomer) {
-							const index = customers.data.indexOf(deletedCustomer);
-							customers.data.splice(index, 1);
-							setCustomers({ ...customers });
-							console.log(customers.data.length);
+							//remove the deleted customer from the list
+							const newCustomers = customers.data.filter(
+								(customer) => customer.id != deletedCustomer.id
+							);
+							setCustomers({
+								...customers,
+								data: newCustomers,
+							});
+							setIsDeletingCustomer(false);
+							setIsDeleteModalShowing(false);
+							setSelectedCustomer(null);
+							toast.success('Cliente removido com sucesso!', {
+								position: 'top-center',
+								autoClose: 3000,
+								theme: 'colored',
+								hideProgressBar: false,
+								closeOnClick: true,
+								pauseOnHover: true,
+								draggable: true,
+							});
 						}
-
-						setIsDeletingCustomer(false);
-						setIsDeleteModalShowing(false);
-						setSelectedCustomer(null);
-						toast.success('Cliente removido com sucesso!', {
-							position: 'top-center',
-							autoClose: 3000,
-							theme: 'colored',
-							hideProgressBar: false,
-							closeOnClick: true,
-							pauseOnHover: true,
-							draggable: true,
-						});
 					}
 				})
 				.catch((error: AxiosError) => {
 					setIsDeletingCustomer(false);
 					setIsDeleteModalShowing(false);
-					toast.error('Erro ao remover cliente!', {
+					toast.error('Erro ao remover o cliente!', {
 						position: 'top-center',
 						autoClose: 3000,
 						theme: 'colored',
@@ -173,7 +178,14 @@ export default function Customers() {
 			},
 		},
 		{ field: 'name', headerName: 'Nome / Razão Social', width: 300 },
-		{ field: 'documentNumber', headerName: 'Documento', width: 140 },
+		{
+			field: 'documentNumber',
+			headerName: 'Documento',
+			width: 180,
+			renderCell: ({ value }) => {
+				return formatDocument(value);
+			},
+		},
 		{
 			field: 'personType',
 			headerName: 'Tipo',
@@ -183,7 +195,9 @@ export default function Customers() {
 			field: 'birthDate',
 			headerName: 'Data Nascimento',
 			width: 180,
-			type: 'date',
+			renderCell: ({ value }) => {
+				return convertDateToLocaleDate(value);
+			},
 		},
 		{
 			field: 'gender',
@@ -191,7 +205,12 @@ export default function Customers() {
 			width: 100,
 		},
 		{ field: 'email', headerName: 'Email', width: 250 },
-		{ field: 'phone', headerName: 'Telefone', width: 130 },
+		{
+			field: 'phone',
+			headerName: 'Telefone',
+			width: 150,
+			renderCell: ({ value }) => formatPhoneNumber(value),
+		},
 		{
 			field: 'address',
 			headerName: 'Endereço',
