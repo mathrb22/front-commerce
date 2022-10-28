@@ -1,10 +1,10 @@
 export interface Product {
-	id: number;
+	id?: number;
 	name: string;
-	description?: string;
+	description: string;
 	media?: string;
 	price: number;
-	amount: number;
-	createdBy: string;
-	createdAt: string;
+	defaultMeansurement?: string;
+	createdBy?: string;
+	createdAt?: string;
 }
