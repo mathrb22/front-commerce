@@ -70,3 +70,38 @@ export async function deleteProduct(
 			});
 	});
 }
+
+export async function createProduct(
+	product: Product
+): Promise<AxiosResponse<Product>> {
+	return new Promise((resolve, reject) => {
+		api
+			.post<Product, AxiosResponse<Product>>(`product`, product, {
+				timeout: 8000,
+			})
+			.then((response) => {
+				resolve(response);
+			})
+			.catch((error) => {
+				reject(error);
+			});
+	});
+}
+
+export async function updateProduct(
+	id: number,
+	product: Product
+): Promise<AxiosResponse<Product>> {
+	return new Promise((resolve, reject) => {
+		api
+			.put<Product, AxiosResponse<Product>>(`product/${id}`, product, {
+				timeout: 8000,
+			})
+			.then((response) => {
+				resolve(response);
+			})
+			.catch((error) => {
+				reject(error);
+			});
+	});
+}

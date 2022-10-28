@@ -66,15 +66,16 @@ api.interceptors.response.use(
 						user.refreshToken = response.data.refreshToken;
 						StorageHelper.setItem('frontcommerce.user', JSON.stringify(user));
 
-						api.defaults.headers.head = {
-							Authorization: `Bearer ${response.data.accessToken}`,
-						};
+						axios.defaults.headers.common[
+							'Authorization'
+						] = `Bearer ${user.refreshToken}`;
+
 						Router.push('/products');
 					}
 				});
 			} else {
-				StorageHelper.removeItem('frontcommerce.user');
-				Router.push('/login');
+				// StorageHelper.removeItem('frontcommerce.user');
+				// Router.push('/login');
 			}
 		}
 	}
