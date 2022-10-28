@@ -10,7 +10,7 @@ import { Contact } from '../shared/interfaces/contact';
 import { getContactInfo } from '../services/contacts.service';
 import { StorageHelper } from '../shared/helpers/storage.helper';
 import 'react-toastify/dist/ReactToastify.css';
-import { AxiosError } from 'axios';
+import axios, { AxiosError } from 'axios';
 
 export type SignInCredentials = {
 	login: string;
@@ -94,9 +94,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 						console.log(user);
 						StorageHelper.setItem('frontcommerce.user', JSON.stringify(user));
 
-						api.defaults.headers.head = {
-							Authorization: `Bearer ${response.data.accessToken}`,
-						};
+						api.defaults.headers.common[
+							'Authorization'
+						] = `Bearer ${user.accessToken}`;
 
 						const userLoggedIn = StorageHelper.getLoggedInUser();
 						if (userLoggedIn) {
@@ -162,7 +162,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 						console.log(user);
 						localStorage.setItem('frontcommerce.user', JSON.stringify(user));
 
-						api.defaults.headers.head = {
+						axios.defaults.headers.head = {
 							Authorization: `Bearer ${response.data.accessToken}`,
 						};
 
@@ -190,13 +190,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
 		const user = StorageHelper.getLoggedInUser();
 		if (user && user.userId) {
 			setIsLoading(true);
-			await getContactInfo(+user.userId).then((res) => {
-				console.log(res);
-				if (res && res.data) {
-					setProfileData(res.data);
+			await getContactInfo(+user.userId)
+				.then((res) => {
+					console.log(res);
+					if (res && res.data) {
+						setProfileData(res.data);
+						setIsLoading(false);
+					}
+				})
+				.catch((err) => {
 					setIsLoading(false);
-				}
-			});
+				});
 		}
 	}
 

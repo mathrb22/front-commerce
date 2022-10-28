@@ -1,19 +1,4 @@
-import { useState } from 'react';
-import PerfectScrollbar from 'react-perfect-scrollbar';
-import {
-	Avatar,
-	Box,
-	Card,
-	Paper,
-	Table,
-	TableBody,
-	TableCell,
-	TableContainer,
-	TableHead,
-	TablePagination,
-	TableRow,
-	Typography,
-} from '@mui/material';
+import { Card } from '@mui/material';
 import { Product } from '../../shared/interfaces/product';
 import { GridColDef } from '@mui/x-data-grid';
 import DataGridTable from '../data-grid-table';

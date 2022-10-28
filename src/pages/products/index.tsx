@@ -194,10 +194,24 @@ export default function Products() {
 
 	function getProducts() {
 		console.log(queryParams);
-		getAllProducts(queryParams).then((response) => {
-			console.log(response.data);
-			setProducts(response.data);
-		});
+		getAllProducts(queryParams)
+			.then((response) => {
+				console.log(response.data);
+				setProducts(response.data);
+			})
+			.catch((error: AxiosError) => {
+				//toast
+				toast.configure();
+				toast.error('Erro ao buscar os produtos!', {
+					position: 'top-center',
+					autoClose: 3000,
+					theme: 'colored',
+					hideProgressBar: false,
+					closeOnClick: true,
+					pauseOnHover: true,
+					draggable: true,
+				});
+			});
 	}
 
 	function handleSearch(query: string) {
