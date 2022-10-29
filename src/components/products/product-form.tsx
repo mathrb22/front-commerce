@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { Product } from '../../shared/interfaces/product';
+import { IProduct } from '../../shared/interfaces/product';
 import { ArrowBack } from '@mui/icons-material';
 import {
 	Box,
@@ -22,7 +22,7 @@ import { toast } from 'react-toastify';
 import { createProduct, updateProduct } from '../../services/products.service';
 
 export interface ProductFormProps {
-	product?: Product;
+	product?: IProduct;
 }
 
 export default function ProductForm({ product }: ProductFormProps) {
@@ -49,12 +49,14 @@ export default function ProductForm({ product }: ProductFormProps) {
 			defaultMeansurement: Yup.string().required(
 				'Informe a unidade de medida padrão'
 			),
-			price: Yup.number().required('Informe o preço do produto'),
+			price: Yup.number()
+				.required('Informe o preço do produto')
+				.notOneOf([0], 'Informe o preço do produto'),
 		}),
 		onSubmit: async (values) => {
 			setIsSubmitting(true);
 
-			let productBody: Product = {
+			let productBody: IProduct = {
 				name: values.name,
 				description: values.description,
 				defaultMeansurement: values.defaultMeansurement,
@@ -74,7 +76,7 @@ export default function ProductForm({ product }: ProductFormProps) {
 		},
 	});
 
-	function addProduct(product: Product) {
+	function addProduct(product: IProduct) {
 		toast.configure();
 		setIsSubmitting(true);
 		createProduct(product).then(
@@ -108,7 +110,7 @@ export default function ProductForm({ product }: ProductFormProps) {
 		);
 	}
 
-	function updateProductInfo(id: number, product: Product) {
+	function updateProductInfo(id: number, product: IProduct) {
 		toast.configure();
 		setIsSubmitting(true);
 		updateProduct(id, product).then(

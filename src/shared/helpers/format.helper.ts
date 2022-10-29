@@ -44,3 +44,8 @@ export const convertDateToLocaleDate = (date: string) => {
 export const formatPhoneNumber = (phoneNumber: string): string => {
 	return phoneNumber.replace(/(\d{2})(\d{1})(\d{4})(\d{4})/, '($1) $2 $3-$4');
 };
+
+export const formatNumberWithDigitGroup = (number: number): string => {
+	//format 12500 to 12.500
+	return number.toLocaleString('pt-BR');
+};

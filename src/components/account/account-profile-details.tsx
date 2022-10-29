@@ -21,7 +21,7 @@ import {
 	getContactInfo,
 	updateContactInfo,
 } from '../../services/contacts.service';
-import { Contact } from '../../shared/interfaces/contact';
+import { IContact } from '../../shared/interfaces/contact';
 import { toast } from 'react-toastify';
 import { AuthContext } from '../../contexts/AuthContext';
 import 'react-toastify/dist/ReactToastify.css';
@@ -60,7 +60,7 @@ const states = [
 ];
 
 interface AccountProfileProps {
-	profile: Contact;
+	profile: IContact;
 	isLoading: boolean;
 }
 
@@ -71,7 +71,7 @@ export const AccountProfileDetails = ({
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const { getUserData } = useContext(AuthContext);
 
-	function updateContact(id: number, contact: Contact) {
+	function updateContact(id: number, contact: IContact) {
 		toast.configure();
 		setIsSubmitting(true);
 		updateContactInfo(id, contact).then(
@@ -139,7 +139,7 @@ export const AccountProfileDetails = ({
 		enableReinitialize: true,
 		onSubmit: async (values) => {
 			setIsSubmitting(true);
-			const contactBody: Contact = {
+			const contactBody: IContact = {
 				name: values.name,
 				secondName: values.secondName,
 				documentNumber: values.documentNumber,

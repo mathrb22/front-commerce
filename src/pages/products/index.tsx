@@ -2,6 +2,7 @@ import Head from 'next/head';
 import {
 	Box,
 	Button,
+	Chip,
 	Container,
 	Dialog,
 	DialogActions,
@@ -17,7 +18,7 @@ import { ProductsListToolbar } from '../../components/products/products-list-too
 import { ProductListResults } from '../../components/products/products-list-results';
 import { GridColDef } from '@mui/x-data-grid';
 import { Pageable } from '../../shared/interfaces/pageable';
-import { Product } from '../../shared/interfaces/product';
+import { IProduct } from '../../shared/interfaces/product';
 import { useRouter } from 'next/router';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -34,21 +35,20 @@ import { AxiosError } from 'axios';
 
 export default function Products() {
 	const router = useRouter();
-	const [products, setProducts] = useState<Pageable<Product>>({
+	const [products, setProducts] = useState<Pageable<IProduct>>({
 		data: [],
 		page: 1,
 		size: 10,
 		total: 0,
 	});
-	const [selectedProduct, setSelectedProduct] = useState<Product | null>();
+	const [selectedProduct, setSelectedProduct] = useState<IProduct | null>();
 	const [isDeletingProduct, setIsDeletingProduct] = useState<boolean>(false);
 	const params = new URLSearchParams();
 	const [isDeleteModalShowing, setIsDeleteModalShowing] = useState(false);
 
 	const [queryParams, setQueryParams] = useState<URLSearchParams>(params);
 
-	function showDeleteDialog(product: Product) {
-		console.log(product);
+	function showDeleteDialog(product: IProduct) {
 		setSelectedProduct(product);
 		setIsDeleteModalShowing(true);
 	}
@@ -152,6 +152,11 @@ export default function Products() {
 			field: 'defaultMeansurement',
 			headerName: 'Unidade de medida padrão',
 			width: 200,
+			renderCell: ({ value }) => {
+				return (
+					<Chip label={value} color='default' variant='outlined' size='small' />
+				);
+			},
 		},
 		{
 			field: 'price',
@@ -193,10 +198,8 @@ export default function Products() {
 	}, [queryParams]);
 
 	function getProducts() {
-		console.log(queryParams);
 		getAllProducts(queryParams)
 			.then((response) => {
-				console.log(response.data);
 				setProducts(response.data);
 			})
 			.catch((error: AxiosError) => {
@@ -215,10 +218,7 @@ export default function Products() {
 	}
 
 	function handleSearch(query: string) {
-		console.log(query);
 		let params = queryParams;
-		console.log(queryParams);
-		console.log(params);
 		if (query != params.get('query')) {
 			if (params.get('query')) {
 				params.set('query', query);
@@ -228,8 +228,6 @@ export default function Products() {
 			}
 
 			setQueryParams(params);
-			console.log(params);
-			console.log(queryParams);
 			getProducts();
 		}
 	}
@@ -253,6 +251,7 @@ export default function Products() {
 					<Box sx={{ mt: 3 }}>
 						<ProductListResults
 							rows={products?.data}
+							idProperty='id'
 							columns={columns}
 							page={products?.page}
 							size={products?.size}

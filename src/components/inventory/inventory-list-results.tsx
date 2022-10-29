@@ -1,35 +1,35 @@
 import { Card } from '@mui/material';
-import { ICustomer } from '../../shared/interfaces/customer';
+import { IInventoryProduct } from '../../shared/interfaces/inventory-product';
 import { GridColDef } from '@mui/x-data-grid';
 import DataGridTable from '../data-grid-table';
 
-export interface CustomerListResultsProps {
+export interface InventoryListResultsProps {
 	columns: GridColDef[];
-	rows: ICustomer[];
 	idProperty: string;
+	rows: IInventoryProduct[];
 	page: number;
 	size: number;
 	total: number;
 	onGetQueryParams: (params: URLSearchParams) => void;
 }
 
-export const CustomerListResults = ({
+export const InventoryListResults = ({
 	rows,
+	idProperty = 'productId',
 	columns,
-	idProperty = 'id',
 	page,
 	size,
 	total,
 	onGetQueryParams,
-}: CustomerListResultsProps) => {
+}: InventoryListResultsProps) => {
 	const rowsPerPage = [10, 25, 50];
 
 	return (
 		<Card sx={{ height: 'calc(100vh - 200px)' }}>
 			<DataGridTable
 				page={page}
-				rows={rows}
 				idProperty={idProperty}
+				rows={rows}
 				columns={columns}
 				rowsPerPage={rowsPerPage}
 				size={size}

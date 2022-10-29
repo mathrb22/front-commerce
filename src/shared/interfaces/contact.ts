@@ -1,7 +1,7 @@
 import { Moment } from 'moment';
 import { EPersonType } from '../enums/person-type.enum';
 
-export interface Contact {
+export interface IContact {
 	id?: number;
 	name?: string;
 	secondName?: string;

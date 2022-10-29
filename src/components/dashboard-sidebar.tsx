@@ -24,6 +24,7 @@ import { Logo } from './logo';
 import { NavItem } from './nav-item';
 import { useContext } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
+import { StorefrontOutlined } from '@mui/icons-material';
 
 export const DashboardSidebar = (props: any) => {
 	const { open, onClose } = props;
@@ -44,6 +45,11 @@ export const DashboardSidebar = (props: any) => {
 			href: '/products',
 			icon: <ShoppingBagIcon fontSize='small' />,
 			title: 'Produtos',
+		},
+		{
+			href: '/inventory',
+			icon: <StorefrontOutlined fontSize='small' />,
+			title: 'Inventário',
 		},
 		{
 			href: '/customers',

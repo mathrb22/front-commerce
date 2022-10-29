@@ -20,12 +20,12 @@ import {
 	getAllCustomers,
 } from '../../services/contacts.service';
 import { Pageable } from '../../shared/interfaces/pageable';
-import { Contact } from '../../shared/interfaces/contact';
+import { IContact } from '../../shared/interfaces/contact';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import UserAvatar from '../../components/avatar';
-import { Customer } from '../../shared/interfaces/customer';
+import { ICustomer } from '../../shared/interfaces/customer';
 import { CustomerListResults } from '../../components/customer/customer-list-results';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -40,20 +40,20 @@ import {
 
 export default function Customers() {
 	const router = useRouter();
-	const [customers, setCustomers] = useState<Pageable<Customer>>({
+	const [customers, setCustomers] = useState<Pageable<ICustomer>>({
 		data: [],
 		page: 1,
 		size: 10,
 		total: 0,
 	});
-	const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>();
+	const [selectedCustomer, setSelectedCustomer] = useState<ICustomer | null>();
 	const [isDeletingCustomer, setIsDeletingCustomer] = useState<boolean>(false);
 	const params = new URLSearchParams();
 	const [isDeleteModalShowing, setIsDeleteModalShowing] = useState(false);
 
 	const [queryParams, setQueryParams] = useState<URLSearchParams>(params);
 
-	function showDeleteDialog(customer: Customer) {
+	function showDeleteDialog(customer: ICustomer) {
 		console.log(customer);
 		setSelectedCustomer(customer);
 		setIsDeleteModalShowing(true);
@@ -225,18 +225,13 @@ export default function Customers() {
 	}, [queryParams]);
 
 	function getCustomers() {
-		console.log(queryParams);
 		getAllCustomers(queryParams).then((response) => {
-			console.log(response.data);
 			setCustomers(response.data);
 		});
 	}
 
 	function handleSearch(query: string) {
-		console.log(query);
 		let params = queryParams;
-		console.log(queryParams);
-		console.log(params);
 		if (query != params.get('query')) {
 			if (params.get('query')) {
 				params.set('query', query);
@@ -246,8 +241,6 @@ export default function Customers() {
 			}
 
 			setQueryParams(params);
-			console.log(params);
-			console.log(queryParams);
 			getCustomers();
 		}
 	}
@@ -271,6 +264,7 @@ export default function Customers() {
 					<Box sx={{ mt: 3 }}>
 						<CustomerListResults
 							rows={customers?.data}
+							idProperty='id'
 							columns={columns}
 							page={customers?.page}
 							size={customers?.size}
