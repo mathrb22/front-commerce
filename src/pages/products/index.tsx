@@ -251,6 +251,7 @@ export default function Products() {
 					<Box sx={{ mt: 3 }}>
 						<ProductListResults
 							rows={products?.data}
+							idProperty='id'
 							columns={columns}
 							page={products?.page}
 							size={products?.size}

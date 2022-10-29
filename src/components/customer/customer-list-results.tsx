@@ -6,6 +6,7 @@ import DataGridTable from '../data-grid-table';
 export interface CustomerListResultsProps {
 	columns: GridColDef[];
 	rows: ICustomer[];
+	idProperty: string;
 	page: number;
 	size: number;
 	total: number;
@@ -15,6 +16,7 @@ export interface CustomerListResultsProps {
 export const CustomerListResults = ({
 	rows,
 	columns,
+	idProperty = 'id',
 	page,
 	size,
 	total,
@@ -27,6 +29,7 @@ export const CustomerListResults = ({
 			<DataGridTable
 				page={page}
 				rows={rows}
+				idProperty={idProperty}
 				columns={columns}
 				rowsPerPage={rowsPerPage}
 				size={size}

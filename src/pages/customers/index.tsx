@@ -264,6 +264,7 @@ export default function Customers() {
 					<Box sx={{ mt: 3 }}>
 						<CustomerListResults
 							rows={customers?.data}
+							idProperty='id'
 							columns={columns}
 							page={customers?.page}
 							size={customers?.size}
