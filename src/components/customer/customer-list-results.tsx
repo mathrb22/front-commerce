@@ -1,12 +1,11 @@
-import { useState } from 'react';
 import { Card } from '@mui/material';
-import { Customer } from '../../shared/interfaces/customer';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { ICustomer } from '../../shared/interfaces/customer';
+import { GridColDef } from '@mui/x-data-grid';
 import DataGridTable from '../data-grid-table';
 
 export interface CustomerListResultsProps {
 	columns: GridColDef[];
-	rows: Customer[];
+	rows: ICustomer[];
 	page: number;
 	size: number;
 	total: number;

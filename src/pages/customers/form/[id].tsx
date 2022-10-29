@@ -22,7 +22,7 @@ import {
 	getContactInfo,
 	updateContactInfo,
 } from '../../../services/contacts.service';
-import { Contact } from '../../../shared/interfaces/contact';
+import { IContact } from '../../../shared/interfaces/contact';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import moment from 'moment';
@@ -35,7 +35,7 @@ import CustomerForm from '../../../components/customer/customer-form';
 export default function EditCustomerPage() {
 	const router = useRouter();
 	const { id } = router.query;
-	const [customer, setCustomer] = useState<Contact | undefined>();
+	const [customer, setCustomer] = useState<IContact | undefined>();
 
 	async function getCustomerInfo(id: number) {
 		getContactInfo(id).then((res) => {

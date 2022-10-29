@@ -6,7 +6,7 @@ import { EPersonType } from '../shared/enums/person-type.enum';
 import { signIn, signUp } from '../services/auth.service';
 import { toast } from 'react-toastify';
 import { ERole } from '../shared/enums/role.enum';
-import { Contact } from '../shared/interfaces/contact';
+import { IContact } from '../shared/interfaces/contact';
 import { getContactInfo } from '../services/contacts.service';
 import { StorageHelper } from '../shared/helpers/storage.helper';
 import 'react-toastify/dist/ReactToastify.css';
@@ -48,7 +48,7 @@ type AuthContextData = {
 	register: (signUp: ISignUp) => Promise<void>;
 	logout: () => void;
 	getUserData: () => Promise<void>;
-	profileData: Contact;
+	profileData: IContact;
 	isLoading: boolean;
 };
 
@@ -60,7 +60,7 @@ export const AuthContext = createContext({} as AuthContextData);
 
 export function AuthProvider({ children }: AuthProviderProps) {
 	const [isLoading, setIsLoading] = useState(false);
-	const [profileData, setProfileData] = useState<Contact>({
+	const [profileData, setProfileData] = useState<IContact>({
 		id: 0,
 		name: '',
 		email: '',

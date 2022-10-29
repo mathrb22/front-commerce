@@ -26,7 +26,7 @@ import moment from 'moment';
 import { toast } from 'react-toastify';
 import { genderList } from '../../shared/consts/genders';
 import { useRouter } from 'next/router';
-import { Contact } from '../../shared/interfaces/contact';
+import { IContact } from '../../shared/interfaces/contact';
 import {
 	createContact,
 	updateContactInfo,
@@ -35,7 +35,7 @@ import {
 import { EPersonType } from '../../shared/enums/person-type.enum';
 
 export interface CustomerFormProps {
-	customer?: Contact;
+	customer?: IContact;
 }
 
 export default function CustomerForm({ customer }: CustomerFormProps) {
@@ -56,8 +56,8 @@ export default function CustomerForm({ customer }: CustomerFormProps) {
 			phone: customer ? customer?.phone : '',
 		},
 		enableReinitialize: true,
-		validate: (values: Contact) => {
-			let errors: Partial<Contact> = {};
+		validate: (values: IContact) => {
+			let errors: Partial<IContact> = {};
 
 			if (values.personTypeId == 1) {
 				if (!values.name) errors.name = 'Informe o nome';
@@ -82,7 +82,7 @@ export default function CustomerForm({ customer }: CustomerFormProps) {
 		},
 		onSubmit: async (values) => {
 			setIsSubmitting(true);
-			const contactBody: Contact = {
+			const contactBody: IContact = {
 				name: values.name,
 				secondName: values.secondName,
 				documentNumber: values.documentNumber,
@@ -122,7 +122,7 @@ export default function CustomerForm({ customer }: CustomerFormProps) {
 		}),
 	});
 
-	function addCustomer(contact: Contact) {
+	function addCustomer(contact: IContact) {
 		toast.configure();
 		setIsSubmitting(true);
 		createContact(contact).then(
@@ -156,7 +156,7 @@ export default function CustomerForm({ customer }: CustomerFormProps) {
 		);
 	}
 
-	function updateCustomer(id: number, contact: Contact) {
+	function updateCustomer(id: number, contact: IContact) {
 		toast.configure();
 		setIsSubmitting(true);
 		updateContactInfo(id, contact).then(

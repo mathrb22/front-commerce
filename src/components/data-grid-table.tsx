@@ -6,6 +6,7 @@ import { NoContent } from './no-content';
 export interface IDataGridProps {
 	columns: GridColDef[];
 	rows: any[];
+	idProperty: string;
 	rowsPerPage: number[];
 	page: number;
 	size: number;
@@ -14,19 +15,21 @@ export interface IDataGridProps {
 }
 
 export default function DataGridTable({
-	rows,
-	size = 10,
 	columns,
+	rows,
+	idProperty = 'id',
 	rowsPerPage = [10, 25, 50],
 	page = 0,
+	size = 10,
 	total = 0,
 	onGetQueryParams,
 }: IDataGridProps) {
 	const [pageNumber, setPageNumber] = useState<number>(page - 1);
 	const [pageSize, setPageSize] = useState<number>(size);
 	const params = new URLSearchParams();
+	const [idPropertyName, setIdPropertyName] = useState(idProperty);
 
-	useEffect(() => {}, [pageSize, pageNumber]);
+	useEffect(() => {}, [pageSize, pageNumber, idPropertyName]);
 
 	function getQueryParamsPagination() {
 		params.append('page', page.toString());
@@ -75,6 +78,9 @@ export default function DataGridTable({
 				page={pageNumber}
 				onPageChange={(newPage) => handlePageChange(newPage)}
 				rows={rows}
+				getRowId={(row: any) => {
+					return row[idPropertyName];
+				}}
 				rowCount={total}
 				rowsPerPageOptions={rowsPerPage}
 				columns={columns}

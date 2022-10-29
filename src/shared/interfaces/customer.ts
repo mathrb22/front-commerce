@@ -1,6 +1,6 @@
 import { EPersonType } from '../enums/person-type.enum';
 
-export interface Customer {
+export interface ICustomer {
 	id?: number;
 	name?: string;
 	secondName?: string;

@@ -1,14 +1,14 @@
 import { AxiosResponse } from 'axios';
 import { Pageable } from '../shared/interfaces/pageable';
-import { Product } from '../shared/interfaces/product';
+import { IProduct } from '../shared/interfaces/product';
 import { api } from './api';
 
 export async function getAllProducts(
 	params?: URLSearchParams
-): Promise<AxiosResponse<Pageable<Product>>> {
+): Promise<AxiosResponse<Pageable<IProduct>>> {
 	return new Promise((resolve, reject) => {
 		api
-			.get<Product[], AxiosResponse<Pageable<Product>>>('product', {
+			.get<IProduct[], AxiosResponse<Pageable<IProduct>>>('product', {
 				timeout: 8000,
 				params: params,
 			})
@@ -39,10 +39,10 @@ export async function exportProducts(): Promise<AxiosResponse<Blob>> {
 
 export async function getProductInfo(
 	id: number
-): Promise<AxiosResponse<Product>> {
+): Promise<AxiosResponse<IProduct>> {
 	return new Promise((resolve, reject) => {
 		api
-			.get<Product, AxiosResponse<Product>>(`product/${id}`, {
+			.get<IProduct, AxiosResponse<IProduct>>(`product/${id}`, {
 				timeout: 8000,
 			})
 			.then((response) => {
@@ -56,7 +56,7 @@ export async function getProductInfo(
 
 export async function deleteProduct(
 	id: number
-): Promise<AxiosResponse<Product>> {
+): Promise<AxiosResponse<IProduct>> {
 	return new Promise((resolve, reject) => {
 		api
 			.delete(`product/${id}`, {
@@ -72,11 +72,11 @@ export async function deleteProduct(
 }
 
 export async function createProduct(
-	product: Product
-): Promise<AxiosResponse<Product>> {
+	product: IProduct
+): Promise<AxiosResponse<IProduct>> {
 	return new Promise((resolve, reject) => {
 		api
-			.post<Product, AxiosResponse<Product>>(`product`, product, {
+			.post<IProduct, AxiosResponse<IProduct>>(`product`, product, {
 				timeout: 8000,
 			})
 			.then((response) => {
@@ -90,11 +90,11 @@ export async function createProduct(
 
 export async function updateProduct(
 	id: number,
-	product: Product
-): Promise<AxiosResponse<Product>> {
+	product: IProduct
+): Promise<AxiosResponse<IProduct>> {
 	return new Promise((resolve, reject) => {
 		api
-			.put<Product, AxiosResponse<Product>>(`product/${id}`, product, {
+			.put<IProduct, AxiosResponse<IProduct>>(`product/${id}`, product, {
 				timeout: 8000,
 			})
 			.then((response) => {
