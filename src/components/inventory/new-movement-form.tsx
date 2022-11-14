@@ -114,35 +114,32 @@ export default function NewInventoryMovementForm() {
 	) => {
 		toast.configure();
 		setIsSubmitting(true);
-		registerInventoryMovement(inventoryMovement).then(
-			async (response) => {
-				setIsSubmitting(false);
-				if (response.status == 200) {
-					toast.success('Movimentação registrada com sucesso!', {
-						position: 'top-center',
-						autoClose: 3000,
-						theme: 'colored',
-						hideProgressBar: false,
-						closeOnClick: true,
-						pauseOnHover: true,
-						draggable: true,
-					});
-					router.push('/inventory');
+		registerInventoryMovement(inventoryMovement)
+			.then(
+				async (response) => {
+					setIsSubmitting(false);
+					if (response && response.status == 200) {
+						toast.success('Movimentação registrada com sucesso!', {
+							position: 'top-center',
+							autoClose: 3000,
+							theme: 'colored',
+							hideProgressBar: false,
+							closeOnClick: true,
+							pauseOnHover: true,
+							draggable: true,
+						});
+						router.push('/inventory');
+					}
+				},
+				(error) => {
+					console.log(error);
+					setIsSubmitting(false);
 				}
-			},
-			(error) => {
+			)
+			.catch((err) => {
+				console.log(err);
 				setIsSubmitting(false);
-				toast.error('Erro ao registrar a movimentação!', {
-					position: 'top-center',
-					autoClose: 5000,
-					theme: 'colored',
-					hideProgressBar: false,
-					closeOnClick: true,
-					pauseOnHover: true,
-					draggable: true,
-				});
-			}
-		);
+			});
 	};
 
 	const handleChangeAmount = (productId: number, value: string) => {
@@ -348,7 +345,7 @@ export default function NewInventoryMovementForm() {
 												label='Compra'
 											/>
 											<FormControlLabel
-												value='Produção'
+												value='Producao'
 												control={<Radio />}
 												label='Produção'
 											/>
@@ -378,21 +375,24 @@ export default function NewInventoryMovementForm() {
 									onGetQueryParams={(params) => setQueryParams(params)}
 								/>
 							</Grid>
-							<Grid item md={12} xs={12} sx={{ mt: 2 }}>
-								<FormLabel>Selecione o contato</FormLabel>
-								<DataGridTable
-									rows={contacts?.data}
-									idProperty='id'
-									height='350px'
-									rowsPerPage={rowsPerPage}
-									columns={contactColumns}
-									page={contacts?.page}
-									size={contacts?.size}
-									total={contacts?.total}
-									onSelectionChange={(contact) => handleSelectedContact(contact)}
-									onGetQueryParams={(params) => setQueryParams(params)}
-								/>
-							</Grid>
+							{formik.values.operation == 'Compra' ||
+							formik.values.operation == 'Venda' ? (
+								<Grid item md={12} xs={12} sx={{ mt: 2 }}>
+									<FormLabel>Selecione o contato</FormLabel>
+									<DataGridTable
+										rows={contacts?.data}
+										idProperty='id'
+										height='350px'
+										rowsPerPage={rowsPerPage}
+										columns={contactColumns}
+										page={contacts?.page}
+										size={contacts?.size}
+										total={contacts?.total}
+										onSelectionChange={(contact) => handleSelectedContact(contact)}
+										onGetQueryParams={(params) => setQueryParams(params)}
+									/>
+								</Grid>
+							) : null}
 						</CardContent>
 						<Divider />
 						<Box

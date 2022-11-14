@@ -78,5 +78,17 @@ api.interceptors.response.use(
 				// Router.push('/login');
 			}
 		}
+
+		if (error && error.response?.status === 400) {
+			toast.error(error.response.data.description, {
+				position: 'top-center',
+				autoClose: 5000,
+				theme: 'colored',
+				hideProgressBar: false,
+				closeOnClick: true,
+				pauseOnHover: true,
+				draggable: true,
+			});
+		}
 	}
 );
