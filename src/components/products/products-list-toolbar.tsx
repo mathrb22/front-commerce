@@ -14,6 +14,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import DownloadIcon from '@mui/icons-material/Download';
 import { exportProducts } from '../../services/products.service';
 import { toast } from 'react-toastify';
+import AddIcon from '@mui/icons-material/Add';
 
 interface ProductsListToolbarProps extends React.ComponentProps<typeof Box> {
 	onSearch: (query: string) => void;
@@ -83,7 +84,11 @@ export const ProductsListToolbar = ({
 							Exportar
 						</Button>
 					</Tooltip>
-					<Button color='primary' variant='contained' onClick={onAdd}>
+					<Button
+						color='primary'
+						variant='contained'
+						onClick={onAdd}
+						startIcon={<AddIcon />}>
 						Adicionar Produto
 					</Button>
 				</Box>

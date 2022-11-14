@@ -1,4 +1,8 @@
 import { AxiosResponse } from 'axios';
+import {
+	IInventoryMovementBody,
+	IInventoryMovementResponse,
+} from '../shared/interfaces/inventory-movement';
 import { IInventoryProduct } from '../shared/interfaces/inventory-product';
 import { Pageable } from '../shared/interfaces/pageable';
 import { api } from './api';
@@ -31,6 +35,27 @@ export function exportInventory(): Promise<AxiosResponse<Blob>> {
 				timeout: 8000,
 				responseType: 'blob',
 			})
+			.then((response) => {
+				resolve(response);
+			})
+			.catch((error) => {
+				reject(error);
+			});
+	});
+}
+
+export function registerInventoryMovement(
+	movement: IInventoryMovementBody
+): Promise<AxiosResponse<IInventoryMovementResponse>> {
+	return new Promise((resolve, reject) => {
+		api
+			.post<IInventoryMovementResponse, AxiosResponse<IInventoryMovementResponse>>(
+				'inventory/movement',
+				movement,
+				{
+					timeout: 8000,
+				}
+			)
 			.then((response) => {
 				resolve(response);
 			})

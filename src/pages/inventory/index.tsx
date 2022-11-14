@@ -1,4 +1,18 @@
-import { Box, Chip, Container, IconButton, Tooltip } from '@mui/material';
+import {
+	Box,
+	Button,
+	Card,
+	CardContent,
+	Chip,
+	Container,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogTitle,
+	Grid,
+	TextField,
+	Tooltip,
+} from '@mui/material';
 import { AxiosError } from 'axios';
 import Head from 'next/head';
 import { ReactElement, useEffect, useState } from 'react';
@@ -9,16 +23,17 @@ import { InventoryListToolbar } from '../../components/inventory/inventory-list-
 import { getAllInventoryProducts } from '../../services/inventory.service';
 import { IInventoryProduct } from '../../shared/interfaces/inventory-product';
 import { Pageable } from '../../shared/interfaces/pageable';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 import { GridColDef } from '@mui/x-data-grid';
 import {
 	formatDateTimeString,
 	formatDateTimeStringToHowManyTimeAgo,
 	formatNumberWithDigitGroup,
 } from '../../shared/helpers/format.helper';
-
+import { LoadingButton } from '@mui/lab';
+import { ProductListResults } from '../../components/products/products-list-results';
+import { useRouter } from 'next/router';
 export default function Inventory() {
+	const router = useRouter();
 	const [inventoryProducts, setInventoryProducts] = useState<
 		Pageable<IInventoryProduct>
 	>({
@@ -27,31 +42,9 @@ export default function Inventory() {
 		size: 10,
 		total: 0,
 	});
-	const [selectedInventoryProduct, setSelectedInventoryProduct] =
-		useState<IInventoryProduct | null>();
-	const [isDeletingInventoryProduct, setIsDeletingInventoryProduct] =
-		useState<boolean>(false);
 	const params = new URLSearchParams();
-	const [isDeleteModalShowing, setIsDeleteModalShowing] = useState(false);
 
 	const [queryParams, setQueryParams] = useState<URLSearchParams>(params);
-
-	function showDeleteDialog(item: IInventoryProduct) {
-		console.log(item);
-		setSelectedInventoryProduct(item);
-		setIsDeleteModalShowing(true);
-	}
-
-	function handleCloseDeleteDialog() {
-		setIsDeleteModalShowing(false);
-	}
-
-	function handleDeleteFromInventory() {
-		toast.configure();
-		if (selectedInventoryProduct?.productId) {
-			console.log(selectedInventoryProduct);
-		}
-	}
 
 	useEffect(() => {
 		getInventory();
@@ -98,44 +91,17 @@ export default function Inventory() {
 		}
 	}
 
-	function handleAddToInventory() {}
-
-	function handleEditInventoryProduct(item: IInventoryProduct) {
-		console.log(item);
+	function handleAddToInventory() {
+		router.push('inventory/movements/new');
 	}
 
 	const columns: GridColDef[] = [
 		{
-			field: 'actions',
-			width: 120,
-			headerName: 'Ações',
-			filterable: false,
-			sortable: false,
-
-			renderCell: ({ row }) => {
-				return (
-					<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-						<Tooltip title='Editar'>
-							<IconButton
-								color='primary'
-								aria-label='edit'
-								onClick={() => handleEditInventoryProduct(row)}>
-								<EditIcon />
-							</IconButton>
-						</Tooltip>
-						<Tooltip title='Excluir'>
-							<IconButton
-								color='error'
-								aria-label='delete'
-								onClick={() => showDeleteDialog(row)}>
-								<DeleteIcon />
-							</IconButton>
-						</Tooltip>
-					</Box>
-				);
-			},
+			field: 'productId',
+			headerName: 'ID',
+			width: 80,
+			align: 'right',
 		},
-		{ field: 'productId', headerName: 'ID do Produto', width: 130 },
 		{ field: 'name', headerName: 'Nome do produto', width: 500 },
 		{
 			field: 'amount',

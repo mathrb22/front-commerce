@@ -152,7 +152,7 @@ export default function Customers() {
 				);
 			},
 		},
-		{ field: 'id', headerName: 'ID', width: 60 },
+		{ field: 'id', headerName: 'ID', width: 60, align: 'right' },
 		{
 			field: 'imageUrl',
 			headerName: 'Avatar',
