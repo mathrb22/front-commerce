@@ -105,7 +105,7 @@ export default function Inventory() {
 		{ field: 'name', headerName: 'Nome do produto', width: 500 },
 		{
 			field: 'amount',
-			headerName: 'Quantidade',
+			headerName: 'Estoque',
 			width: 130,
 			align: 'right',
 			renderCell: ({ value }) => {

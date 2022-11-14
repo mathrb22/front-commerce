@@ -4,6 +4,7 @@ import {
 	Card,
 	CardContent,
 	CardHeader,
+	Chip,
 	Container,
 	Divider,
 	FormControl,
@@ -34,10 +35,17 @@ import { toast } from 'react-toastify';
 import { IInventoryProduct } from '../../shared/interfaces/inventory-product';
 import { LoadingButton } from '@mui/lab';
 import { EOperation } from '../../shared/enums/operation.enum';
-import { registerInventoryMovement } from '../../services/inventory.service';
+import {
+	getAllInventoryProducts,
+	registerInventoryMovement,
+} from '../../services/inventory.service';
 import { getAllCustomers } from '../../services/contacts.service';
 import UserAvatar from '../avatar';
-import { formatDocument } from '../../shared/helpers/format.helper';
+import {
+	formatDocument,
+	formatNumberWithDigitGroup,
+	formatPhoneNumber,
+} from '../../shared/helpers/format.helper';
 
 export default function NewInventoryMovementForm() {
 	const router = useRouter();
@@ -50,6 +58,15 @@ export default function NewInventoryMovementForm() {
 	const [selectedProducts, setSelectedProducts] = useState<IInventoryProduct[]>(
 		[]
 	);
+	const [inventoryItems, setInventoryItems] = useState<
+		Pageable<IInventoryProduct>
+	>({
+		data: [],
+		page: 1,
+		size: 10,
+		total: 0,
+	});
+
 	const [contacts, setContacts] = useState<Pageable<ICustomer>>({
 		data: [],
 		page: 1,
@@ -58,7 +75,11 @@ export default function NewInventoryMovementForm() {
 	});
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const rowsPerPage = [10, 25, 50];
-	const [queryParams, setQueryParams] = useState<URLSearchParams>();
+	const [productQueryParams, setProductQueryParams] =
+		useState<URLSearchParams>();
+	const [contactQueryParams, setContactQueryParams] = useState<URLSearchParams>(
+		new URLSearchParams()
+	);
 
 	const formik = useFormik({
 		initialValues: {
@@ -81,6 +102,23 @@ export default function NewInventoryMovementForm() {
 			}
 			if (selectedProducts.some((p) => p.amount <= 0)) {
 				toast.warn('Informe a quantidade para o(s) produto(s) selecionado(s)!', {
+					position: 'top-center',
+					autoClose: 5000,
+					theme: 'colored',
+					hideProgressBar: false,
+					closeOnClick: true,
+					pauseOnHover: true,
+					draggable: true,
+				});
+				return;
+			}
+
+			if (
+				(values.operation == EOperation.Compra ||
+					values.operation == EOperation.Venda) &&
+				values.contactId === 0
+			) {
+				toast.warn('Selecione o cliente da movimentação!', {
 					position: 'top-center',
 					autoClose: 5000,
 					theme: 'colored',
@@ -151,10 +189,7 @@ export default function NewInventoryMovementForm() {
 			return p;
 		});
 		setSelectedProducts(productsUpdated);
-		console.table(selectedProducts);
 	};
-
-	useEffect(() => {}, [selectedProducts]);
 
 	const productColumns: GridColDef[] = [
 		{ field: 'id', headerName: 'ID', width: 60, align: 'right' },
@@ -179,9 +214,28 @@ export default function NewInventoryMovementForm() {
 			},
 		},
 		{
+			field: 'stockAmount',
+			headerName: 'Estoque',
+			width: 120,
+			align: 'right',
+			valueGetter(params) {
+				return params.row.stockAmount;
+			},
+			renderCell: ({ row }) => {
+				return (
+					<Chip
+						label={formatNumberWithDigitGroup(row.stockAmount ? row.stockAmount : 0)}
+						color='secondary'
+						variant='filled'
+						size='small'
+					/>
+				);
+			},
+		},
+		{
 			field: 'amount',
 			headerName: 'Qtde.',
-			width: 160,
+			width: 130,
 			align: 'right',
 			sortable: false,
 			type: 'number',
@@ -189,8 +243,18 @@ export default function NewInventoryMovementForm() {
 				return (
 					<TextField
 						type='number'
+						InputProps={{
+							inputProps: {
+								min: 0,
+								max:
+									formik.values.operation == EOperation.Venda ||
+									formik.values.operation == EOperation.Consumo
+										? row.stockAmount
+										: null,
+							},
+						}}
 						disabled={!selectedProducts?.find((p) => p.productId === row.id)}
-						placeholder='Quantidade'
+						placeholder='Qtde.'
 						value={
 							selectedProducts?.find((p) => p.productId === row.id)
 								? selectedProducts?.find((p) => p.productId === row.id)?.amount
@@ -238,6 +302,18 @@ export default function NewInventoryMovementForm() {
 				return formatDocument(value);
 			},
 		},
+		{
+			field: 'personType',
+			headerName: 'Tipo',
+			width: 120,
+		},
+		{ field: 'email', headerName: 'Email', width: 250 },
+		{
+			field: 'phone',
+			headerName: 'Telefone',
+			width: 150,
+			renderCell: ({ value }) => formatPhoneNumber(value),
+		},
 	];
 
 	const handleSelectedProducts = (products: GridSelectionModel) => {
@@ -258,9 +334,22 @@ export default function NewInventoryMovementForm() {
 	};
 
 	useEffect(() => {
-		getAllProducts(queryParams)
+		handleContactsQuery();
+	}, []);
+
+	useEffect(() => {
+		getProductsList();
+	}, [productQueryParams]);
+
+	useEffect(() => {
+		getContacts();
+	}, [contactQueryParams]);
+
+	const getProductsList = () => {
+		getAllProducts(productQueryParams)
 			.then((response) => {
 				setProducts(response.data);
+				getInventoryItems();
 			})
 			.catch((error: AxiosError) => {
 				toast.configure();
@@ -274,8 +363,60 @@ export default function NewInventoryMovementForm() {
 					draggable: true,
 				});
 			});
+	};
 
-		getAllCustomers()
+	const getInventoryItems = () => {
+		getAllInventoryProducts()
+			.then((response) => {
+				setInventoryItems(response.data);
+				console.table(inventoryItems.data);
+				// setProductStockAmount();
+			})
+			.catch((error: AxiosError) => {
+				toast.configure();
+				toast.error('Erro ao buscar os produtos do inventário!', {
+					position: 'top-center',
+					autoClose: 3000,
+					theme: 'colored',
+					hideProgressBar: false,
+					closeOnClick: true,
+					pauseOnHover: true,
+					draggable: true,
+				});
+			});
+	};
+
+	const setProductStockAmount = async () => {
+		const productsList: Pageable<IProduct> = {
+			data: [],
+			page: 1,
+			size: 10,
+			total: 0,
+		};
+
+		products.data.forEach((product) => {
+			productsList.data.push(product);
+		});
+
+		productsList.data.map((product) => {
+			inventoryItems.data.find((item) => {
+				if (item.productId === product.id) {
+					return {
+						...product,
+						stockAmount: item ? item.amount : 0,
+					};
+				}
+			});
+			return product;
+		});
+
+		console.table(productsList.data);
+		setProducts(productsList);
+		console.table(products.data);
+	};
+
+	const getContacts = () => {
+		getAllCustomers(contactQueryParams)
 			.then((response) => {
 				setContacts(response.data);
 			})
@@ -291,7 +432,30 @@ export default function NewInventoryMovementForm() {
 					draggable: true,
 				});
 			});
-	}, []);
+	};
+
+	const handleContactsQuery = () => {
+		let params = contactQueryParams;
+		if (formik.values.operation == EOperation.Compra) {
+			if (params.get('query')) {
+				params.set('query', 'Pessoa Juridica');
+			} else {
+				params.append('query', 'Pessoa Juridica');
+			}
+		} else {
+			params.delete('query');
+		}
+		setContactQueryParams(params);
+		getContacts();
+	};
+
+	const handleChangeOperation = async (operation: string) => {
+		await formik.setFieldValue('operation', operation, true);
+		await formik.setFieldTouched('operation', true, false);
+		await formik.validateForm();
+		handleContactsQuery();
+		console.log(formik.values.operation);
+	};
 
 	return (
 		<Box
@@ -337,7 +501,8 @@ export default function NewInventoryMovementForm() {
 											row
 											name='row-radio-buttons-group'
 											color='primary'
-											onChange={(e) => formik.setFieldValue('operation', e.target.value)}
+											onChange={(e) => handleChangeOperation(e.target.value)}
+											onBlur={formik.handleBlur}
 											value={formik.values.operation}>
 											<FormControlLabel
 												value='Compra'
@@ -372,7 +537,7 @@ export default function NewInventoryMovementForm() {
 									size={products?.size}
 									total={products?.total}
 									onSelectionChange={(products) => handleSelectedProducts(products)}
-									onGetQueryParams={(params) => setQueryParams(params)}
+									onGetQueryParams={(params) => setProductQueryParams(params)}
 								/>
 							</Grid>
 							{formik.values.operation == 'Compra' ||
@@ -389,7 +554,7 @@ export default function NewInventoryMovementForm() {
 										size={contacts?.size}
 										total={contacts?.total}
 										onSelectionChange={(contact) => handleSelectedContact(contact)}
-										onGetQueryParams={(params) => setQueryParams(params)}
+										onGetQueryParams={(params) => setContactQueryParams(params)}
 									/>
 								</Grid>
 							) : null}
