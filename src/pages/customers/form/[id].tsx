@@ -1,35 +1,10 @@
 import { useState, useEffect } from 'react';
-import {
-	Box,
-	Card,
-	CardContent,
-	CardHeader,
-	Container,
-	Divider,
-	Grid,
-	MenuItem,
-	TextField,
-	Typography,
-} from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { ReactElement } from 'react-imask/dist/mixin';
 import { DashboardLayout } from '../../../components/dashboard-layout';
-import Link from 'next/link';
-import ArrowBack from '@mui/icons-material/ArrowBack';
-import {
-	getContactInfo,
-	updateContactInfo,
-} from '../../../services/contacts.service';
+import { getContactInfo } from '../../../services/contacts.service';
 import { IContact } from '../../../shared/interfaces/contact';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import moment from 'moment';
-import { genderList } from '../../../shared/consts/genders';
-import { LoadingButton } from '@mui/lab';
-import { toast } from 'react-toastify';
-import { EPersonType } from '../../../shared/enums/person-type.enum';
 import CustomerForm from '../../../components/customer/customer-form';
 
 export default function EditCustomerPage() {

@@ -14,6 +14,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import DownloadIcon from '@mui/icons-material/Download';
 import { exportCustomers } from '../../services/contacts.service';
 import { toast } from 'react-toastify';
+import AddIcon from '@mui/icons-material/Add';
 
 interface CustomerListToolbarProps extends React.ComponentProps<typeof Box> {
 	onSearch: (query: string) => void;
@@ -83,7 +84,11 @@ export const CustomerListToolbar = ({
 							Exportar
 						</Button>
 					</Tooltip>
-					<Button color='primary' variant='contained' onClick={onAdd}>
+					<Button
+						color='primary'
+						variant='contained'
+						onClick={onAdd}
+						startIcon={<AddIcon />}>
 						Adicionar Cliente
 					</Button>
 				</Box>

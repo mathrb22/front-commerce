@@ -145,7 +145,7 @@ export default function Products() {
 				);
 			},
 		},
-		{ field: 'id', headerName: 'ID', width: 60 },
+		{ field: 'id', headerName: 'ID', width: 60, align: 'right' },
 		{ field: 'name', headerName: 'Nome', width: 300 },
 		{ field: 'description', headerName: 'Descrição', width: 540 },
 		{

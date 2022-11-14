@@ -17,12 +17,11 @@ import { exportInventory } from '../../services/inventory.service';
 import { alpha } from '@material-ui/system';
 import SearchIcon from '@mui/icons-material/Search';
 import DownloadIcon from '@mui/icons-material/Download';
-import SellIcon from '@mui/icons-material/Sell';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import InventoryIcon from '@mui/icons-material/Inventory';
 import FactoryIcon from '@mui/icons-material/Factory';
 import { EOperation } from '../../shared/enums/operation.enum';
+import AddIcon from '@mui/icons-material/Add';
 
 interface InventoryListToolbarProps extends React.ComponentProps<typeof Box> {
 	onSearch: (query: string) => void;
@@ -75,20 +74,20 @@ export const InventoryListToolbar = ({
 	onAdd,
 	...props
 }: InventoryListToolbarProps) => {
-	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-	const open = Boolean(anchorEl);
+	// const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+	// const open = Boolean(anchorEl);
 
-	const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-		setAnchorEl(event.currentTarget);
-	};
-	const handleClose = () => {
-		setAnchorEl(null);
-	};
+	// const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+	// 	setAnchorEl(event.currentTarget);
+	// };
+	// const handleClose = () => {
+	// 	setAnchorEl(null);
+	// };
 
-	const selectOperation = (operation: EOperation) => {
-		console.log(operation);
-		setAnchorEl(null);
-	};
+	// const selectOperation = (operation: EOperation) => {
+	// 	console.log(operation);
+	// 	setAnchorEl(null);
+	// };
 
 	async function exportData() {
 		exportInventory().then(
@@ -106,7 +105,15 @@ export const InventoryListToolbar = ({
 				link.parentNode?.removeChild(link);
 			},
 			(error) => {
-				toast.error('Erro ao exportar dados');
+				toast.error('Erro ao exportar dados', {
+					position: 'top-center',
+					autoClose: 5000,
+					theme: 'colored',
+					hideProgressBar: false,
+					closeOnClick: true,
+					pauseOnHover: true,
+					draggable: true,
+				});
 			}
 		);
 	}
@@ -152,12 +159,12 @@ export const InventoryListToolbar = ({
 					<Button
 						color='primary'
 						variant='contained'
-						onClick={handleClick}
+						onClick={onAdd}
 						disableElevation
-						endIcon={<KeyboardArrowDownIcon />}>
-						Adicionar
+						startIcon={<AddIcon />}>
+						Registrar operação
 					</Button>
-					<StyledMenu
+					{/* <StyledMenu
 						id='demo-customized-menu'
 						MenuListProps={{
 							'aria-labelledby': 'demo-customized-button',
@@ -165,10 +172,6 @@ export const InventoryListToolbar = ({
 						anchorEl={anchorEl}
 						open={open}
 						onClose={handleClose}>
-						<MenuItem onClick={() => selectOperation(EOperation.Venda)} disableRipple>
-							<SellIcon />
-							Venda
-						</MenuItem>
 						<MenuItem
 							onClick={() => selectOperation(EOperation.Compra)}
 							disableRipple>
@@ -181,13 +184,7 @@ export const InventoryListToolbar = ({
 							<FactoryIcon />
 							Produção
 						</MenuItem>
-						<MenuItem
-							onClick={() => selectOperation(EOperation.Consumo)}
-							disableRipple>
-							<InventoryIcon />
-							Consumo
-						</MenuItem>
-					</StyledMenu>
+					</StyledMenu> */}
 				</Box>
 			</Box>
 		</Box>

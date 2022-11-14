@@ -1,6 +1,6 @@
 export enum EOperation {
 	Compra = 'Compra',
-	Producao = 'Produção',
+	Producao = 'Producao',
 	Venda = 'Venda',
 	Consumo = 'Consumo',
 }
