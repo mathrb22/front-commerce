@@ -26,9 +26,7 @@ export const formatDateTimeString = (date: string): string => {
 	return moment(date).format('DD/MM/YYYY HH:mm:ss');
 };
 
-//format dateTimeString to how many time ago using moment
 export const formatDateTimeStringToHowManyTimeAgo = (date: string): string => {
-	//use date-fns formatDistance in pt-BR
 	return formatDistanceToNow(new Date(date), {
 		locale: ptBR,
 		addSuffix: true,

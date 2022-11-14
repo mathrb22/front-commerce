@@ -7,4 +7,5 @@ export interface IProduct {
 	defaultMeansurement?: string;
 	createdBy?: string;
 	createdAt?: string;
+	stockAmount?: number;
 }
