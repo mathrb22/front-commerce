@@ -70,7 +70,7 @@ api.interceptors.response.use(
 							'Authorization'
 						] = `Bearer ${user.refreshToken}`;
 
-						Router.push('/products');
+						Router.push('/dashboard');
 					}
 				});
 			} else {

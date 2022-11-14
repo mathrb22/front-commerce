@@ -103,7 +103,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 							await getUserData();
 						}
 
-						Router.push('/products');
+						Router.push('/dashboard');
 					}
 				},
 				(err: AxiosError) => {
@@ -167,7 +167,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 						};
 
 						getUserData().then(() => {
-							Router.push('/products');
+							Router.push('/dashboard');
 						});
 					}
 				}

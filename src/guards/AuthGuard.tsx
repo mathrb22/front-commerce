@@ -46,7 +46,7 @@ function RouteGuard({ children }: any) {
 			setAuthorized(true);
 			if (path == '/') {
 				router.push({
-					pathname: '/products',
+					pathname: '/dashboard',
 				});
 			}
 		}

@@ -1,4 +1,5 @@
 import { AxiosResponse } from 'axios';
+import { IInventoryHistory } from '../shared/interfaces/inventory-history';
 import {
 	IInventoryMovementBody,
 	IInventoryMovementResponse,
@@ -54,6 +55,27 @@ export function registerInventoryMovement(
 				movement,
 				{
 					timeout: 8000,
+				}
+			)
+			.then((response) => {
+				resolve(response);
+			})
+			.catch((error) => {
+				reject(error);
+			});
+	});
+}
+
+export async function getAllInventoryHistory(
+	params?: URLSearchParams
+): Promise<AxiosResponse<Pageable<IInventoryHistory>>> {
+	return new Promise((resolve, reject) => {
+		api
+			.get<IInventoryHistory[], AxiosResponse<Pageable<IInventoryHistory>>>(
+				'movement/operation/history',
+				{
+					timeout: 8000,
+					params: params,
 				}
 			)
 			.then((response) => {

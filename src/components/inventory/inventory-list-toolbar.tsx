@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { toast } from 'react-toastify';
 import {
 	Box,
@@ -8,19 +7,10 @@ import {
 	SvgIcon,
 	Typography,
 	Tooltip,
-	styled,
-	Menu,
-	MenuProps,
-	MenuItem,
 } from '@mui/material';
 import { exportInventory } from '../../services/inventory.service';
-import { alpha } from '@material-ui/system';
 import SearchIcon from '@mui/icons-material/Search';
 import DownloadIcon from '@mui/icons-material/Download';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import FactoryIcon from '@mui/icons-material/Factory';
-import { EOperation } from '../../shared/enums/operation.enum';
 import AddIcon from '@mui/icons-material/Add';
 
 interface InventoryListToolbarProps extends React.ComponentProps<typeof Box> {
@@ -28,67 +18,11 @@ interface InventoryListToolbarProps extends React.ComponentProps<typeof Box> {
 	onAdd: () => void;
 }
 
-const StyledMenu = styled((props: MenuProps) => (
-	<Menu
-		elevation={0}
-		anchorOrigin={{
-			vertical: 'bottom',
-			horizontal: 'right',
-		}}
-		transformOrigin={{
-			vertical: 'top',
-			horizontal: 'right',
-		}}
-		{...props}
-	/>
-))(({ theme }) => ({
-	'& .MuiPaper-root': {
-		borderRadius: 6,
-		marginTop: theme.spacing(1),
-		minWidth: 180,
-		color:
-			theme.palette.mode === 'light' ? 'rgb(55, 65, 81)' : theme.palette.grey[300],
-		boxShadow:
-			'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
-		'& .MuiMenu-list': {
-			padding: '4px 0',
-		},
-		'& .MuiMenuItem-root': {
-			'& .MuiSvgIcon-root': {
-				fontSize: 18,
-				color: theme.palette.text.secondary,
-				marginRight: theme.spacing(1.5),
-			},
-			'&:active': {
-				backgroundColor: alpha(
-					theme.palette.primary.main,
-					theme.palette.action.selectedOpacity
-				),
-			},
-		},
-	},
-}));
-
 export const InventoryListToolbar = ({
 	onSearch,
 	onAdd,
 	...props
 }: InventoryListToolbarProps) => {
-	// const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-	// const open = Boolean(anchorEl);
-
-	// const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-	// 	setAnchorEl(event.currentTarget);
-	// };
-	// const handleClose = () => {
-	// 	setAnchorEl(null);
-	// };
-
-	// const selectOperation = (operation: EOperation) => {
-	// 	console.log(operation);
-	// 	setAnchorEl(null);
-	// };
-
 	async function exportData() {
 		exportInventory().then(
 			(response) => {
@@ -143,7 +77,7 @@ export const InventoryListToolbar = ({
 								</InputAdornment>
 							),
 						}}
-						sx={{ backgroundColor: 'white', borderRadius: '4px', mr: 1, mb: 2 }}
+						sx={{ backgroundColor: 'white', borderRadius: '4px', mr: 1 }}
 						placeholder='Pesquisar no inventário'
 						variant='outlined'
 					/>
@@ -164,27 +98,6 @@ export const InventoryListToolbar = ({
 						startIcon={<AddIcon />}>
 						Registrar operação
 					</Button>
-					{/* <StyledMenu
-						id='demo-customized-menu'
-						MenuListProps={{
-							'aria-labelledby': 'demo-customized-button',
-						}}
-						anchorEl={anchorEl}
-						open={open}
-						onClose={handleClose}>
-						<MenuItem
-							onClick={() => selectOperation(EOperation.Compra)}
-							disableRipple>
-							<ShoppingCartIcon />
-							Compra
-						</MenuItem>
-						<MenuItem
-							onClick={() => selectOperation(EOperation.Producao)}
-							disableRipple>
-							<FactoryIcon />
-							Produção
-						</MenuItem>
-					</StyledMenu> */}
 				</Box>
 			</Box>
 		</Box>
