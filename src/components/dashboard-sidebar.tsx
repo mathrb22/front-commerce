@@ -2,29 +2,19 @@ import { useEffect } from 'react';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
-import {
-	Box,
-	Button,
-	Divider,
-	Drawer,
-	Icon,
-	Theme,
-	Typography,
-	useMediaQuery,
-} from '@mui/material';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import Image from 'next/image';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import PeopleIcon from '@mui/icons-material/People';
-import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
-import PersonIcon from '@mui/icons-material/Person';
-import SettingsIcon from '@mui/icons-material/Settings';
-import LoginIcon from '@mui/icons-material/Login';
+import { Box, Divider, Drawer, Theme, useMediaQuery } from '@mui/material';
 import { Logo } from './logo';
 import { NavItem } from './nav-item';
 import { useContext } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
-import { StorefrontOutlined } from '@mui/icons-material';
+import {
+	DashboardRounded,
+	LogoutRounded,
+	PeopleRounded,
+	PersonRounded,
+	ShoppingBagRounded,
+	StorefrontRounded,
+} from '@mui/icons-material';
 
 export const DashboardSidebar = (props: any) => {
 	const { open, onClose } = props;
@@ -36,38 +26,33 @@ export const DashboardSidebar = (props: any) => {
 	});
 
 	const items = [
-		// {
-		// 	href: '/dashboard',
-		// 	icon: <DashboardIcon fontSize='small' />,
-		// 	title: 'Dashboard',
-		// },
+		{
+			href: '/dashboard',
+			icon: <DashboardRounded fontSize='small' />,
+			title: 'Dashboard',
+		},
 		{
 			href: '/products',
-			icon: <ShoppingBagIcon fontSize='small' />,
+			icon: <ShoppingBagRounded fontSize='small' />,
 			title: 'Produtos',
 		},
 		{
 			href: '/inventory',
-			icon: <StorefrontOutlined fontSize='small' />,
+			icon: <StorefrontRounded fontSize='small' />,
 			title: 'Inventário',
 		},
 		{
 			href: '/customers',
-			icon: <PeopleIcon fontSize='small' />,
+			icon: <PeopleRounded fontSize='small' />,
 			title: 'Clientes',
 		},
 		{
 			href: '/account',
-			icon: <PersonIcon fontSize='small' />,
+			icon: <PersonRounded fontSize='small' />,
 			title: 'Conta',
 		},
-		// {
-		// 	href: '/settings',
-		// 	icon: <SettingsIcon fontSize='small' />,
-		// 	title: 'Configurações',
-		// },
 		{
-			icon: <LoginIcon fontSize='small' />,
+			icon: <LogoutRounded fontSize='small' />,
 			title: 'Sair',
 			onclick: logout,
 		},

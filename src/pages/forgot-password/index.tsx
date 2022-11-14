@@ -33,7 +33,7 @@ export default function ForgotPassword() {
 				.required('Informe o e-mail'),
 		}),
 		onSubmit: async (values) => {
-			router.push('/products');
+			router.push('/dashboard');
 		},
 	});
 

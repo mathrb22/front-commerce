@@ -1,18 +1,4 @@
-import {
-	Box,
-	Button,
-	Card,
-	CardContent,
-	Chip,
-	Container,
-	Dialog,
-	DialogActions,
-	DialogContent,
-	DialogTitle,
-	Grid,
-	TextField,
-	Tooltip,
-} from '@mui/material';
+import { Box, Chip, Container, Tooltip } from '@mui/material';
 import { AxiosError } from 'axios';
 import Head from 'next/head';
 import { ReactElement, useEffect, useState } from 'react';
@@ -29,8 +15,6 @@ import {
 	formatDateTimeStringToHowManyTimeAgo,
 	formatNumberWithDigitGroup,
 } from '../../shared/helpers/format.helper';
-import { LoadingButton } from '@mui/lab';
-import { ProductListResults } from '../../components/products/products-list-results';
 import { useRouter } from 'next/router';
 export default function Inventory() {
 	const router = useRouter();

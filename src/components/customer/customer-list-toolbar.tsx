@@ -72,7 +72,7 @@ export const CustomerListToolbar = ({
 								</InputAdornment>
 							),
 						}}
-						sx={{ backgroundColor: 'white', borderRadius: '4px', mr: 1, mb: 2 }}
+						sx={{ backgroundColor: 'white', borderRadius: '4px', mr: 1 }}
 						placeholder='Pesquisar clientes'
 						variant='outlined'
 					/>
