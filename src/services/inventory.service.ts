@@ -68,10 +68,10 @@ export function registerInventoryMovement(
 
 export async function getAllInventoryHistory(
 	params?: URLSearchParams
-): Promise<AxiosResponse<Pageable<IInventoryHistory>>> {
+): Promise<AxiosResponse<IInventoryHistory[]>> {
 	return new Promise((resolve, reject) => {
 		api
-			.get<IInventoryHistory[], AxiosResponse<Pageable<IInventoryHistory>>>(
+			.get<IInventoryHistory[], AxiosResponse<IInventoryHistory[]>>(
 				'movement/operation/history',
 				{
 					timeout: 8000,

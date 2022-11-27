@@ -194,7 +194,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
 				.then((res) => {
 					console.log(res);
 					if (res && res.data) {
-						setProfileData(res.data);
+						const data = {
+							...res.data,
+							imageUrl: `data:image/jpeg;base64,${res.data.imageUrl}`,
+						};
+						setProfileData(data);
+
 						setIsLoading(false);
 					}
 				})

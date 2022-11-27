@@ -138,7 +138,7 @@ export default function UserAvatar({
 						<input
 							id='avatarUpload'
 							hidden
-							accept='image/*'
+							accept='image/jpeg'
 							type='file'
 							onChange={(e) => handleFileChange(e)}
 						/>

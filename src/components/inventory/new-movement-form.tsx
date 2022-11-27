@@ -334,8 +334,13 @@ export default function NewInventoryMovementForm() {
 	};
 
 	useEffect(() => {
-		handleContactsQuery();
-	}, []);
+		if (
+			formik.values.operation == EOperation.Compra ||
+			formik.values.operation == EOperation.Venda
+		) {
+			handleContactsQuery();
+		}
+	}, [formik.values.operation]);
 
 	useEffect(() => {
 		getProductsList();
@@ -387,18 +392,7 @@ export default function NewInventoryMovementForm() {
 	};
 
 	const setProductStockAmount = async () => {
-		const productsList: Pageable<IProduct> = {
-			data: [],
-			page: 1,
-			size: 10,
-			total: 0,
-		};
-
-		products.data.forEach((product) => {
-			productsList.data.push(product);
-		});
-
-		productsList.data.map((product) => {
+		products.data.map((product) => {
 			inventoryItems.data.find((item) => {
 				if (item.productId === product.id) {
 					return {
@@ -409,9 +403,7 @@ export default function NewInventoryMovementForm() {
 			});
 			return product;
 		});
-
-		console.table(productsList.data);
-		setProducts(productsList);
+		// setProducts(products);
 		console.table(products.data);
 	};
 
@@ -434,8 +426,8 @@ export default function NewInventoryMovementForm() {
 			});
 	};
 
-	const handleContactsQuery = () => {
-		let params = contactQueryParams;
+	const handleContactsQuery = (params?: URLSearchParams) => {
+		if (!params) params = contactQueryParams;
 		if (formik.values.operation == EOperation.Compra) {
 			if (params.get('query')) {
 				params.set('query', 'Pessoa Juridica');
@@ -451,10 +443,6 @@ export default function NewInventoryMovementForm() {
 
 	const handleChangeOperation = async (operation: string) => {
 		await formik.setFieldValue('operation', operation, true);
-		await formik.setFieldTouched('operation', true, false);
-		await formik.validateForm();
-		handleContactsQuery();
-		console.log(formik.values.operation);
 	};
 
 	return (
@@ -530,7 +518,7 @@ export default function NewInventoryMovementForm() {
 									checkboxSelection
 									rows={products?.data}
 									idProperty='id'
-									height='350px'
+									height='400px'
 									rowsPerPage={rowsPerPage}
 									columns={productColumns}
 									page={products?.page}
@@ -547,14 +535,16 @@ export default function NewInventoryMovementForm() {
 									<DataGridTable
 										rows={contacts?.data}
 										idProperty='id'
-										height='350px'
+										height='400px'
 										rowsPerPage={rowsPerPage}
 										columns={contactColumns}
 										page={contacts?.page}
 										size={contacts?.size}
 										total={contacts?.total}
 										onSelectionChange={(contact) => handleSelectedContact(contact)}
-										onGetQueryParams={(params) => setContactQueryParams(params)}
+										onGetQueryParams={(params) => {
+											handleContactsQuery(params);
+										}}
 									/>
 								</Grid>
 							) : null}

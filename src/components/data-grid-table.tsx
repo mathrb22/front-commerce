@@ -80,7 +80,6 @@ export default function DataGridTable({
 	const handlePageSizeChange = (newPageSize: number) => {
 		if (pageSize !== newPageSize) {
 			size = newPageSize;
-			console.log('pageSizeChange', newPageSize);
 			setPageSize(newPageSize);
 			getQueryParamsPagination();
 		}
