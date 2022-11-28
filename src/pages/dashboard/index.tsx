@@ -19,9 +19,14 @@ import { AxiosError } from 'axios';
 import CurrencyFormat from 'react-currency-format';
 
 export default function Dashboard() {
-	const [inventoryHistory, setInventoryHistory] = useState<IInventoryHistory[]>(
-		[]
-	);
+	const [inventoryHistory, setInventoryHistory] = useState<
+		Pageable<IInventoryHistory>
+	>({
+		data: [],
+		page: 1,
+		size: 10,
+		total: 0,
+	});
 	const [queryParams, setQueryParams] = useState<URLSearchParams>(
 		new URLSearchParams()
 	);
@@ -30,9 +35,15 @@ export default function Dashboard() {
 
 	const columns: GridColDef[] = [
 		{
-			field: 'productId',
+			field: 'id',
 			headerName: 'ID',
-			width: 80,
+			width: 40,
+			align: 'right',
+		},
+		{
+			field: 'productId',
+			headerName: 'Cód. Produto',
+			width: 100,
 			align: 'right',
 		},
 		{ field: 'product', headerName: 'Nome do produto', width: 500 },
@@ -97,6 +108,10 @@ export default function Dashboard() {
 		}
 	}, []);
 
+	useEffect(() => {
+		handleGetHistory();
+	}, [queryParams]);
+
 	const handleFilter = (query?: string, operation?: string) => {
 		let params = queryParams;
 		if (query) {
@@ -144,9 +159,13 @@ export default function Dashboard() {
 					/>
 					<Box sx={{ mt: 3 }}>
 						<InventoryHistoryListResults
-							rows={inventoryHistory}
-							idProperty='productId'
+							rows={inventoryHistory?.data}
+							idProperty='id'
 							columns={columns}
+							page={inventoryHistory?.page}
+							size={inventoryHistory?.size}
+							total={inventoryHistory?.total}
+							onGetQueryParams={(params) => setQueryParams(params)}
 						/>
 					</Box>
 				</Container>
