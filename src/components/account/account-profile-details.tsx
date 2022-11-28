@@ -183,10 +183,6 @@ export const AccountProfileDetails = ({
 		if (base64Img && imageName && profile.id) {
 			const base64ImageWithoutPrefix = base64Img.split(';base64,');
 			await updateImage(profile.id, imageName, base64ImageWithoutPrefix[1]);
-			// formik.setFieldValue('imageUrl', base64Img);
-			// formik.setFieldValue('imageName', imageName);
-			// console.log(formik.values.imageUrl);
-			// console.log(formik.values.imageName);
 		}
 	}
 

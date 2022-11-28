@@ -158,8 +158,8 @@ export default function UserAvatar({
 				getCroppedFile={(image) => {
 					setUserAvatar(image);
 					setIsCropperDialogOpen(false);
-					if (onSelectImage && userAvatar && selectedImageName)
-						onSelectImage(userAvatar, selectedImageName);
+					if (onSelectImage && selectedImage && selectedImageName)
+						onSelectImage(selectedImage, selectedImageName);
 				}}
 			/>
 		</Box>
