@@ -9,6 +9,7 @@ import {
 	Tooltip,
 } from '@mui/material';
 import { ReactNode, useState } from 'react';
+import CropDialogPopup from './crop-dialog-popup';
 
 export interface UserAvatarProps extends AvatarProps {
 	imageUrl?: string;
@@ -35,6 +36,11 @@ export default function UserAvatar({
 	...props
 }: UserAvatarProps) {
 	const [userAvatar, setUserAvatar] = useState<string | undefined>(imageUrl);
+	const [selectedImage, setSelectedImage] = useState<string | undefined>();
+	const [selectedImageName, setSelectedImageName] = useState<
+		string | undefined
+	>();
+	const [isCropperDialogOpen, setIsCropperDialogOpen] = useState(false);
 
 	function stringToColor(string: string | undefined) {
 		if (!string) {
@@ -73,7 +79,6 @@ export default function UserAvatar({
 	}
 
 	function handleUpload() {
-		//get the input file with id avatarUpload and click it
 		const fileInput = document.getElementById('avatarUpload');
 		if (fileInput) {
 			fileInput.click();
@@ -86,8 +91,9 @@ export default function UserAvatar({
 			const reader = new FileReader();
 			reader.onloadend = () => {
 				if (reader.result) {
-					setUserAvatar(reader.result as string);
-					if (onSelectImage) onSelectImage(reader.result as string, file.name);
+					setSelectedImage(reader.result as string);
+					if (file.name) setSelectedImageName(file.name);
+					setIsCropperDialogOpen(true);
 				}
 			};
 			reader.readAsDataURL(file);
@@ -116,7 +122,6 @@ export default function UserAvatar({
 					{!userAvatar && stringAvatar(userName)}
 				</Avatar>
 			)}
-
 			{showUploadButton && (
 				<Tooltip title='Alterar foto de perfil'>
 					<Button
@@ -138,7 +143,7 @@ export default function UserAvatar({
 						<input
 							id='avatarUpload'
 							hidden
-							accept='image/*'
+							accept='image/png'
 							type='file'
 							onChange={(e) => handleFileChange(e)}
 						/>
@@ -146,6 +151,17 @@ export default function UserAvatar({
 					</Button>
 				</Tooltip>
 			)}
+			<CropDialogPopup
+				open={isCropperDialogOpen}
+				handleClose={() => setIsCropperDialogOpen(false)}
+				image={selectedImage}
+				getCroppedFile={(image) => {
+					setUserAvatar(image);
+					setIsCropperDialogOpen(false);
+					if (onSelectImage && selectedImage && selectedImageName)
+						onSelectImage(selectedImage, selectedImageName);
+				}}
+			/>
 		</Box>
 	);
 }

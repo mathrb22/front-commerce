@@ -16,6 +16,7 @@ import { AuthContext } from '../../contexts/AuthContext';
 import { getAllInventoryHistory } from '../../services/inventory.service';
 import { toast } from 'react-toastify';
 import { AxiosError } from 'axios';
+import CurrencyFormat from 'react-currency-format';
 
 export default function Dashboard() {
 	const [inventoryHistory, setInventoryHistory] = useState<
@@ -29,14 +30,20 @@ export default function Dashboard() {
 	const [queryParams, setQueryParams] = useState<URLSearchParams>(
 		new URLSearchParams()
 	);
-	const { getUserData, profileData } = useContext(AuthContext);
+	const { profileData } = useContext(AuthContext);
 	const [contactId, setContactId] = useState<number | undefined>();
 
 	const columns: GridColDef[] = [
 		{
-			field: 'productId',
+			field: 'id',
 			headerName: 'ID',
-			width: 80,
+			width: 40,
+			align: 'right',
+		},
+		{
+			field: 'productId',
+			headerName: 'Cód. Produto',
+			width: 100,
 			align: 'right',
 		},
 		{ field: 'product', headerName: 'Nome do produto', width: 500 },
@@ -47,11 +54,14 @@ export default function Dashboard() {
 			align: 'right',
 			renderCell: ({ value }) => {
 				return (
-					<Chip
-						label={formatNumberWithDigitGroup(value)}
-						color='secondary'
-						variant='filled'
-						size='small'
+					<CurrencyFormat
+						value={value}
+						displayType={'text'}
+						thousandSeparator={'.'}
+						decimalSeparator={','}
+						prefix={'R$ '}
+						fixedDecimalScale
+						decimalScale={2}
 					/>
 				);
 			},
@@ -92,12 +102,15 @@ export default function Dashboard() {
 	};
 
 	useEffect(() => {
-		getUserData();
 		if (profileData.id) {
 			setContactId(profileData.id);
+			handleFilter('', 'Compra');
 		}
-		handleFilter('', 'Compra');
 	}, []);
+
+	useEffect(() => {
+		handleGetHistory();
+	}, [queryParams]);
 
 	const handleFilter = (query?: string, operation?: string) => {
 		let params = queryParams;
@@ -108,16 +121,20 @@ export default function Dashboard() {
 		}
 
 		if (operation) {
-			params.append('operation', operation);
+			if (params.get('operation')) {
+				params.set('operation', operation);
+			} else {
+				params.append('operation', operation);
+			}
 		} else {
 			params.set('operation', 'Compra');
 		}
 
-		if (contactId) {
-			params.append('contactId', contactId.toString());
-		}
+		// if (contactId) {
+		// 	params.append('contactId', contactId.toString());
+		// }
 		setQueryParams(params);
-		// handleGetHistory();
+		handleGetHistory();
 	};
 
 	const handleChangeMovement = (operation: string) => {
@@ -142,12 +159,12 @@ export default function Dashboard() {
 					/>
 					<Box sx={{ mt: 3 }}>
 						<InventoryHistoryListResults
-							rows={inventoryHistory.data}
-							page={inventoryHistory.page}
-							size={inventoryHistory.size}
-							total={inventoryHistory.total}
-							idProperty='productId'
+							rows={inventoryHistory?.data}
+							idProperty='id'
 							columns={columns}
+							page={inventoryHistory?.page}
+							size={inventoryHistory?.size}
+							total={inventoryHistory?.total}
 							onGetQueryParams={(params) => setQueryParams(params)}
 						/>
 					</Box>

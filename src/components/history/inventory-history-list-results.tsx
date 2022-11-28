@@ -1,12 +1,12 @@
 import { Card } from '@mui/material';
-import { GridColDef } from '@mui/x-data-grid';
-import DataGridTable from '../data-grid-table';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { IInventoryHistory } from '../../shared/interfaces/inventory-history';
+import DataGridTable from '../data-grid-table';
 
 export interface InventoryHistoryListResultsProps {
 	columns: GridColDef[];
-	idProperty: string;
 	rows: IInventoryHistory[];
+	idProperty: string;
 	page: number;
 	size: number;
 	total: number;
@@ -15,8 +15,8 @@ export interface InventoryHistoryListResultsProps {
 
 export const InventoryHistoryListResults = ({
 	rows,
-	idProperty = 'productId',
 	columns,
+	idProperty = 'id',
 	page,
 	size,
 	total,
@@ -28,8 +28,8 @@ export const InventoryHistoryListResults = ({
 		<Card sx={{ height: 'calc(100vh - 200px)' }}>
 			<DataGridTable
 				page={page}
-				idProperty={idProperty}
 				rows={rows}
+				idProperty={idProperty}
 				columns={columns}
 				rowsPerPage={rowsPerPage}
 				size={size}

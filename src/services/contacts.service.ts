@@ -4,6 +4,12 @@ import { ICustomer } from '../shared/interfaces/customer';
 import { Pageable } from '../shared/interfaces/pageable';
 import { api } from './api';
 
+export interface IContactImage {
+	id: number;
+	imageName: string;
+	imageUrl: string;
+}
+
 export async function getContactInfo(
 	id: number
 ): Promise<AxiosResponse<IContact>> {
@@ -97,6 +103,47 @@ export async function exportCustomers(): Promise<AxiosResponse<Blob>> {
 			.get<Blob, AxiosResponse<Blob>>('contact/export', {
 				timeout: 8000,
 				responseType: 'blob',
+			})
+			.then((response) => {
+				resolve(response);
+			})
+			.catch((error) => {
+				reject(error);
+			});
+	});
+}
+
+export async function updateContactImage(
+	id: number,
+	imageName: string,
+	imageUrl: string
+): Promise<AxiosResponse> {
+	return new Promise((resolve, reject) => {
+		const requestBody = {
+			imageName,
+			imageUrl,
+		};
+
+		api
+			.put(`contact/${id}/image`, requestBody, {
+				timeout: 8000,
+			})
+			.then((response) => {
+				resolve(response);
+			})
+			.catch((error) => {
+				reject(error);
+			});
+	});
+}
+
+export async function getContactImage(
+	id: number
+): Promise<AxiosResponse<IContactImage>> {
+	return new Promise((resolve, reject) => {
+		api
+			.get<IContactImage, AxiosResponse>(`contact/${id}/image`, {
+				timeout: 8000,
 			})
 			.then((response) => {
 				resolve(response);

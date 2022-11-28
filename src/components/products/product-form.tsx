@@ -63,9 +63,6 @@ export default function ProductForm({ product }: ProductFormProps) {
 				price: Number(parseFloat(values.price.toString()).toFixed(2)),
 			};
 
-			console.log(values);
-			console.log(productBody);
-
 			if (product?.id) {
 				setIsSubmitting(false);
 				await updateProductInfo(Number(product?.id), productBody);

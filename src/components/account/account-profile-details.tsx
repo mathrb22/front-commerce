@@ -19,6 +19,7 @@ import { LoadingButton } from '@mui/lab';
 import { DatePicker } from '@mui/x-date-pickers';
 import {
 	getContactInfo,
+	updateContactImage,
 	updateContactInfo,
 } from '../../services/contacts.service';
 import { IContact } from '../../shared/interfaces/contact';
@@ -178,13 +179,52 @@ export const AccountProfileDetails = ({
 		}),
 	});
 
-	function handleChangeUserImg(base64Img: string, imageName: string) {
-		if (base64Img && imageName) {
-			formik.setFieldValue('imageUrl', base64Img);
-			formik.setFieldValue('imageName', imageName);
-			console.log(formik.values.imageUrl);
-			console.log(formik.values.imageName);
+	async function handleChangeUserImg(base64Img: string, imageName: string) {
+		if (base64Img && imageName && profile.id) {
+			const base64ImageWithoutPrefix = base64Img.split(';base64,');
+			await updateImage(profile.id, imageName, base64ImageWithoutPrefix[1]);
 		}
+	}
+
+	async function updateImage(id: number, imageName: string, imageUrl: string) {
+		updateContactImage(id, imageName, imageUrl).then(
+			async (response) => {
+				if (response.status == 200) {
+					toast.success('Imagem atualizada com sucesso!', {
+						position: 'top-center',
+						autoClose: 5000,
+						theme: 'colored',
+						hideProgressBar: false,
+						closeOnClick: true,
+						pauseOnHover: true,
+						draggable: true,
+					});
+					await getUserData();
+				} else {
+					toast.error('Erro ao atualizar imagem!', {
+						position: 'top-center',
+						autoClose: 5000,
+						theme: 'colored',
+						hideProgressBar: false,
+						closeOnClick: true,
+						pauseOnHover: true,
+						draggable: true,
+					});
+				}
+			},
+			(error) => {
+				toast.configure();
+				toast.error('Erro ao atualizar a imagem!', {
+					position: 'top-center',
+					autoClose: 5000,
+					theme: 'colored',
+					hideProgressBar: false,
+					closeOnClick: true,
+					pauseOnHover: true,
+					draggable: true,
+				});
+			}
+		);
 	}
 
 	return (
