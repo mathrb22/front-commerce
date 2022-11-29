@@ -138,7 +138,6 @@ export default function NewInventoryMovementForm() {
 				inventoryMovement.contactId = values.contactId;
 			}
 
-			console.log(inventoryMovement);
 			handleAddMovement(inventoryMovement);
 		},
 		validationSchema: Yup.object({
@@ -170,12 +169,10 @@ export default function NewInventoryMovementForm() {
 					}
 				},
 				(error) => {
-					console.log(error);
 					setIsSubmitting(false);
 				}
 			)
 			.catch((err) => {
-				console.log(err);
 				setIsSubmitting(false);
 			});
 	};

@@ -19,7 +19,7 @@ function getAxiosRequestConfig() {
 	var config: AxiosRequestConfig;
 	var baseURL: string = process.env.NEXT_PUBLIC_API_URL
 		? process.env.NEXT_PUBLIC_API_URL
-		: 'https://localhost:44375';
+		: 'https://localhost:5001';
 
 	const user = getUser();
 	if (user && user.accessToken) {
@@ -66,29 +66,16 @@ api.interceptors.response.use(
 						user.refreshToken = response.data.refreshToken;
 						StorageHelper.setItem('frontcommerce.user', JSON.stringify(user));
 
-						axios.defaults.headers.common[
-							'Authorization'
-						] = `Bearer ${user.refreshToken}`;
-
-						Router.push('/dashboard');
+						api.defaults.headers.head = {
+							Authorization: `Bearer ${response.data.accessToken}`,
+						};
+						Router.push('/products');
 					}
 				});
 			} else {
-				// StorageHelper.removeItem('frontcommerce.user');
-				// Router.push('/login');
+				StorageHelper.removeItem('frontcommerce.user');
+				Router.push('/login');
 			}
-		}
-
-		if (error && error.response?.status === 400) {
-			toast.error(error.response.data.description, {
-				position: 'top-center',
-				autoClose: 5000,
-				theme: 'colored',
-				hideProgressBar: false,
-				closeOnClick: true,
-				pauseOnHover: true,
-				draggable: true,
-			});
 		}
 	}
 );

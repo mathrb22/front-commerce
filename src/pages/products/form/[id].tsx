@@ -15,19 +15,14 @@ export default function EditProductPage() {
 
 	async function getProductDetails(id: number) {
 		getProductInfo(id).then((res) => {
-			console.log(res);
 			if (res && res.data) {
-				console.log(res.data);
-				console.log(product);
 				setProduct(res.data);
-				console.log(product);
 			}
 		});
 	}
 
 	useEffect(() => {
 		if (id) {
-			console.log(id);
 			if (typeof id === 'string' && id.match(/^[0-9]+$/)) {
 				getProductDetails(Number(id));
 			} else {

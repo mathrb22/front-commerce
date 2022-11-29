@@ -47,6 +47,7 @@ export default function Dashboard() {
 			align: 'right',
 		},
 		{ field: 'product', headerName: 'Nome do produto', width: 500 },
+		{ field: 'amount', headerName: 'Quantidade', width: 100, align: 'right' },
 		{
 			field: 'totalPrice',
 			headerName: 'Valor Total',
@@ -65,6 +66,12 @@ export default function Dashboard() {
 					/>
 				);
 			},
+		},
+		{ field: 'contact', 
+		  width: 500,
+		  headerName: queryParams.get('operation') == 'Compra' ||
+					  queryParams.get('operation') == 'Producao' ?
+		 		 	  'Fornecedor' : 'Cliente' 
 		},
 		{
 			field: 'buyDate',

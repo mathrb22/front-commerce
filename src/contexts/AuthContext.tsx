@@ -91,7 +91,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
 							? StorageHelper.encryptUsingAES256(password)
 							: undefined;
 
-						console.log(user);
 						StorageHelper.setItem('frontcommerce.user', JSON.stringify(user));
 
 						api.defaults.headers.common[
@@ -107,7 +106,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
 					}
 				},
 				(err: AxiosError) => {
-					console.log('caiu aqui');
 					setIsLoading(false);
 					if (err.response?.data)
 						toast.error(err.response?.data.description, {
@@ -159,7 +157,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
 							refreshToken: response.data.refreshToken,
 						};
 
-						console.log(user);
 						localStorage.setItem('frontcommerce.user', JSON.stringify(user));
 
 						axios.defaults.headers.head = {
@@ -192,7 +189,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
 			setIsLoading(true);
 			await getContactInfo(+user.userId)
 				.then((res) => {
-					console.log(res);
 					if (res && res.data) {
 						if (res.data.imageName && res.data.imageUrl) {
 							getContactImage(+user.userId).then((response) => {

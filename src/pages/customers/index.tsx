@@ -54,7 +54,6 @@ export default function Customers() {
 	const [queryParams, setQueryParams] = useState<URLSearchParams>(params);
 
 	function showDeleteDialog(customer: ICustomer) {
-		console.log(customer);
 		setSelectedCustomer(customer);
 		setIsDeleteModalShowing(true);
 	}
