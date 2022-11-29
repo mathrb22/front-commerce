@@ -47,3 +47,9 @@ export const formatNumberWithDigitGroup = (number: number): string => {
 	//format 12500 to 12.500
 	return number.toLocaleString('pt-BR');
 };
+
+export const removeBase64Prefix = (base64?: string): string => {
+	if (!base64) return '';
+	const base64WithoutPrefix = base64.split(';base64,');
+	return base64WithoutPrefix[1];
+};

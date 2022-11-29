@@ -29,6 +29,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { genderList } from '../../shared/consts/genders';
 import UserAvatar from '../avatar';
 import { EPersonType } from '../../shared/enums/person-type.enum';
+import { removeBase64Prefix } from '../../shared/helpers/format.helper';
 
 const states = [
 	{ nome: 'Acre', sigla: 'AC' },
@@ -151,7 +152,7 @@ export const AccountProfileDetails = ({
 				phone: values.phone,
 				email: values.email,
 				address: values.address,
-				imageUrl: values.imageUrl,
+				imageUrl: removeBase64Prefix(values.imageUrl),
 				imageName: values.imageName,
 			};
 			if (values.personType == 1) {
@@ -181,8 +182,7 @@ export const AccountProfileDetails = ({
 
 	async function handleChangeUserImg(base64Img: string, imageName: string) {
 		if (base64Img && imageName && profile.id) {
-			const base64ImageWithoutPrefix = base64Img.split(';base64,');
-			await updateImage(profile.id, imageName, base64ImageWithoutPrefix[1]);
+			await updateImage(profile.id, imageName, removeBase64Prefix(base64Img));
 		}
 	}
 
