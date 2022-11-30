@@ -130,10 +130,6 @@ export default function Dashboard() {
 		} else {
 			params.set('operation', 'Compra');
 		}
-
-		// if (contactId) {
-		// 	params.append('contactId', contactId.toString());
-		// }
 		setQueryParams(params);
 		handleGetHistory();
 	};

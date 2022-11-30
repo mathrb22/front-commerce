@@ -12,21 +12,31 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import SearchIcon from '@mui/icons-material/Search';
 
-interface InventoryHistoryListToolbarProps
-	extends React.ComponentProps<typeof Box> {
-	onSearch: (query: string) => void;
-	onFilterOperation: (operation: string) => void;
+export interface IOperationMenuItem {
+	id: number;
+	operation: EOperation;
+	label: string;
 }
 
-const movementsList = [
+export const operationList = [
 	{ id: 1, operation: EOperation.Compra, label: 'Compra' },
 	{ id: 2, operation: EOperation.Producao, label: 'Produção' },
 	{ id: 3, operation: EOperation.Venda, label: 'Venda' },
 	{ id: 4, operation: EOperation.Consumo, label: 'Consumo' },
 ];
 
+interface InventoryHistoryListToolbarProps
+	extends React.ComponentProps<typeof Box> {
+	onSearch: (query: string) => void;
+	onFilterOperation: (operation: string) => void;
+	pageTitle?: string;
+	operations?: IOperationMenuItem[];
+}
+
 export const InventoryHistoryListToolbar = ({
 	onFilterOperation,
+	pageTitle = 'Dashboard',
+	operations = operationList,
 	...props
 }: InventoryHistoryListToolbarProps) => {
 	const formik = useFormik({
@@ -56,7 +66,7 @@ export const InventoryHistoryListToolbar = ({
 					m: -1,
 				}}>
 				<Typography sx={{ m: 1 }} variant='h4'>
-					Dashboard
+					{pageTitle}
 				</Typography>
 				<Box sx={{ m: 1, display: 'flex' }}>
 					<Grid item md={5} sm={7} xs={12}>
@@ -94,9 +104,9 @@ export const InventoryHistoryListToolbar = ({
 							select
 							variant='outlined'>
 							<MenuItem value='Compra'>Selecionar</MenuItem>
-							{movementsList.map((movement) => (
-								<MenuItem key={movement.id} value={movement.operation}>
-									{movement.label}
+							{operations.map((op) => (
+								<MenuItem key={op.id} value={op.operation}>
+									{op.label}
 								</MenuItem>
 							))}
 						</TextField>

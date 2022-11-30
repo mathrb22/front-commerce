@@ -94,9 +94,9 @@ export default function UserAvatar({
 
 	function handleFileChange(event: any) {
 		const file = event.target.files[0];
-		if (file.size > 1048576) {
+		if (file.size > 2097152) {
 			toast.configure();
-			toast.warn('Selecione uma imagem de tamanho máximo de 1MB', {
+			toast.warn('Selecione uma imagem de tamanho máximo de 2MB', {
 				position: 'top-center',
 				autoClose: 5000,
 				hideProgressBar: false,
@@ -108,45 +108,45 @@ export default function UserAvatar({
 			return;
 		}
 
-		const img = new Image();
-		img.src = window.URL.createObjectURL(file);
-		img.onload = () => {
-			const width = img.naturalWidth;
-			const height = img.naturalHeight;
-			window.URL.revokeObjectURL(img.src);
-			if (width > 700 || height > 700) {
-				toast.configure();
-				toast.warn('Selecione uma imagem com no máximo 700x700px', {
-					position: 'top-center',
-					autoClose: 5000,
-					hideProgressBar: false,
-					closeOnClick: true,
-					theme: 'colored',
-					pauseOnHover: true,
-					draggable: true,
-				});
-				return;
-			} else {
-				if (file) {
-					new Compressor(file, {
-						quality: 0.7,
-						success: (compressedResult) => {
-							if (compressedResult) {
-								const reader = new FileReader();
-								reader.onloadend = () => {
-									if (reader.result) {
-										setSelectedImage(reader.result as string);
-										if (file.name) setSelectedImageName(file.name);
-										setIsCropperDialogOpen(true);
-									}
-								};
-								reader.readAsDataURL(compressedResult);
+		// const img = new Image();
+		// img.src = window.URL.createObjectURL(file);
+		// img.onload = () => {
+		// 	const width = img.naturalWidth;
+		// 	const height = img.naturalHeight;
+		// 	window.URL.revokeObjectURL(img.src);
+		// 	if (width > 700 || height > 700) {
+		// 		toast.configure();
+		// 		toast.warn('Selecione uma imagem com no máximo 700x700px', {
+		// 			position: 'top-center',
+		// 			autoClose: 5000,
+		// 			hideProgressBar: false,
+		// 			closeOnClick: true,
+		// 			theme: 'colored',
+		// 			pauseOnHover: true,
+		// 			draggable: true,
+		// 		});
+		// 		return;
+		// 	} else {
+		if (file) {
+			new Compressor(file, {
+				quality: 0.7,
+				success: (compressedResult) => {
+					if (compressedResult) {
+						const reader = new FileReader();
+						reader.onloadend = () => {
+							if (reader.result) {
+								setSelectedImage(reader.result as string);
+								if (file.name) setSelectedImageName(file.name);
+								setIsCropperDialogOpen(true);
 							}
-						},
-					});
-				}
-			}
-		};
+						};
+						reader.readAsDataURL(compressedResult);
+					}
+				},
+			});
+		}
+		// 	}
+		// };
 	}
 
 	// async function prepareCroppedImage(croppedImage: string) {
@@ -251,7 +251,7 @@ export default function UserAvatar({
 					setUserAvatar(image);
 					if (onSelectImage && selectedImage && selectedImageName) {
 						// prepareCroppedImage(image);
-						onSelectImage(selectedImage, selectedImageName);
+						onSelectImage(image, selectedImageName);
 						setIsCropperDialogOpen(false);
 					}
 				}}
