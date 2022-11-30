@@ -93,7 +93,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
 						StorageHelper.setItem('frontcommerce.user', JSON.stringify(user));
 
-						api.defaults.headers.common[
+						axios.defaults.headers.common[
 							'Authorization'
 						] = `Bearer ${user.accessToken}`;
 
@@ -152,6 +152,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 					if (response.data.userId) {
 						const user = {
 							login: signupBody.email,
+							password: signupBody.password,
 							userId: response.data.userId,
 							accessToken: response.data.accessToken,
 							refreshToken: response.data.refreshToken,
@@ -159,9 +160,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
 						localStorage.setItem('frontcommerce.user', JSON.stringify(user));
 
-						axios.defaults.headers.head = {
-							Authorization: `Bearer ${response.data.accessToken}`,
-						};
+						axios.defaults.headers.common[
+							'Authorization'
+						] = `Bearer ${user.accessToken}`;
 
 						getUserData().then(() => {
 							Router.push('/dashboard');

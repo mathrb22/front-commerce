@@ -19,7 +19,7 @@ function getAxiosRequestConfig() {
 	var config: AxiosRequestConfig;
 	var baseURL: string = process.env.NEXT_PUBLIC_API_URL
 		? process.env.NEXT_PUBLIC_API_URL
-		: 'https://localhost:5001';
+		: 'https://localhost:44375';
 
 	const user = getUser();
 	if (user && user.accessToken) {
@@ -66,15 +66,16 @@ api.interceptors.response.use(
 						user.refreshToken = response.data.refreshToken;
 						StorageHelper.setItem('frontcommerce.user', JSON.stringify(user));
 
-						api.defaults.headers.head = {
-							Authorization: `Bearer ${response.data.accessToken}`,
-						};
-						Router.push('/products');
+						axios.defaults.headers.common[
+							'Authorization'
+						] = `Bearer ${user.accessToken}`;
+
+						Router.push('/dashboard').then(() => {
+							// window.location.reload();
+							console.log('navegou pro dashboard');
+						});
 					}
 				});
-			} else {
-				StorageHelper.removeItem('frontcommerce.user');
-				Router.push('/login');
 			}
 		}
 	}
