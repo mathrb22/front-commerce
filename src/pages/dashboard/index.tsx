@@ -67,11 +67,14 @@ export default function Dashboard() {
 				);
 			},
 		},
-		{ field: 'contact', 
-		  width: 500,
-		  headerName: queryParams.get('operation') == 'Compra' ||
-					  queryParams.get('operation') == 'Producao' ?
-		 		 	  'Fornecedor' : 'Cliente' 
+		{
+			field: 'contact',
+			width: 500,
+			headerName:
+				queryParams.get('operation') == 'Compra' ||
+				queryParams.get('operation') == 'Producao'
+					? 'Fornecedor'
+					: 'Cliente',
 		},
 		{
 			field: 'buyDate',
@@ -95,16 +98,7 @@ export default function Dashboard() {
 			})
 			.catch((error: AxiosError) => {
 				//toast
-				toast.configure();
-				toast.error('Erro ao buscar o histórico de movimentações!', {
-					position: 'top-center',
-					autoClose: 3000,
-					theme: 'colored',
-					hideProgressBar: false,
-					closeOnClick: true,
-					pauseOnHover: true,
-					draggable: true,
-				});
+				console.log(error);
 			});
 	};
 

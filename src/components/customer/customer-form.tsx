@@ -69,7 +69,7 @@ export default function CustomerForm({ customer }: CustomerFormProps) {
 					const birthdate = moment(values.birthdate, 'DD/MM/YYYY', true);
 					if (!birthdate.isValid()) errors.birthdate = 'Data de nascimento inválida';
 				}
-			} else {
+			} else if (values.personTypeId == 2) {
 				if (!values.name) errors.name = 'Informe a razão social';
 				if (!values.secondName) errors.secondName = 'Informe o nome fantasia';
 				if (!values.documentNumber) errors.documentNumber = 'Informe o CNPJ';
@@ -81,6 +81,7 @@ export default function CustomerForm({ customer }: CustomerFormProps) {
 			return errors;
 		},
 		onSubmit: async (values) => {
+			console.log(values);
 			setIsSubmitting(true);
 			const contactBody: IContact = {
 				name: values.name,
@@ -97,7 +98,6 @@ export default function CustomerForm({ customer }: CustomerFormProps) {
 				contactBody.gender = values.gender;
 				contactBody.birthdate = values.birthdate;
 			}
-
 			if (customer?.id) {
 				await updateCustomer(Number(customer?.id), contactBody);
 			} else {
@@ -112,13 +112,13 @@ export default function CustomerForm({ customer }: CustomerFormProps) {
 				.max(255)
 				.required('Informe o e-mail'),
 			documentNumber: Yup.string().required(),
-			address: Yup.string(),
-			gender: Yup.string(),
+			address: Yup.string().nullable(),
+			gender: Yup.string().nullable(),
 			phone: Yup.string()
 				.required('Informe o número do celular')
 				.min(11, 'Informe um número de celular válido')
 				.max(11, 'Informe um número de celular válido'),
-			birthdate: Yup.string(),
+			birthdate: Yup.string().nullable(),
 		}),
 	});
 

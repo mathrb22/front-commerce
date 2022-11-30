@@ -18,6 +18,7 @@ import { DashboardLayout } from '../../components/dashboard-layout';
 import {
 	deleteContact,
 	getAllCustomers,
+	getContactImage,
 } from '../../services/contacts.service';
 import { Pageable } from '../../shared/interfaces/pageable';
 import { IContact } from '../../shared/interfaces/contact';
@@ -165,8 +166,8 @@ export default function Customers() {
 							justifyContent: 'center',
 						}}>
 						<UserAvatar
+							userId={row.id}
 							userName={row.name}
-							imageUrl={row.imageUrl}
 							isLoading={false}
 							width={32}
 							height={32}
@@ -225,6 +226,12 @@ export default function Customers() {
 
 	function getCustomers() {
 		getAllCustomers(queryParams).then((response) => {
+			// response.data.data.forEach((customer: ICustomer) => {
+			// 	if (customer.id && customer.imageName)
+			// 		getContactImage(customer.id).then((response) => {
+			// 			customer.imageUrl = `data:image/png;base64,${response.data.imageUrl}`;
+			// 		});
+			// });
 			setCustomers(response.data);
 		});
 	}

@@ -1,13 +1,12 @@
 import { createContext, ReactNode, useEffect, useState } from 'react';
 import Router from 'next/router';
-import { api } from '../services/api';
 import { IUser } from '../shared/interfaces/user';
 import { EPersonType } from '../shared/enums/person-type.enum';
 import { signIn, signUp } from '../services/auth.service';
 import { toast } from 'react-toastify';
 import { ERole } from '../shared/enums/role.enum';
 import { IContact } from '../shared/interfaces/contact';
-import { getContactImage, getContactInfo } from '../services/contacts.service';
+import { getContactInfo } from '../services/contacts.service';
 import { StorageHelper } from '../shared/helpers/storage.helper';
 import 'react-toastify/dist/ReactToastify.css';
 import axios, { AxiosError } from 'axios';
@@ -191,19 +190,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 			await getContactInfo(+user.userId)
 				.then((res) => {
 					if (res && res.data) {
-						if (res.data.imageName && res.data.imageUrl) {
-							getContactImage(+user.userId).then((response) => {
-								const data = {
-									...res.data,
-									imageUrl: `data:image/png;base64,${response.data.imageUrl}`,
-								};
-								setProfileData(data);
-								setIsLoading(false);
-							});
-						} else {
-							setProfileData(res.data);
-							setIsLoading(false);
-						}
+						setProfileData(res.data);
+						setIsLoading(false);
 					}
 				})
 				.catch((err) => {

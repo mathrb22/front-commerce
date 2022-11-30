@@ -244,7 +244,7 @@ export const AccountProfileDetails = ({
 						{profile && !isLoading ? (
 							<>
 								<UserAvatar
-									imageUrl={profile.imageUrl}
+									userId={profile.id}
 									onSelectImage={(base64Img, imageName) =>
 										handleChangeUserImg(base64Img, imageName)
 									}

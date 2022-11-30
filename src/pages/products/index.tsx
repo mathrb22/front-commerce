@@ -177,7 +177,7 @@ export default function Products() {
 				);
 			},
 		},
-		{ field: 'createdBy', headerName: 'Criado por', width: 130 },
+		// { field: 'createdBy', headerName: 'Criado por', width: 130 },
 		{
 			field: 'createdAt',
 			headerName: 'Criado em',

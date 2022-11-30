@@ -279,8 +279,8 @@ export default function NewInventoryMovementForm() {
 							justifyContent: 'center',
 						}}>
 						<UserAvatar
+							userId={row.id}
 							userName={row.name}
-							imageUrl={row.imageUrl}
 							isLoading={false}
 							width={32}
 							height={32}

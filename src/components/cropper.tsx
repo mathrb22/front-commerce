@@ -47,7 +47,7 @@ export default function CropperDemo({ src, getCroppedFile }: CropperProps) {
 	return (
 		<>
 			{loading && <Skeleton variant='rectangular' width={'100%'} height={400} />}
-			<Box display={'flex'} justifyContent={'center'} mb={1}>
+			{/* <Box display={'flex'} justifyContent={'center'} mb={1}>
 				<ButtonGroup disableElevation variant='outlined'>
 					<Tooltip title='Rotacionar' aria-label='Rotacionar'>
 						<Button onClick={rotate}>
@@ -69,7 +69,7 @@ export default function CropperDemo({ src, getCroppedFile }: CropperProps) {
 						</Button>
 					</Tooltip>
 				</ButtonGroup>
-			</Box>
+			</Box> */}
 
 			<Cropper
 				src={src}
