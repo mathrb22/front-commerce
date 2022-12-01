@@ -44,6 +44,8 @@ export default function CustomerHistoryPage() {
 
 	const [operations, setOperations] = useState<IOperationMenuItem[]>([]);
 
+	const [initialOperation, setInitialOperation] = useState<EOperation>();
+
 	const operationsList: IOperationMenuItem[] = [
 		{ id: 1, operation: EOperation.Compra, label: 'Compra' },
 		{ id: 2, operation: EOperation.Venda, label: 'Venda' },
@@ -63,7 +65,6 @@ export default function CustomerHistoryPage() {
 	useEffect(() => {
 		if (id && typeof id === 'string' && id.match(/^[0-9]+$/)) {
 			getCustomerInfo(Number(id));
-			handleFilter();
 		}
 	}, [id]);
 
@@ -83,8 +84,11 @@ export default function CustomerHistoryPage() {
 							label: 'Venda',
 						},
 					]);
+					setInitialOperation(EOperation.Venda);
+					handleChangeMovement(EOperation.Venda);
 				} else {
 					setOperations(operationsList);
+					setInitialOperation(EOperation.Compra);
 				}
 			}
 		});
@@ -214,6 +218,7 @@ export default function CustomerHistoryPage() {
 					<InventoryHistoryListToolbar
 						pageTitle='Histórico do cliente'
 						operations={operations}
+						initialOperation={initialOperation}
 						onSearch={(query) => handleFilter(query)}
 						onFilterOperation={(op) => handleChangeMovement(op)}
 					/>
