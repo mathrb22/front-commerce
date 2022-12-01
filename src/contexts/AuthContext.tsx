@@ -1,13 +1,12 @@
 import { createContext, ReactNode, useEffect, useState } from 'react';
 import Router from 'next/router';
-import { api } from '../services/api';
 import { IUser } from '../shared/interfaces/user';
 import { EPersonType } from '../shared/enums/person-type.enum';
 import { signIn, signUp } from '../services/auth.service';
 import { toast } from 'react-toastify';
 import { ERole } from '../shared/enums/role.enum';
 import { IContact } from '../shared/interfaces/contact';
-import { getContactImage, getContactInfo } from '../services/contacts.service';
+import { getContactInfo } from '../services/contacts.service';
 import { StorageHelper } from '../shared/helpers/storage.helper';
 import 'react-toastify/dist/ReactToastify.css';
 import axios, { AxiosError } from 'axios';
@@ -91,10 +90,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 							? StorageHelper.encryptUsingAES256(password)
 							: undefined;
 
-						console.log(user);
 						StorageHelper.setItem('frontcommerce.user', JSON.stringify(user));
 
-						api.defaults.headers.common[
+						axios.defaults.headers.common[
 							'Authorization'
 						] = `Bearer ${user.accessToken}`;
 
@@ -107,7 +105,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
 					}
 				},
 				(err: AxiosError) => {
-					console.log('caiu aqui');
 					setIsLoading(false);
 					if (err.response?.data)
 						toast.error(err.response?.data.description, {
@@ -154,17 +151,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
 					if (response.data.userId) {
 						const user = {
 							login: signupBody.email,
+							password: signupBody.password,
 							userId: response.data.userId,
 							accessToken: response.data.accessToken,
 							refreshToken: response.data.refreshToken,
 						};
 
-						console.log(user);
 						localStorage.setItem('frontcommerce.user', JSON.stringify(user));
 
-						axios.defaults.headers.head = {
-							Authorization: `Bearer ${response.data.accessToken}`,
-						};
+						axios.defaults.headers.common[
+							'Authorization'
+						] = `Bearer ${user.accessToken}`;
 
 						getUserData().then(() => {
 							Router.push('/dashboard');
@@ -192,21 +189,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 			setIsLoading(true);
 			await getContactInfo(+user.userId)
 				.then((res) => {
-					console.log(res);
 					if (res && res.data) {
-						if (res.data.imageName && res.data.imageUrl) {
-							getContactImage(+user.userId).then((response) => {
-								const data = {
-									...res.data,
-									imageUrl: `data:image/png;base64,${response.data.imageUrl}`,
-								};
-								setProfileData(data);
-								setIsLoading(false);
-							});
-						} else {
-							setProfileData(res.data);
-							setIsLoading(false);
-						}
+						setProfileData(res.data);
+						setIsLoading(false);
 					}
 				})
 				.catch((err) => {

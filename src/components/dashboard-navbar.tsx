@@ -66,7 +66,7 @@ export const DashboardNavbar = (props: any) => {
 								height={40}
 								fontSize={20}
 								isLoading={isLoading}
-								imageUrl={profileData.imageUrl}
+								userId={profileData.id}
 								userName={profileData.name}
 							/>
 						</IconButton>

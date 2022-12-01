@@ -1,10 +1,10 @@
 import { EOperation } from '../enums/operation.enum';
-import { IInventoryProduct } from './inventory-product';
+import { IInventoryProduct, IProductMovementBody } from './inventory-product';
 
 export interface IInventoryMovementBody {
 	contactId?: number;
 	operation: EOperation;
-	products: IInventoryProduct[];
+	products: IProductMovementBody[];
 }
 export interface IInventoryMovementResponse {
 	createdBy?: number;

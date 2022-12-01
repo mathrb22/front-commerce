@@ -30,9 +30,7 @@ export class StorageHelper {
 
 	static encryptUsingAES256(token: string): string {
 		const fkey = CryptoJS.enc.Utf8.parse(StorageHelper.key);
-		console.log('key: ' + fkey.toString());
 		const fiv = CryptoJS.enc.Utf8.parse(StorageHelper.key);
-		console.log('iv: ' + fiv.toString());
 		const encrypted = CryptoJS.AES.encrypt(JSON.stringify(token), fkey, {
 			keySize: 16,
 			fiv,
@@ -53,7 +51,6 @@ export class StorageHelper {
 			padding: CryptoJS.pad.Pkcs7,
 		}).toString(CryptoJS.enc.Utf8);
 
-		console.log('decrypted', decrypted.toString());
 		return decrypted;
 	}
 }

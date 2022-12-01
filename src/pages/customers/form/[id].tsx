@@ -14,19 +14,14 @@ export default function EditCustomerPage() {
 
 	async function getCustomerInfo(id: number) {
 		getContactInfo(id).then((res) => {
-			console.log(res);
 			if (res && res.data) {
-				console.log(res.data);
-				console.log(customer);
 				setCustomer(res.data);
-				console.log(customer);
 			}
 		});
 	}
 
 	useEffect(() => {
 		if (id) {
-			console.log(id);
 			if (typeof id === 'string' && id.match(/^[0-9]+$/)) {
 				getCustomerInfo(Number(id));
 			} else {

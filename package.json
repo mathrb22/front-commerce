@@ -23,6 +23,7 @@
     "@types/react-currency-format": "^1.0.0",
     "@types/uuid": "^8.3.4",
     "axios": "^0.26.1",
+    "compressorjs": "^1.1.1",
     "crypto-js": "^4.1.1",
     "date-fns": "^2.29.2",
     "formik": "^2.2.9",

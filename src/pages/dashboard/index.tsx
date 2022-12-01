@@ -47,6 +47,7 @@ export default function Dashboard() {
 			align: 'right',
 		},
 		{ field: 'product', headerName: 'Nome do produto', width: 500 },
+		{ field: 'amount', headerName: 'Quantidade', width: 100, align: 'right' },
 		{
 			field: 'totalPrice',
 			headerName: 'Valor Total',
@@ -65,6 +66,15 @@ export default function Dashboard() {
 					/>
 				);
 			},
+		},
+		{
+			field: 'contact',
+			width: 500,
+			headerName:
+				queryParams.get('operation') == 'Compra' ||
+				queryParams.get('operation') == 'Producao'
+					? 'Fornecedor'
+					: 'Cliente',
 		},
 		{
 			field: 'buyDate',
@@ -88,16 +98,7 @@ export default function Dashboard() {
 			})
 			.catch((error: AxiosError) => {
 				//toast
-				toast.configure();
-				toast.error('Erro ao buscar o histórico de movimentações!', {
-					position: 'top-center',
-					autoClose: 3000,
-					theme: 'colored',
-					hideProgressBar: false,
-					closeOnClick: true,
-					pauseOnHover: true,
-					draggable: true,
-				});
+				console.log(error);
 			});
 	};
 
@@ -109,7 +110,7 @@ export default function Dashboard() {
 	}, []);
 
 	useEffect(() => {
-		handleGetHistory();
+		handleFilter();
 	}, [queryParams]);
 
 	const handleFilter = (query?: string, operation?: string) => {
@@ -129,10 +130,6 @@ export default function Dashboard() {
 		} else {
 			params.set('operation', 'Compra');
 		}
-
-		// if (contactId) {
-		// 	params.append('contactId', contactId.toString());
-		// }
 		setQueryParams(params);
 		handleGetHistory();
 	};

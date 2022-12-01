@@ -74,7 +74,7 @@ export default function DataGridTable({
 	};
 
 	const handleCellClick = (cell: GridCellParams, event: MuiEvent) => {
-		event.defaultMuiPrevented = cell.field === 'amount';
+		event.defaultMuiPrevented = cell.field === 'quantity';
 	};
 
 	const handlePageSizeChange = (newPageSize: number) => {

@@ -8,8 +8,13 @@ import {
 	Skeleton,
 	Tooltip,
 } from '@mui/material';
-import { ReactNode, useState } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import CropDialogPopup from './crop-dialog-popup';
+import Compressor from 'compressorjs';
+import { toast } from 'react-toastify';
+import { dataURLtoFile } from '../shared/helpers/file.helper';
+import { getContactImage } from '../services/contacts.service';
+import { StorageHelper } from '../shared/helpers/storage.helper';
 
 export interface UserAvatarProps extends AvatarProps {
 	imageUrl?: string;
@@ -17,6 +22,7 @@ export interface UserAvatarProps extends AvatarProps {
 	height?: number;
 	fontSize?: number;
 	backgroundColor?: string;
+	userId?: number;
 	userName?: string;
 	showUploadButton?: boolean;
 	isLoading?: boolean;
@@ -25,6 +31,7 @@ export interface UserAvatarProps extends AvatarProps {
 
 export default function UserAvatar({
 	imageUrl,
+	userId,
 	userName,
 	width,
 	height,
@@ -35,7 +42,7 @@ export default function UserAvatar({
 	onSelectImage,
 	...props
 }: UserAvatarProps) {
-	const [userAvatar, setUserAvatar] = useState<string | undefined>(imageUrl);
+	const [userAvatar, setUserAvatar] = useState<string | undefined>();
 	const [selectedImage, setSelectedImage] = useState<string | undefined>();
 	const [selectedImageName, setSelectedImageName] = useState<
 		string | undefined
@@ -87,18 +94,103 @@ export default function UserAvatar({
 
 	function handleFileChange(event: any) {
 		const file = event.target.files[0];
-		if (file) {
-			const reader = new FileReader();
-			reader.onloadend = () => {
-				if (reader.result) {
-					setSelectedImage(reader.result as string);
-					if (file.name) setSelectedImageName(file.name);
-					setIsCropperDialogOpen(true);
-				}
-			};
-			reader.readAsDataURL(file);
+		if (file.size > 2097152) {
+			toast.configure();
+			toast.warn('Selecione uma imagem de tamanho máximo de 2MB', {
+				position: 'top-center',
+				autoClose: 5000,
+				hideProgressBar: false,
+				closeOnClick: true,
+				theme: 'colored',
+				pauseOnHover: true,
+				draggable: true,
+			});
+			return;
 		}
+
+		// const img = new Image();
+		// img.src = window.URL.createObjectURL(file);
+		// img.onload = () => {
+		// 	const width = img.naturalWidth;
+		// 	const height = img.naturalHeight;
+		// 	window.URL.revokeObjectURL(img.src);
+		// 	if (width > 700 || height > 700) {
+		// 		toast.configure();
+		// 		toast.warn('Selecione uma imagem com no máximo 700x700px', {
+		// 			position: 'top-center',
+		// 			autoClose: 5000,
+		// 			hideProgressBar: false,
+		// 			closeOnClick: true,
+		// 			theme: 'colored',
+		// 			pauseOnHover: true,
+		// 			draggable: true,
+		// 		});
+		// 		return;
+		// 	} else {
+		if (file) {
+			new Compressor(file, {
+				quality: 0.7,
+				success: (compressedResult) => {
+					if (compressedResult) {
+						const reader = new FileReader();
+						reader.onloadend = () => {
+							if (reader.result) {
+								setSelectedImage(reader.result as string);
+								if (file.name) setSelectedImageName(file.name);
+								setIsCropperDialogOpen(true);
+							}
+						};
+						reader.readAsDataURL(compressedResult);
+					}
+				},
+			});
+		}
+		// 	}
+		// };
 	}
+
+	// async function prepareCroppedImage(croppedImage: string) {
+	// 	if (croppedImage) {
+	// 		console.log('before compression: ' + croppedImage.length);
+	// 		const compressedFile = await dataURLtoFile(croppedImage, selectedImageName!);
+	// 		//convert the croppedImage base64 string (dataURL) to File and return the image compressed:
+	// 		new Compressor(compressedFile, {
+	// 			quality: 0.7,
+	// 			success: (compressedResult) => {
+	// 				if (compressedResult) {
+	// 					const reader = new FileReader();
+	// 					reader.onloadend = () => {
+	// 						if (reader.result) {
+	// 							if (onSelectImage) {
+	// 								const result = reader.result as string;
+	// 								console.log('after compression: ' + result.length);
+	// 								onSelectImage(reader.result as string, selectedImageName || 'avatar');
+	// 							}
+	// 						}
+	// 					};
+	// 					reader.readAsDataURL(compressedResult);
+	// 				}
+	// 			},
+	// 		});
+	// 	}
+	// }
+
+	useEffect(() => {
+		console.log('useEffect');
+		if (userId) {
+			getUserImage(userId);
+		}
+	}, []);
+
+	const getUserImage = async (id?: number) => {
+		getContactImage(id!).then((response) => {
+			if (response && response.data.imageUrl) {
+				const avatar = `
+					data:image/png;base64,${response.data.imageUrl}`;
+				setUserAvatar(avatar);
+			}
+		});
+	};
 
 	return (
 		<Box sx={{ position: 'relative' }}>
@@ -143,7 +235,7 @@ export default function UserAvatar({
 						<input
 							id='avatarUpload'
 							hidden
-							accept='image/png'
+							accept='image/*'
 							type='file'
 							onChange={(e) => handleFileChange(e)}
 						/>
@@ -157,9 +249,11 @@ export default function UserAvatar({
 				image={selectedImage}
 				getCroppedFile={(image) => {
 					setUserAvatar(image);
-					setIsCropperDialogOpen(false);
-					if (onSelectImage && selectedImage && selectedImageName)
-						onSelectImage(selectedImage, selectedImageName);
+					if (onSelectImage && selectedImage && selectedImageName) {
+						// prepareCroppedImage(image);
+						onSelectImage(image, selectedImageName);
+						setIsCropperDialogOpen(false);
+					}
 				}}
 			/>
 		</Box>

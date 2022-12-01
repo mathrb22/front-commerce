@@ -32,7 +32,10 @@ import CurrencyFormat from 'react-currency-format';
 import { getAllProducts } from '../../services/products.service';
 import { AxiosError } from 'axios';
 import { toast } from 'react-toastify';
-import { IInventoryProduct } from '../../shared/interfaces/inventory-product';
+import {
+	IInventoryProduct,
+	IProductMovementBody,
+} from '../../shared/interfaces/inventory-product';
 import { LoadingButton } from '@mui/lab';
 import { EOperation } from '../../shared/enums/operation.enum';
 import {
@@ -55,9 +58,9 @@ export default function NewInventoryMovementForm() {
 		size: 10,
 		total: 0,
 	});
-	const [selectedProducts, setSelectedProducts] = useState<IInventoryProduct[]>(
-		[]
-	);
+	const [selectedProducts, setSelectedProducts] = useState<
+		IProductMovementBody[]
+	>([]);
 	const [inventoryItems, setInventoryItems] = useState<
 		Pageable<IInventoryProduct>
 	>({
@@ -88,6 +91,7 @@ export default function NewInventoryMovementForm() {
 		},
 		enableReinitialize: true,
 		onSubmit: async (values) => {
+			console.log(selectedProducts);
 			if (!selectedProducts || !selectedProducts.length) {
 				toast.warn('Selecione ao menos 1 produto para esta movimentação!', {
 					position: 'top-center',
@@ -100,7 +104,7 @@ export default function NewInventoryMovementForm() {
 				});
 				return;
 			}
-			if (selectedProducts.some((p) => p.amount <= 0)) {
+			if (selectedProducts.some((p) => !p.amount)) {
 				toast.warn('Informe a quantidade para o(s) produto(s) selecionado(s)!', {
 					position: 'top-center',
 					autoClose: 5000,
@@ -134,11 +138,13 @@ export default function NewInventoryMovementForm() {
 				operation: values.operation,
 				products: selectedProducts,
 			};
+
+			console.log(inventoryMovement.products);
+
 			if (values.contactId) {
 				inventoryMovement.contactId = values.contactId;
 			}
 
-			console.log(inventoryMovement);
 			handleAddMovement(inventoryMovement);
 		},
 		validationSchema: Yup.object({
@@ -170,17 +176,17 @@ export default function NewInventoryMovementForm() {
 					}
 				},
 				(error) => {
-					console.log(error);
 					setIsSubmitting(false);
 				}
 			)
 			.catch((err) => {
-				console.log(err);
 				setIsSubmitting(false);
 			});
 	};
 
-	const handleChangeAmount = (productId: number, value: string) => {
+	const handleChangeQuantity = (productId: number, value: string) => {
+		console.log(productId, value);
+		console.log(selectedProducts);
 		const productsUpdated = selectedProducts?.map((p) => {
 			if (p.productId === productId) {
 				p.amount = Number(value);
@@ -188,6 +194,7 @@ export default function NewInventoryMovementForm() {
 			}
 			return p;
 		});
+		console.log(productsUpdated);
 		setSelectedProducts(productsUpdated);
 	};
 
@@ -214,17 +221,14 @@ export default function NewInventoryMovementForm() {
 			},
 		},
 		{
-			field: 'stockAmount',
+			field: 'amount',
 			headerName: 'Estoque',
 			width: 120,
 			align: 'right',
-			valueGetter(params) {
-				return params.row.stockAmount;
-			},
 			renderCell: ({ row }) => {
 				return (
 					<Chip
-						label={formatNumberWithDigitGroup(row.stockAmount ? row.stockAmount : 0)}
+						label={formatNumberWithDigitGroup(row.amount ? row.amount : 0)}
 						color='secondary'
 						variant='filled'
 						size='small'
@@ -233,7 +237,7 @@ export default function NewInventoryMovementForm() {
 			},
 		},
 		{
-			field: 'amount',
+			field: 'quantity',
 			headerName: 'Qtde.',
 			width: 130,
 			align: 'right',
@@ -249,18 +253,14 @@ export default function NewInventoryMovementForm() {
 								max:
 									formik.values.operation == EOperation.Venda ||
 									formik.values.operation == EOperation.Consumo
-										? row.stockAmount
-										: null,
+										? row.amount
+										: undefined,
 							},
 						}}
 						disabled={!selectedProducts?.find((p) => p.productId === row.id)}
 						placeholder='Qtde.'
-						value={
-							selectedProducts?.find((p) => p.productId === row.id)
-								? selectedProducts?.find((p) => p.productId === row.id)?.amount
-								: row.amount
-						}
-						onChange={(e) => handleChangeAmount(row.id, e.target.value)}
+						value={row.quantity}
+						onChange={(e) => handleChangeQuantity(row.id, e.target.value)}
 						size='small'></TextField>
 				);
 			},
@@ -282,8 +282,8 @@ export default function NewInventoryMovementForm() {
 							justifyContent: 'center',
 						}}>
 						<UserAvatar
+							userId={row.id}
 							userName={row.name}
-							imageUrl={row.imageUrl}
 							isLoading={false}
 							width={32}
 							height={32}
@@ -317,12 +317,10 @@ export default function NewInventoryMovementForm() {
 	];
 
 	const handleSelectedProducts = (products: GridSelectionModel) => {
-		const selectedItems: IInventoryProduct[] = products.map((product) => {
+		const selectedItems: IProductMovementBody[] = products.map((product) => {
 			return {
 				productId: product as number,
-				amount: selectedProducts.find((p) => p.productId == product)
-					? selectedProducts.find((p) => p.productId == product)?.amount!
-					: 0,
+				amount: selectedProducts.find((p) => p.productId == product)?.amount!,
 			};
 		});
 		setSelectedProducts(selectedItems);
@@ -374,7 +372,6 @@ export default function NewInventoryMovementForm() {
 		getAllInventoryProducts()
 			.then((response) => {
 				setInventoryItems(response.data);
-				console.table(inventoryItems.data);
 				// setProductStockAmount();
 			})
 			.catch((error: AxiosError) => {
@@ -389,22 +386,6 @@ export default function NewInventoryMovementForm() {
 					draggable: true,
 				});
 			});
-	};
-
-	const setProductStockAmount = async () => {
-		products.data.map((product) => {
-			inventoryItems.data.find((item) => {
-				if (item.productId === product.id) {
-					return {
-						...product,
-						stockAmount: item ? item.amount : 0,
-					};
-				}
-			});
-			return product;
-		});
-		// setProducts(products);
-		console.table(products.data);
 	};
 
 	const getContacts = () => {
@@ -443,6 +424,29 @@ export default function NewInventoryMovementForm() {
 
 	const handleChangeOperation = async (operation: string) => {
 		await formik.setFieldValue('operation', operation, true);
+		//clear the quantity of the selectedProducts (set to 0)
+
+		// const newProducts: IProduct[] = products.data.map((product) => {
+		// 	selectedProducts.forEach((p) => {
+		// 		if (p.productId == product.id) {
+		// 			product.quantity = 0;
+		// 		}
+		// 		return product;
+		// 	});
+		// });
+
+		// const productsPageable: Pageable<IProduct> = {
+		// 	data: newProducts,
+		// 	page: products.page,
+		// 	size: products.size,
+		// 	total: products.total,
+		// };
+		// setProducts(productsPageable);
+
+		const newSelectedProducts = selectedProducts.map((product) => {
+			return { ...product, amount: 0 };
+		});
+		setSelectedProducts(newSelectedProducts);
 	};
 
 	return (

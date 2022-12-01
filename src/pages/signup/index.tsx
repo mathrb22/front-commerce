@@ -297,12 +297,10 @@ export default function Signup() {
 							<DatePicker
 								label='Data de nascimento'
 								onChange={(date) => {
-									console.log(formik.errors);
 									formik.setFieldValue('birthdate', date);
 								}}
 								onError={(error) => {
 									formik.setFieldError('birthdate', error?.toString());
-									console.log(formik.errors);
 								}}
 								value={formik.values.birthdate ? formik.values.birthdate : null}
 								renderInput={(params) => (

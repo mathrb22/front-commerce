@@ -37,7 +37,6 @@ export default function Inventory() {
 	function getInventory() {
 		getAllInventoryProducts(queryParams)
 			.then((response) => {
-				console.log(response.data);
 				setInventoryProducts(response.data);
 			})
 			.catch((error: AxiosError) => {
@@ -56,10 +55,7 @@ export default function Inventory() {
 	}
 
 	function handleSearch(query: string) {
-		console.log(query);
 		let params = queryParams;
-		console.log(queryParams);
-		console.log(params);
 		if (query != params.get('query')) {
 			if (params.get('query')) {
 				params.set('query', query);
@@ -69,8 +65,6 @@ export default function Inventory() {
 			}
 
 			setQueryParams(params);
-			console.log(params);
-			console.log(queryParams);
 			getInventory();
 		}
 	}

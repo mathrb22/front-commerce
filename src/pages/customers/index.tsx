@@ -18,11 +18,13 @@ import { DashboardLayout } from '../../components/dashboard-layout';
 import {
 	deleteContact,
 	getAllCustomers,
+	getContactImage,
 } from '../../services/contacts.service';
 import { Pageable } from '../../shared/interfaces/pageable';
 import { IContact } from '../../shared/interfaces/contact';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
+import HistoryIcon from '@mui/icons-material/History';
 import DeleteIcon from '@mui/icons-material/Delete';
 import UserAvatar from '../../components/avatar';
 import { ICustomer } from '../../shared/interfaces/customer';
@@ -54,7 +56,6 @@ export default function Customers() {
 	const [queryParams, setQueryParams] = useState<URLSearchParams>(params);
 
 	function showDeleteDialog(customer: ICustomer) {
-		console.log(customer);
 		setSelectedCustomer(customer);
 		setIsDeleteModalShowing(true);
 	}
@@ -117,6 +118,10 @@ export default function Customers() {
 		router.push(`/customers/form/${id}`);
 	}
 
+	function showCustomerHistory(id: number) {
+		router.push(`/customers/history/${id}`);
+	}
+
 	function handleAddCustomer() {
 		router.push(`/customers/form`);
 	}
@@ -124,7 +129,7 @@ export default function Customers() {
 	const columns: GridColDef[] = [
 		{
 			field: 'actions',
-			width: 120,
+			width: 150,
 			headerName: 'Ações',
 			filterable: false,
 			sortable: false,
@@ -138,6 +143,14 @@ export default function Customers() {
 								aria-label='edit'
 								onClick={() => handleEditCustomer(row.id)}>
 								<EditIcon />
+							</IconButton>
+						</Tooltip>
+						<Tooltip title='Exibir Histórico'>
+							<IconButton
+								color='default'
+								aria-label='history'
+								onClick={() => showCustomerHistory(row.id)}>
+								<HistoryIcon />
 							</IconButton>
 						</Tooltip>
 						<Tooltip title='Excluir'>
@@ -166,8 +179,8 @@ export default function Customers() {
 							justifyContent: 'center',
 						}}>
 						<UserAvatar
+							userId={row.id}
 							userName={row.name}
-							imageUrl={row.imageUrl}
 							isLoading={false}
 							width={32}
 							height={32}
@@ -226,6 +239,12 @@ export default function Customers() {
 
 	function getCustomers() {
 		getAllCustomers(queryParams).then((response) => {
+			// response.data.data.forEach((customer: ICustomer) => {
+			// 	if (customer.id && customer.imageName)
+			// 		getContactImage(customer.id).then((response) => {
+			// 			customer.imageUrl = `data:image/png;base64,${response.data.imageUrl}`;
+			// 		});
+			// });
 			setCustomers(response.data);
 		});
 	}
