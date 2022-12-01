@@ -139,8 +139,6 @@ export default function NewInventoryMovementForm() {
 				products: selectedProducts,
 			};
 
-			console.log(inventoryMovement.products);
-
 			if (values.contactId) {
 				inventoryMovement.contactId = values.contactId;
 			}
@@ -185,8 +183,6 @@ export default function NewInventoryMovementForm() {
 	};
 
 	const handleChangeQuantity = (productId: number, value: string) => {
-		console.log(productId, value);
-		console.log(selectedProducts);
 		const productsUpdated = selectedProducts?.map((p) => {
 			if (p.productId === productId) {
 				p.amount = Number(value);
@@ -194,7 +190,6 @@ export default function NewInventoryMovementForm() {
 			}
 			return p;
 		});
-		console.log(productsUpdated);
 		setSelectedProducts(productsUpdated);
 	};
 

@@ -176,7 +176,6 @@ export default function UserAvatar({
 	// }
 
 	useEffect(() => {
-		console.log('useEffect');
 		if (userId) {
 			getUserImage(userId);
 		}

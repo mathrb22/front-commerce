@@ -13,6 +13,7 @@ import { NoContent } from './no-content';
 export interface IDataGridProps {
 	columns: GridColDef[];
 	rows: any[];
+	rowHeight?: number;
 	checkboxSelection?: boolean;
 	idProperty: string;
 	rowsPerPage: number[];
@@ -27,6 +28,7 @@ export interface IDataGridProps {
 export default function DataGridTable({
 	columns,
 	rows,
+	rowHeight,
 	checkboxSelection = false,
 	idProperty = 'id',
 	rowsPerPage = [10, 25, 50],
@@ -109,6 +111,7 @@ export default function DataGridTable({
 					return row[idPropertyName];
 				}}
 				rowCount={total}
+				rowHeight={rowHeight}
 				rowsPerPageOptions={rowsPerPage}
 				columns={columns}
 				onSelectionModelChange={(newSelectionModel, details) =>

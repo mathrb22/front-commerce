@@ -4,7 +4,7 @@ import { ICustomer } from '../shared/interfaces/customer';
 import { Pageable } from '../shared/interfaces/pageable';
 import { api } from './api';
 
-export interface IContactImage {
+export interface IImageResponse {
 	id: number;
 	imageName: string;
 	imageUrl: string;
@@ -139,10 +139,10 @@ export async function updateContactImage(
 
 export async function getContactImage(
 	id: number
-): Promise<AxiosResponse<IContactImage>> {
+): Promise<AxiosResponse<IImageResponse>> {
 	return new Promise((resolve, reject) => {
 		api
-			.get<IContactImage, AxiosResponse>(`contact/${id}/image`, {
+			.get<IImageResponse, AxiosResponse>(`contact/${id}/image`, {
 				timeout: 8000,
 			})
 			.then((response) => {
