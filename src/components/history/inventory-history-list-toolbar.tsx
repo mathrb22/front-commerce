@@ -78,7 +78,7 @@ export const InventoryHistoryListToolbar = ({
 				</Typography>
 				<Box sx={{ m: 1, display: 'flex' }}>
 					<Grid item md={5} sm={7} xs={12}>
-						{/* <TextField
+						<TextField
 							onChange={(event) => onSearch(event.target.value)}
 							InputProps={{
 								endAdornment: (
@@ -92,7 +92,7 @@ export const InventoryHistoryListToolbar = ({
 							sx={{ backgroundColor: 'white', borderRadius: '4px', mr: 1 }}
 							placeholder='Pesquisar histórico'
 							variant='outlined'
-						/> */}
+						/>
 					</Grid>
 					<Grid item md={5} sm={7} xs={12}>
 						<TextField

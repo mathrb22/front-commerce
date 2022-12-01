@@ -56,12 +56,12 @@ export default function Inventory() {
 
 	function handleSearch(query: string) {
 		let params = queryParams;
-		if (query != params.get('query')) {
-			if (params.get('query')) {
-				params.set('query', query);
+		if (query != params.get('querys')) {
+			if (params.get('querys')) {
+				params.set('querys', query);
 			} else {
-				params.delete('query');
-				params.append('query', query);
+				params.delete('querys');
+				params.append('querys', query);
 			}
 
 			setQueryParams(params);

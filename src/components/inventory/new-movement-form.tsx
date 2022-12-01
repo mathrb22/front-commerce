@@ -405,13 +405,13 @@ export default function NewInventoryMovementForm() {
 	const handleContactsQuery = (params?: URLSearchParams) => {
 		if (!params) params = contactQueryParams;
 		if (formik.values.operation == EOperation.Compra) {
-			if (params.get('query')) {
-				params.set('query', 'Pessoa Juridica');
+			if (params.get('querys')) {
+				params.set('querys', 'Pessoa Juridica');
 			} else {
-				params.append('query', 'Pessoa Juridica');
+				params.append('querys', 'Pessoa Juridica');
 			}
 		} else {
-			params.delete('query');
+			params.delete('querys');
 		}
 		setContactQueryParams(params);
 		getContacts();

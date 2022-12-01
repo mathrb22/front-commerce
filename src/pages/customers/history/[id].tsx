@@ -46,6 +46,8 @@ export default function CustomerHistoryPage() {
 
 	const [initialOperation, setInitialOperation] = useState<EOperation>();
 
+	const [selectedOperation, setSelectedOperation] = useState<string>();
+
 	const operationsList: IOperationMenuItem[] = [
 		{ id: 1, operation: EOperation.Compra, label: 'Compra' },
 		{ id: 2, operation: EOperation.Venda, label: 'Venda' },
@@ -96,10 +98,15 @@ export default function CustomerHistoryPage() {
 
 	const handleFilter = (query?: string, operation?: string) => {
 		let params = queryParams;
-		if (query) {
-			params.append('query', query);
+		if (query && query != params.get('querys')) {
+			if (params.get('querys')) {
+				params.set('querys', query);
+			} else {
+				params.delete('querys');
+				params.append('querys', query);
+			}
 		} else {
-			params.delete('query');
+			params.delete('querys');
 		}
 
 		if (operation) {
@@ -109,7 +116,8 @@ export default function CustomerHistoryPage() {
 				params.append('operation', operation);
 			}
 		} else {
-			params.set('operation', 'Compra');
+			if (selectedOperation) params.set('operation', selectedOperation);
+			else if (initialOperation) params.set('operation', initialOperation);
 		}
 
 		if (id && typeof id === 'string' && id.match(/^[0-9]+$/)) {
@@ -126,6 +134,7 @@ export default function CustomerHistoryPage() {
 
 	const handleChangeMovement = (operation: string) => {
 		handleFilter('', operation);
+		setSelectedOperation(operation);
 	};
 
 	const columns: GridColDef[] = [
