@@ -8,6 +8,7 @@ import { IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
 export interface CropDialogPopupProps {
+	title?: string;
 	open: boolean;
 	handleClose: () => void;
 	image?: string;
@@ -15,6 +16,7 @@ export interface CropDialogPopupProps {
 }
 
 export default function CropDialogPopup({
+	title = 'Atualizar imagem',
 	open,
 	image,
 	handleClose,
@@ -28,7 +30,7 @@ export default function CropDialogPopup({
 				aria-labelledby='alert-dialog-title'
 				aria-describedby='alert-dialog-description'>
 				<DialogTitle id='alert-dialog-title'>
-					Atualizar imagem de perfil
+					{title}
 					<IconButton
 						aria-label='close'
 						onClick={handleClose}

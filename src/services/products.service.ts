@@ -2,6 +2,7 @@ import { AxiosResponse } from 'axios';
 import { Pageable } from '../shared/interfaces/pageable';
 import { IProduct } from '../shared/interfaces/product';
 import { api } from './api';
+import { IImageResponse } from './contacts.service';
 
 export async function getAllProducts(
 	params?: URLSearchParams
@@ -95,6 +96,47 @@ export async function updateProduct(
 	return new Promise((resolve, reject) => {
 		api
 			.put<IProduct, AxiosResponse<IProduct>>(`product/${id}`, product, {
+				timeout: 8000,
+			})
+			.then((response) => {
+				resolve(response);
+			})
+			.catch((error) => {
+				reject(error);
+			});
+	});
+}
+
+export async function updateProductImage(
+	id: number,
+	imageName: string,
+	imageUrl: string
+): Promise<AxiosResponse> {
+	return new Promise((resolve, reject) => {
+		const requestBody = {
+			imageName,
+			imageUrl,
+		};
+
+		api
+			.put(`product/${id}/image`, requestBody, {
+				timeout: 8000,
+			})
+			.then((response) => {
+				resolve(response);
+			})
+			.catch((error) => {
+				reject(error);
+			});
+	});
+}
+
+export async function getProductImage(
+	id: number
+): Promise<AxiosResponse<IImageResponse>> {
+	return new Promise((resolve, reject) => {
+		api
+			.get<IImageResponse, AxiosResponse>(`product/${id}/image`, {
 				timeout: 8000,
 			})
 			.then((response) => {

@@ -32,6 +32,8 @@ import { LoadingButton } from '@mui/lab';
 import Image from 'next/image';
 import { toast } from 'react-toastify';
 import { AxiosError } from 'axios';
+import UserAvatar from '../../components/avatar';
+import ProductImage from '../../components/product-image';
 
 export default function Products() {
 	const router = useRouter();
@@ -145,7 +147,28 @@ export default function Products() {
 				);
 			},
 		},
-		{ field: 'id', headerName: 'ID', width: 60, align: 'right' },
+		{ field: 'id', headerName: 'ID', width: 50, align: 'right' },
+		{
+			field: 'imageUrl',
+			headerName: 'Foto',
+			width: 110,
+			renderCell({ row }) {
+				return (
+					<Box
+						sx={{
+							display: 'flex',
+							alignItems: 'center',
+							justifyContent: 'center',
+						}}>
+						<ProductImage
+							productId={row.id}
+							productName={row.name}
+							isLoading={false}
+						/>
+					</Box>
+				);
+			},
+		},
 		{ field: 'name', headerName: 'Nome', width: 300 },
 		{ field: 'description', headerName: 'Descrição', width: 540 },
 		{
@@ -251,6 +274,7 @@ export default function Products() {
 					<Box sx={{ mt: 3 }}>
 						<ProductListResults
 							rows={products?.data}
+							rowHeight={100}
 							idProperty='id'
 							columns={columns}
 							page={products?.page}
