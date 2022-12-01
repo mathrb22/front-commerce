@@ -13,6 +13,7 @@ import {
 	InputAdornment,
 	TextField,
 	Typography,
+	useMediaQuery,
 } from '@mui/material';
 import Link from 'next/link';
 import { useFormik } from 'formik';
@@ -36,6 +37,8 @@ export default function ProductForm({ product }: ProductFormProps) {
 	const { id } = router.query;
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const descriptionCharacterLimit = 500;
+
+	const isOnDesktop = useMediaQuery('(min-width:768px)');
 
 	const formik = useFormik({
 		initialValues: {
@@ -229,10 +232,15 @@ export default function ProductForm({ product }: ProductFormProps) {
 						<CardHeader title='Informações do produto' />
 						<Divider />
 						<CardContent>
-							<div style={{ display: 'flex', gap: 16 }}>
+							<div
+								style={{
+									display: 'flex',
+									gap: 24,
+									flexDirection: isOnDesktop ? 'row' : 'column-reverse',
+								}}>
 								{product?.id ? (
 									<Grid item>
-										<div style={{ minWidth: 300, width: 300 }}>
+										<div style={{ minWidth: 300, width: isOnDesktop ? 300 : '100%' }}>
 											<ProductImage
 												isContained
 												productId={Number(id)}
