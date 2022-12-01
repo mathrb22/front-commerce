@@ -33,7 +33,7 @@ export default function EditCustomerPage() {
 	return (
 		<>
 			<Head>
-				<title>Editar cliente</title>
+				<title>Editar cliente | Frontcommerce</title>
 			</Head>
 			<CustomerForm customer={customer} />
 		</>

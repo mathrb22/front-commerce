@@ -189,7 +189,7 @@ export default function CustomerHistoryPage() {
 	return (
 		<>
 			<Head>
-				<title>Histórico do cliente</title>
+				<title>Histórico do cliente | Frontcommerce</title>
 			</Head>
 			<Box
 				component='main'

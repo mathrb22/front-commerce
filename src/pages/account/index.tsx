@@ -15,7 +15,7 @@ export default function Account() {
 	return (
 		<>
 			<Head>
-				<title>Conta</title>
+				<title>Conta | Frontcommerce</title>
 			</Head>
 			<Box
 				component='main'

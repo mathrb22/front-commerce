@@ -115,7 +115,7 @@ export default function Inventory() {
 	return (
 		<>
 			<Head>
-				<title>Inventário</title>
+				<title>Inventário | Frontcommerce</title>
 			</Head>
 			<Box
 				component='main'

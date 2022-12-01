@@ -258,7 +258,7 @@ export default function Products() {
 	return (
 		<>
 			<Head>
-				<title>Produtos</title>
+				<title>Produtos | Frontcommerce</title>
 			</Head>
 			<Box
 				component='main'

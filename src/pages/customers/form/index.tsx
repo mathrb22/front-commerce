@@ -7,7 +7,7 @@ export default function AddCustomerPage() {
 	return (
 		<>
 			<Head>
-				<title>Adicionar cliente</title>
+				<title>Adicionar cliente | Frontcommerce</title>
 			</Head>
 			<CustomerForm />
 		</>

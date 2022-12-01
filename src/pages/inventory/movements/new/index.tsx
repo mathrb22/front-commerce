@@ -7,7 +7,7 @@ export default function NewInventoryMovementPage() {
 	return (
 		<>
 			<Head>
-				<title>Registrar movimentação</title>
+				<title>Registrar movimentação | Frontcommerce</title>
 			</Head>
 			<NewInventoryMovementForm />
 		</>
