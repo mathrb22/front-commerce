@@ -28,7 +28,7 @@ export interface IDataGridProps {
 export default function DataGridTable({
 	columns,
 	rows,
-	rowHeight,
+	rowHeight = 52,
 	checkboxSelection = false,
 	idProperty = 'id',
 	rowsPerPage = [10, 25, 50],

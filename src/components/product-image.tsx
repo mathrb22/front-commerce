@@ -24,6 +24,9 @@ export interface ProductImageProps {
 	productId?: number;
 	productName?: string;
 	isLoading?: boolean;
+	isContained?: boolean;
+	showUploadButton?: boolean;
+	onSelectImage?: (base64Img: string, imageName: string) => void;
 }
 
 export default function ProductImage({
@@ -32,11 +35,19 @@ export default function ProductImage({
 	width,
 	height,
 	isLoading = true,
+	isContained = false,
+	showUploadButton,
+	onSelectImage,
 	...props
 }: ProductImageProps) {
 	const [productImage, setProductImage] = useState<string>(
 		'/images/products/img-default.jpg'
 	);
+	const [selectedImage, setSelectedImage] = useState<string | undefined>();
+	const [selectedImageName, setSelectedImageName] = useState<
+		string | undefined
+	>();
+	const [isCropperDialogOpen, setIsCropperDialogOpen] = useState(false);
 
 	useEffect(() => {
 		if (productId) {
@@ -54,15 +65,62 @@ export default function ProductImage({
 		});
 	};
 
+	function handleUpload() {
+		const fileInput = document.getElementById('avatarUpload');
+		if (fileInput) {
+			fileInput.click();
+		}
+	}
+
+	function handleFileChange(event: any) {
+		const file = event.target.files[0];
+		if (file.size > 2097152) {
+			toast.configure();
+			toast.warn('Selecione uma imagem de tamanho máximo de 2MB', {
+				position: 'top-center',
+				autoClose: 5000,
+				hideProgressBar: false,
+				closeOnClick: true,
+				theme: 'colored',
+				pauseOnHover: true,
+				draggable: true,
+			});
+			return;
+		}
+
+		if (file) {
+			new Compressor(file, {
+				quality: 0.7,
+				success: (compressedResult) => {
+					if (compressedResult) {
+						const reader = new FileReader();
+						reader.onloadend = () => {
+							if (reader.result) {
+								setSelectedImage(reader.result as string);
+								if (file.name) setSelectedImageName(file.name);
+								setIsCropperDialogOpen(true);
+							}
+						};
+						reader.readAsDataURL(compressedResult);
+					}
+				},
+			});
+		}
+		// 	}
+		// };
+	}
+
 	return (
-		<Box sx={{ position: 'relative' }}>
-			{isLoading ? (
-				<Skeleton
-					animation='wave'
-					variant='rectangular'
-					width={width ?? 80}
-					height={width ?? 80}
-				/>
+		<Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+			{isContained ? (
+				<Box sx={{ border: 1, borderColor: '#ddd', p: 2 }}>
+					<Image
+						unoptimized
+						alt='Avatar do usuário'
+						width={width ?? 840}
+						height={height ?? 700}
+						src={productImage}></Image>
+				</Box>
 			) : (
 				<Image
 					unoptimized
@@ -71,6 +129,40 @@ export default function ProductImage({
 					height={height ?? 700}
 					src={productImage}></Image>
 			)}
+
+			{showUploadButton && (
+				<Tooltip title='Alterar foto do produto'>
+					<Button
+						variant='contained'
+						sx={{ mt: 3, mb: 2, display: 'flex', gap: 1, width: 200 }}
+						color='primary'
+						aria-label='upload picture'
+						onClick={handleUpload}>
+						<input
+							id='avatarUpload'
+							hidden
+							accept='image/*'
+							type='file'
+							onChange={(e) => handleFileChange(e)}
+						/>
+						<FileUpload fontSize='small' />
+						Atualizar foto
+					</Button>
+				</Tooltip>
+			)}
+			<CropDialogPopup
+				title='Atualizar imagem do produto'
+				open={isCropperDialogOpen}
+				handleClose={() => setIsCropperDialogOpen(false)}
+				image={selectedImage}
+				getCroppedFile={(image) => {
+					setProductImage(image);
+					if (onSelectImage && selectedImage && selectedImageName) {
+						onSelectImage(image, selectedImageName);
+						setIsCropperDialogOpen(false);
+					}
+				}}
+			/>
 		</Box>
 	);
 }

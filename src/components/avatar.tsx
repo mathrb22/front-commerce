@@ -48,6 +48,7 @@ export default function UserAvatar({
 		string | undefined
 	>();
 	const [isCropperDialogOpen, setIsCropperDialogOpen] = useState(false);
+	const [isImageLoading, setIsImageLoading] = useState<boolean>(isLoading);
 
 	function stringToColor(string: string | undefined) {
 		if (!string) {
@@ -149,32 +150,6 @@ export default function UserAvatar({
 		// };
 	}
 
-	// async function prepareCroppedImage(croppedImage: string) {
-	// 	if (croppedImage) {
-	// 		console.log('before compression: ' + croppedImage.length);
-	// 		const compressedFile = await dataURLtoFile(croppedImage, selectedImageName!);
-	// 		//convert the croppedImage base64 string (dataURL) to File and return the image compressed:
-	// 		new Compressor(compressedFile, {
-	// 			quality: 0.7,
-	// 			success: (compressedResult) => {
-	// 				if (compressedResult) {
-	// 					const reader = new FileReader();
-	// 					reader.onloadend = () => {
-	// 						if (reader.result) {
-	// 							if (onSelectImage) {
-	// 								const result = reader.result as string;
-	// 								console.log('after compression: ' + result.length);
-	// 								onSelectImage(reader.result as string, selectedImageName || 'avatar');
-	// 							}
-	// 						}
-	// 					};
-	// 					reader.readAsDataURL(compressedResult);
-	// 				}
-	// 			},
-	// 		});
-	// 	}
-	// }
-
 	useEffect(() => {
 		if (userId) {
 			getUserImage(userId);
@@ -187,13 +162,14 @@ export default function UserAvatar({
 				const avatar = `
 					data:image/png;base64,${response.data.imageUrl}`;
 				setUserAvatar(avatar);
+				setIsImageLoading(false);
 			}
 		});
 	};
 
 	return (
 		<Box sx={{ position: 'relative' }}>
-			{isLoading ? (
+			{isImageLoading ? (
 				<Skeleton
 					animation='wave'
 					variant='circular'
@@ -243,6 +219,7 @@ export default function UserAvatar({
 				</Tooltip>
 			)}
 			<CropDialogPopup
+				title='Atualizar imagem do usuário'
 				open={isCropperDialogOpen}
 				handleClose={() => setIsCropperDialogOpen(false)}
 				image={selectedImage}

@@ -19,7 +19,13 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { LoadingButton } from '@mui/lab';
 import { toast } from 'react-toastify';
-import { createProduct, updateProduct } from '../../services/products.service';
+import {
+	createProduct,
+	updateProduct,
+	updateProductImage,
+} from '../../services/products.service';
+import ProductImage from '../product-image';
+import { removeBase64Prefix } from '../../shared/helpers/format.helper';
 
 export interface ProductFormProps {
 	product?: IProduct;
@@ -27,6 +33,7 @@ export interface ProductFormProps {
 
 export default function ProductForm({ product }: ProductFormProps) {
 	const router = useRouter();
+	const { id } = router.query;
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const descriptionCharacterLimit = 500;
 
@@ -140,6 +147,52 @@ export default function ProductForm({ product }: ProductFormProps) {
 		);
 	}
 
+	async function handleChangeProductImage(base64Img: string, imageName: string) {
+		if (base64Img && imageName && product?.id) {
+			await updateImage(product?.id, imageName, removeBase64Prefix(base64Img));
+		}
+	}
+
+	async function updateImage(id: number, imageName: string, imageUrl: string) {
+		updateProductImage(id, imageName, imageUrl).then(
+			async (response) => {
+				if (response.status == 200) {
+					toast.success('Imagem atualizada com sucesso!', {
+						position: 'top-center',
+						autoClose: 5000,
+						theme: 'colored',
+						hideProgressBar: false,
+						closeOnClick: true,
+						pauseOnHover: true,
+						draggable: true,
+					});
+				} else {
+					toast.error('Erro ao atualizar imagem!', {
+						position: 'top-center',
+						autoClose: 5000,
+						theme: 'colored',
+						hideProgressBar: false,
+						closeOnClick: true,
+						pauseOnHover: true,
+						draggable: true,
+					});
+				}
+			},
+			(error) => {
+				toast.configure();
+				toast.error('Erro ao atualizar a imagem!', {
+					position: 'top-center',
+					autoClose: 5000,
+					theme: 'colored',
+					hideProgressBar: false,
+					closeOnClick: true,
+					pauseOnHover: true,
+					draggable: true,
+				});
+			}
+		);
+	}
+
 	return (
 		<Box
 			component='main'
@@ -176,99 +229,120 @@ export default function ProductForm({ product }: ProductFormProps) {
 						<CardHeader title='Informações do produto' />
 						<Divider />
 						<CardContent>
-							<Grid container spacing={3}>
-								<Grid item md={12} xs={12}>
-									<TextField
-										fullWidth
-										label='Nome'
-										name='name'
-										onChange={formik.handleChange}
-										required
-										value={formik.values.name}
-										onBlur={formik.handleBlur}
-										placeholder='Digite o nome do produto'
-										autoComplete='name'
-										error={Boolean(formik.touched.name && formik.errors.name)}
-										helperText={formik.touched.name && formik.errors.name}
-										variant='outlined'></TextField>
-								</Grid>
-								<Grid item md={12} xs={12}>
-									<TextField
-										fullWidth
-										multiline
-										rows={4}
-										inputProps={{
-											maxlength: descriptionCharacterLimit,
-										}}
-										label='Descrição'
-										name='description'
-										onBlur={formik.handleBlur}
-										onChange={formik.handleChange}
-										required
-										value={formik.values.description}
-										placeholder='Digite a descrição do produto'
-										autoComplete='description'
-										error={Boolean(
-											formik.touched.description && formik.errors.description
-										)}
-										helperText={
-											<Box
-												sx={{
-													display: 'flex',
-													justifyContent: 'space-between',
-													alignItems: 'center',
-												}}>
-												<Typography sx={{ fontSize: 12 }}>
-													{formik.touched.description && formik.errors.description}
-												</Typography>
-												<Typography sx={{ fontSize: 12 }}>
-													{formik.values.description.length}/{descriptionCharacterLimit}
-												</Typography>
-											</Box>
-										}
-										variant='outlined'></TextField>
-								</Grid>
-								<Grid item md={4} sm={6} xs={12}>
-									<TextField
-										type='number'
-										InputProps={{
-											startAdornment: <InputAdornment position='start'>R$</InputAdornment>,
-										}}
-										fullWidth
-										label='Preço'
-										name='price'
-										onChange={formik.handleChange}
-										onBlur={formik.handleBlur}
-										required
-										value={formik.values.price}
-										placeholder='Digite o preço'
-										autoComplete='price'
-										error={Boolean(formik.touched.price && formik.errors.price)}
-										helperText={formik.touched.price && formik.errors.price}
-										variant='outlined'></TextField>
-								</Grid>
-								<Grid item md={5} sm={6} xs={12}>
-									<TextField
-										fullWidth
-										label='Unidade de medida padrão'
-										name='defaultMeansurement'
-										onChange={formik.handleChange}
-										required
-										value={formik.values.defaultMeansurement}
-										onBlur={formik.handleBlur}
-										placeholder='Digite a unidade de medida padrão'
-										autoComplete='defaultMeansurement'
-										error={Boolean(
-											formik.touched.defaultMeansurement &&
+							<div style={{ display: 'flex', gap: 16 }}>
+								{product?.id ? (
+									<Grid item>
+										<div style={{ minWidth: 300, width: 300 }}>
+											<ProductImage
+												isContained
+												productId={Number(id)}
+												productName={product?.name}
+												height={300}
+												isLoading={false}
+												showUploadButton
+												onSelectImage={(base64Img, imageName) =>
+													handleChangeProductImage(base64Img, imageName)
+												}
+												width={300}></ProductImage>
+										</div>
+									</Grid>
+								) : null}
+								<Grid container spacing={3}>
+									<Grid item md={12} xs={12}>
+										<TextField
+											fullWidth
+											label='Nome'
+											name='name'
+											onChange={formik.handleChange}
+											required
+											value={formik.values.name}
+											onBlur={formik.handleBlur}
+											placeholder='Digite o nome do produto'
+											autoComplete='name'
+											error={Boolean(formik.touched.name && formik.errors.name)}
+											helperText={formik.touched.name && formik.errors.name}
+											variant='outlined'></TextField>
+									</Grid>
+									<Grid item md={12} xs={12}>
+										<TextField
+											fullWidth
+											multiline
+											rows={4}
+											inputProps={{
+												maxlength: descriptionCharacterLimit,
+											}}
+											label='Descrição'
+											name='description'
+											onBlur={formik.handleBlur}
+											onChange={formik.handleChange}
+											required
+											value={formik.values.description}
+											placeholder='Digite a descrição do produto'
+											autoComplete='description'
+											error={Boolean(
+												formik.touched.description && formik.errors.description
+											)}
+											helperText={
+												<Box
+													sx={{
+														display: 'flex',
+														justifyContent: 'space-between',
+														alignItems: 'center',
+													}}>
+													<Typography sx={{ fontSize: 12 }}>
+														{formik.touched.description && formik.errors.description}
+													</Typography>
+													<Typography sx={{ fontSize: 12 }}>
+														{formik.values.description.length}/{descriptionCharacterLimit}
+													</Typography>
+												</Box>
+											}
+											variant='outlined'></TextField>
+									</Grid>
+									<Grid item md={4} sm={6} xs={12}>
+										<TextField
+											type='number'
+											InputProps={{
+												startAdornment: (
+													<InputAdornment position='start'>R$</InputAdornment>
+												),
+											}}
+											fullWidth
+											label='Preço'
+											name='price'
+											onChange={formik.handleChange}
+											onBlur={formik.handleBlur}
+											required
+											value={formik.values.price}
+											placeholder='Digite o preço'
+											autoComplete='price'
+											error={Boolean(formik.touched.price && formik.errors.price)}
+											helperText={formik.touched.price && formik.errors.price}
+											variant='outlined'></TextField>
+									</Grid>
+									<Grid item md={5} sm={6} xs={12}>
+										<TextField
+											fullWidth
+											label='Unidade de medida padrão'
+											name='defaultMeansurement'
+											onChange={formik.handleChange}
+											required
+											value={formik.values.defaultMeansurement}
+											onBlur={formik.handleBlur}
+											placeholder='Digite a unidade de medida padrão'
+											autoComplete='defaultMeansurement'
+											error={Boolean(
+												formik.touched.defaultMeansurement &&
+													formik.errors.defaultMeansurement
+											)}
+											helperText={
+												formik.touched.defaultMeansurement &&
 												formik.errors.defaultMeansurement
-										)}
-										helperText={
-											formik.touched.defaultMeansurement &&
-											formik.errors.defaultMeansurement
-										}
-										variant='outlined'></TextField>
+											}
+											variant='outlined'></TextField>
+									</Grid>
 								</Grid>
-							</Grid>
+							</div>
 						</CardContent>
 						<Divider />
 						<Box
