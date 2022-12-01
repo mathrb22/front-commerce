@@ -1,13 +1,9 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import Router from 'next/router';
-import { destroyCookie, parseCookies } from 'nookies';
-import { toast } from 'react-toastify';
 import { ERole } from '../shared/enums/role.enum';
 import { StorageHelper } from '../shared/helpers/storage.helper';
 import { IUser } from '../shared/interfaces/user';
 import { signIn } from './auth.service';
-import { useContext } from 'react';
-import { AuthContext } from '../contexts/AuthContext';
 
 function getUser(): IUser | undefined {
 	const user = StorageHelper.getLoggedInUser();
@@ -72,7 +68,6 @@ api.interceptors.response.use(
 
 						Router.push('/dashboard').then(() => {
 							// window.location.reload();
-							console.log('navegou pro dashboard');
 						});
 					}
 				});

@@ -81,7 +81,6 @@ export default function CustomerForm({ customer }: CustomerFormProps) {
 			return errors;
 		},
 		onSubmit: async (values) => {
-			console.log(values);
 			setIsSubmitting(true);
 			const contactBody: IContact = {
 				name: values.name,

@@ -9,7 +9,7 @@ import CustomerForm from '../../../components/customer/customer-form';
 import { getAllInventoryHistory } from '../../../services/inventory.service';
 import { Pageable } from '../../../shared/interfaces/pageable';
 import { IInventoryHistory } from '../../../shared/interfaces/inventory-history';
-import { Box, Container, Tooltip } from '@mui/material';
+import { Box, Container, Tooltip, Typography } from '@mui/material';
 import {
 	InventoryHistoryListToolbar,
 	IOperationMenuItem,
@@ -23,6 +23,8 @@ import {
 	formatDateTimeStringToHowManyTimeAgo,
 } from '../../../shared/helpers/format.helper';
 import { EOperation } from '../../../shared/enums/operation.enum';
+import Link from 'next/link';
+import { ArrowBack } from '@mui/icons-material';
 
 export default function CustomerHistoryPage() {
 	const router = useRouter();
@@ -64,6 +66,10 @@ export default function CustomerHistoryPage() {
 			handleFilter();
 		}
 	}, [id]);
+
+	useEffect(() => {
+		handleFilter();
+	}, [queryParams]);
 
 	async function getCustomerInfo(id: number) {
 		getContactInfo(id).then((res) => {
@@ -188,6 +194,23 @@ export default function CustomerHistoryPage() {
 					py: 3,
 				}}>
 				<Container maxWidth={false} sx={{ px: 3 }}>
+					<Box
+						sx={{
+							m: 0,
+							maxWidth: 'min-content',
+							pb: 2,
+							cursor: 'pointer',
+							':hover': {
+								textDecoration: 'underline',
+							},
+						}}>
+						<Link passHref href='/customers'>
+							<Typography sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+								<ArrowBack />
+								Clientes
+							</Typography>
+						</Link>
+					</Box>
 					<InventoryHistoryListToolbar
 						pageTitle='Histórico do cliente'
 						operations={operations}

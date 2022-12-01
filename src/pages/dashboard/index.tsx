@@ -110,7 +110,7 @@ export default function Dashboard() {
 	}, []);
 
 	useEffect(() => {
-		handleGetHistory();
+		handleFilter();
 	}, [queryParams]);
 
 	const handleFilter = (query?: string, operation?: string) => {
