@@ -152,7 +152,7 @@ export const AccountProfileDetails = ({
 				phone: values.phone,
 				email: values.email,
 				address: values.address,
-				imageUrl: removeBase64Prefix(values.imageUrl),
+				imageUrl: values.imageUrl,
 				imageName: values.imageName,
 			};
 			if (values.personType == 1) {
