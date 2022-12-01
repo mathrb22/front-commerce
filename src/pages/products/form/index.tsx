@@ -8,7 +8,7 @@ export default function AddProductPage() {
 	return (
 		<>
 			<Head>
-				<title>Adicionar produto</title>
+				<title>Adicionar produto | Frontcommerce</title>
 			</Head>
 			<ProductForm />
 		</>

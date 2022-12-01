@@ -267,7 +267,7 @@ export default function Customers() {
 	return (
 		<>
 			<Head>
-				<title>Clientes</title>
+				<title>Clientes | Frontcommerce</title>
 			</Head>
 			<Box
 				component='main'

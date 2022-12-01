@@ -34,7 +34,7 @@ export default function EditProductPage() {
 	return (
 		<>
 			<Head>
-				<title>Editar produto</title>
+				<title>Editar produto | Frontcommerce</title>
 			</Head>
 			<ProductForm product={product} />
 		</>
