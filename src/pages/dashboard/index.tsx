@@ -11,12 +11,16 @@ import {
 	formatDateTimeStringToHowManyTimeAgo,
 	formatNumberWithDigitGroup,
 } from '../../shared/helpers/format.helper';
-import { InventoryHistoryListToolbar } from '../../components/history/inventory-history-list-toolbar';
+import {
+	InventoryHistoryListToolbar,
+	IOperationMenuItem,
+} from '../../components/history/inventory-history-list-toolbar';
 import { AuthContext } from '../../contexts/AuthContext';
 import { getAllInventoryHistory } from '../../services/inventory.service';
 import { toast } from 'react-toastify';
 import { AxiosError } from 'axios';
 import CurrencyFormat from 'react-currency-format';
+import { EOperation } from '../../shared/enums/operation.enum';
 
 export default function Dashboard() {
 	const [inventoryHistory, setInventoryHistory] = useState<
@@ -32,6 +36,12 @@ export default function Dashboard() {
 	);
 	const { profileData } = useContext(AuthContext);
 	const [contactId, setContactId] = useState<number | undefined>();
+
+	const [initialOperation, setInitialOperation] = useState<EOperation>(
+		EOperation.Compra
+	);
+
+	const [selectedOperation, setSelectedOperation] = useState<string>();
 
 	const columns: GridColDef[] = [
 		{
@@ -115,10 +125,16 @@ export default function Dashboard() {
 
 	const handleFilter = (query?: string, operation?: string) => {
 		let params = queryParams;
-		if (query) {
-			params.append('query', query);
+
+		if (query && query != params.get('querys')) {
+			if (params.get('querys')) {
+				params.set('querys', query);
+			} else {
+				params.delete('querys');
+				params.append('querys', query);
+			}
 		} else {
-			params.delete('query');
+			params.delete('querys');
 		}
 
 		if (operation) {
@@ -128,7 +144,8 @@ export default function Dashboard() {
 				params.append('operation', operation);
 			}
 		} else {
-			params.set('operation', 'Compra');
+			if (selectedOperation) params.set('operation', selectedOperation);
+			else if (initialOperation) params.set('operation', initialOperation);
 		}
 		setQueryParams(params);
 		handleGetHistory();
@@ -136,6 +153,7 @@ export default function Dashboard() {
 
 	const handleChangeMovement = (operation: string) => {
 		handleFilter('', operation);
+		setSelectedOperation(operation);
 	};
 
 	return (
